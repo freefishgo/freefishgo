@@ -8,16 +8,22 @@ import (
 )
 
 type app struct {
-	Handlers *router.ControllerRegister
+	handlers *router.ControllerRegister
 	Server   *http.Server
 	Config   *config.Config
 }
 
 func NewFreeFish() *app {
 	freeFish := new(app)
-	freeFish.Handlers = router.NewControllerRegister()
+	freeFish.handlers = router.NewControllerRegister()
 	freeFish.Config = config.NewConfig()
 	return freeFish
+}
+
+func (app *app) AddHanlers(ctrles ...router.IController) {
+	for i := 0; i < len(ctrles); i++ {
+		app.handlers.AddHandlers(&ctrles[i])
+	}
 }
 
 func (app *app) Run() {
@@ -29,7 +35,7 @@ func (app *app) Run() {
 				//ReadTimeout:    app.Server.ReadTimeout,
 				//WriteTimeout:   app.Server.WriteTimeout,
 				//MaxHeaderBytes: app.Server.MaxHeaderBytes,
-				Handler: app.Handlers,
+				Handler: app.handlers,
 			}
 			app.Server.ListenAndServe()
 		}()
