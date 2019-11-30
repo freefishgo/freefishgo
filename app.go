@@ -22,7 +22,7 @@ func NewFreeFish() *app {
 
 func (app *app) AddHanlers(ctrles ...router.IController) {
 	for i := 0; i < len(ctrles); i++ {
-		app.handlers.AddHandlers(&ctrles[i])
+		app.handlers.AddHandlers(ctrles[i])
 	}
 }
 
