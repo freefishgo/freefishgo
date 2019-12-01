@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2217649a-b500-443b-a5ff-d317bedb26f4" name="Default Changelist" comment="Default Changelist">
+    <list default="true" id="2217649a-b500-443b-a5ff-d317bedb26f4" name="Default Changelist" comment="反射调用方法">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/Controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/Controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/routerMain.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/routerMain.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/tree.go" afterDir="false" />
@@ -105,7 +103,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="building" />
     <MESSAGE value="Default Changelist" />
-    <option name="LAST_COMMIT_MESSAGE" value="Default Changelist" />
+    <MESSAGE value="反射调用方法" />
+    <option name="LAST_COMMIT_MESSAGE" value="反射调用方法" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

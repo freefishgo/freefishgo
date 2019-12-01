@@ -28,6 +28,7 @@ func newTree() *tree {
 	return tree
 }
 
+// 控制器注册
 func (t *tree) addPathTree(controllerName string, controllerAction string, controllerFunc reflect.Type, ControllerActionParameterStruct reflect.Type) {
 	controllerInfo := new(ControllerInfo)
 	controllerInfo.ControllerAction = controllerAction
@@ -39,4 +40,14 @@ func (t *tree) addPathTree(controllerName string, controllerAction string, contr
 	}
 
 	t.ControllerList[strings.ToLower(controllerName)][strings.ToLower(controllerAction)] = controllerInfo
+}
+
+//  根据控制器名字和动作名字获取控制器
+func (t *tree) getControllerInfoByControllerNameControllerAction(controllerName string, controllerAction string) (*ControllerInfo, bool) {
+	if v, ok := t.ControllerList[controllerName]; ok {
+		if v, ok := v[controllerAction]; ok {
+			return v, true
+		}
+	}
+	return nil, false
 }

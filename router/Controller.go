@@ -20,6 +20,7 @@ type Controller struct {
 	sonController  IController
 }
 
+// 控制器的基本数据结构
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
@@ -64,18 +65,23 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	return tree
 }
 
+// 控制器属性设置
 func (c *Controller) GetControllerInfo() *ControllerInfo {
 	println("默认GetControllerInfo")
 	return new(ControllerInfo)
 }
 
+// 控制器注册
 func (c *Controller) setSonController(son IController) {
 	c.sonController = son
 }
+
+// http请求上下文注册
 func (c *Controller) SetHttpContext(ctx *httpContext.HttpContext) {
 	c.HttpContext = ctx
 }
 
+// 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
 		"GetControllerInfo": true}
