@@ -7,10 +7,10 @@ import (
 )
 
 type ControllerInfo struct {
-	ControllerFunc   reflect.Type //请求事件的处理函数
-	ControllerName   string       //控制器名称
-	ControllerAction string       //控制器处理方法
-	ParameterStruct  reflect.Type
+	ControllerFunc                  reflect.Type //请求事件的处理函数
+	ControllerName                  string       //控制器名称
+	ControllerAction                string       //控制器处理方法
+	ControllerActionParameterStruct reflect.Type
 }
 
 // http请求逻辑控制器
@@ -35,23 +35,28 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	for i := 0; i < getType.NumMethod(); i++ {
 		me := getType.Method(i)
 		actionName := me.Name
-		if isNotSkin(actionName) {
-			tree.addPathTree(controllerName, actionName, getType.Elem())
-		} else {
+		if !isNotSkin(actionName) {
 			continue
 		}
+		var controllerActionParameterStruct reflect.Type = nil
 		if me.Type.NumIn() == 2 {
 			tmp := me.Type.In(1)
-			if tmp.Kind() == reflect.Struct {
-				for i := 0; i < tmp.NumField(); i++ {
-					field := tmp.Field(i)
-					println(field.Tag)
-					println(field.Name)
+			if tmp.Kind() == reflect.Ptr {
+				//for i := 0; i < tmp.NumField(); i++ {
+				//	field := tmp.Field(i)
+				//	println(field.Tag)
+				//	println(field.Name)
+				//}
+				if tmp.Elem().Kind() == reflect.Struct {
+					controllerActionParameterStruct = tmp.Elem()
+				} else {
+					panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针,且只能设置一个结构体指针")
 				}
 			} else {
-				panic("方法" + getType.String() + "." + me.Name + "错误:不能设置参数为非结构体,且只能设置一个结构体")
+				panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针,且只能设置一个结构体指针")
 			}
 		}
+		tree.addPathTree(controllerName, actionName, getType.Elem(), controllerActionParameterStruct)
 	}
 
 	(c.sonController).GetControllerInfo()

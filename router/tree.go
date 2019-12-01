@@ -28,11 +28,12 @@ func newTree() *tree {
 	return tree
 }
 
-func (t *tree) addPathTree(controllerName string, controllerAction string, controllerFunc reflect.Type) {
+func (t *tree) addPathTree(controllerName string, controllerAction string, controllerFunc reflect.Type, ControllerActionParameterStruct reflect.Type) {
 	controllerInfo := new(ControllerInfo)
 	controllerInfo.ControllerAction = controllerAction
 	controllerInfo.ControllerName = controllerName
 	controllerInfo.ControllerFunc = controllerFunc
+	controllerInfo.ControllerActionParameterStruct = ControllerActionParameterStruct
 	if _, ok := t.ControllerList[controllerName]; !ok {
 		t.ControllerList[strings.ToLower(controllerName)] = map[string]*ControllerInfo{}
 	}

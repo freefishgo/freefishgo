@@ -1,7 +1,6 @@
 package main
 
 import (
-	"freeFishGo/httpContext"
 	"freeFishGo/router"
 	"time"
 )
@@ -14,8 +13,14 @@ func (c *ctrTest) GetControllerInfo() *router.ControllerInfo {
 	println("进入自定义的了")
 	return nil
 }
-func (c *ctrTest) MyControllerActionStrut(Test httpContext.HttpContext) {
-	c.HttpContext.Response.Write([]byte("MyControllerAction"))
+
+type Test struct {
+	T  []string `json:"tt"`
+	T1 string   `json:"tstst1"`
+}
+
+func (c *ctrTest) MyControllerActionStrut(Test *Test) {
+	c.HttpContext.Response.Write([]byte(Test.T1))
 }
 func main() {
 	app := NewFreeFish()

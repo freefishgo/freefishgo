@@ -39,21 +39,11 @@ func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Req
 	var ic IController = tt.(IController)
 	ic.SetHttpContext(ctx)
 	r.ParseForm()
-	test := struct {
-		T  []string `json:"tt"`
-		T1 string   `json:"tstst1"`
-	}{T: []string{"sfdf", "sfsdfs"}}
-
-	data, _ := json.Marshal(test)
-	println(string(data))
-	test1 := struct {
-		T  []string `json:"tt"`
-		T1 string   `json:"tstst1"`
-	}{}
-	json.Unmarshal(data, &test1)
-	json.Unmarshal(fromToSimpleMap(r.Form), &test)
+	test := reflect.New(c.tree.ControllerList["ctrtest"]["mycontrolleractionstrut"].ControllerActionParameterStruct).Interface()
 	fmt.Printf("数据：%+v", test)
-	t.MethodByName(c.tree.ControllerList["ctrtest"]["mycontrolleractionstrut"].ControllerAction).Call(getValues(*ctx))
+	json.Unmarshal(fromToSimpleMap(r.Form), test)
+	fmt.Printf("数据：%+v", test)
+	t.MethodByName(c.tree.ControllerList["ctrtest"]["mycontrolleractionstrut"].ControllerAction).Call(getValues(test))
 	return
 }
 
