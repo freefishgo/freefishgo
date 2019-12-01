@@ -17,6 +17,7 @@ func (c *ctrTest) GetControllerInfo() *router.ControllerInfo {
 type Test struct {
 	T  []string `json:"tt"`
 	T1 string   `json:"tstst1"`
+	Id string   `json:"id"`
 }
 
 func (c *ctrTest) MyControllerActionStrut(Test *Test) {

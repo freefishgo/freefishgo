@@ -100,11 +100,11 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL) *freeFishUrl {
 	if u.Path != "/" {
 		urlList := strings.Split(u.Path[1:], "/")
 		if len(urlList) == 1 {
-			f.ControllerAction = urlList[0]
-			f.ControllerName = urlList[0]
-		} else if len(urlList) == 2 {
-			f.ControllerName = urlList[0]
-			f.ControllerAction = urlList[1]
+			f.ControllerAction = strings.ToLower(urlList[0])
+			f.ControllerName = strings.ToLower(urlList[0])
+		} else if len(urlList) > 1 {
+			f.ControllerName = strings.ToLower(urlList[0])
+			f.ControllerAction = strings.ToLower(urlList[1])
 			for i := 2; i < len(urlList); i++ {
 				f.OtherKeyMap["id"] = urlList[i]
 			}
