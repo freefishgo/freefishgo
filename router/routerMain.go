@@ -87,12 +87,6 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) []byte {
 	return data
 }
 
-type freeFishUrl struct {
-	ControllerName   string
-	ControllerAction string
-	OtherKeyMap      map[string]interface{}
-}
-
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
 func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL) *freeFishUrl {
 	f := new(freeFishUrl)
