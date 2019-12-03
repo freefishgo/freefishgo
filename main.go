@@ -9,9 +9,9 @@ type ctrTest struct {
 	router.Controller
 }
 
-func (c *ctrTest) GetControllerInfo() *router.ControllerInfo {
-	println("进入自定义的了")
-	return nil
+func (c *ctrTest) GetControllerInfo() []*router.ControllerActionInfo {
+	println("默认GetControllerInfo")
+	return make([]*router.ControllerActionInfo, 0)
 }
 
 type Test struct {

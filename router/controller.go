@@ -3,6 +3,7 @@ package router
 import (
 	"freeFishGo/httpContext"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -65,10 +66,38 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	return tree
 }
 
+type ControllerActionInfo struct {
+	// 传设置控制器的方法
+	ControllerActionFunc interface{}
+	//路由设置  如：/{Controller}/{Action}/{id:[0-9]+}
+	// /home/index/123可以匹配成功
+	RouterPattern string
+	//允许的请求方法
+	AllowMethod []httpContext.HttpMethod
+	pattern     *Pattern
+}
+
+// 计算出提取Controller和Action的字符处理方法id
+func (c *ControllerActionInfo) calPattern() {
+	c.pattern = new(Pattern)
+
+	f := regexp.MustCompile(`{[\ ]*Controller}[\ ]*`)
+	tmp := f.ReplaceAllString(`/{ Controller}/{Action}/{id:45454}`, `([\w+$]+)`)
+	f = regexp.MustCompile(`{[\ ]*Action}[\ ]*`)
+	tmp = f.ReplaceAllString(tmp, `([\w+$]+)`)
+	println(tmp)
+	f = regexp.MustCompile(tmp)
+	params := f.FindStringSubmatch("/home/index/123")
+	for _, param := range params {
+		println(param)
+	}
+
+}
+
 // 控制器属性设置
-func (c *Controller) GetControllerInfo() *ControllerInfo {
+func (c *Controller) GetControllerInfo() []*ControllerActionInfo {
 	println("默认GetControllerInfo")
-	return new(ControllerInfo)
+	return make([]*ControllerActionInfo, 0)
 }
 
 // 控制器注册

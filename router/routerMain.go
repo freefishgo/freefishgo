@@ -11,7 +11,8 @@ import (
 )
 
 type ControllerRegister struct {
-	tree *tree
+	tree    *tree
+	adapter []*Pattern
 }
 
 func NewControllerRegister() *ControllerRegister {
