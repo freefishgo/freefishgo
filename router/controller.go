@@ -25,7 +25,7 @@ type Controller struct {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	GetControllerInfo() *ControllerInfo
+	GetControllerInfo() []*ControllerActionInfo
 	SetHttpContext(ctx *httpContext.HttpContext)
 }
 
@@ -44,11 +44,6 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		if me.Type.NumIn() == 2 {
 			tmp := me.Type.In(1)
 			if tmp.Kind() == reflect.Ptr {
-				//for i := 0; i < tmp.NumField(); i++ {
-				//	field := tmp.Field(i)
-				//	println(field.Tag)
-				//	println(field.Name)
-				//}
 				if tmp.Elem().Kind() == reflect.Struct {
 					controllerActionParameterStruct = tmp.Elem()
 				} else {
@@ -69,32 +64,20 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 type ControllerActionInfo struct {
 	// 传设置控制器的方法
 	ControllerActionFunc interface{}
-	//路由设置  如：/{Controller}/{Action}/{id:[0-9]+}
+	//路由设置  如：/{Controller}/{Action}/{id:int}
 	// /home/index/123可以匹配成功
 	RouterPattern string
 	//允许的请求方法
 	AllowMethod []httpContext.HttpMethod
-	pattern     *Pattern
+
+	controllerName string
+	actionName     string
+	patternRe      *regexp.Regexp
+	//正则匹配出来的变量地址映射变量映射
+	patternMap map[string]int
 }
 
-// 计算出提取Controller和Action的字符处理方法id
-func (c *ControllerActionInfo) calPattern() {
-	c.pattern = new(Pattern)
-
-	f := regexp.MustCompile(`{[\ ]*Controller}[\ ]*`)
-	tmp := f.ReplaceAllString(`/{ Controller}/{Action}/{id:45454}`, `([\w+$]+)`)
-	f = regexp.MustCompile(`{[\ ]*Action}[\ ]*`)
-	tmp = f.ReplaceAllString(tmp, `([\w+$]+)`)
-	println(tmp)
-	f = regexp.MustCompile(tmp)
-	params := f.FindStringSubmatch("/home/index/123")
-	for _, param := range params {
-		println(param)
-	}
-
-}
-
-// 控制器属性设置
+// 控制器属性设置 路由变量路由中只能出现一次
 func (c *Controller) GetControllerInfo() []*ControllerActionInfo {
 	println("默认GetControllerInfo")
 	return make([]*ControllerActionInfo, 0)

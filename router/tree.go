@@ -1,7 +1,11 @@
 package router
 
 import (
+	"fmt"
 	"reflect"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -17,9 +21,82 @@ import (
 //	controllerName   string           //控制器名称
 //	controllerAction string           //控制器处理方法
 //}
+// 路由映射模型
+type ControllerModelList map[string]*ControllerActionInfo
 
 type tree struct {
 	ControllerList map[string]map[string]*ControllerInfo //静态路径
+	//主要路由节点
+	MainRouterList ControllerActionInfo
+	// 路由映射模型
+	ControllerModelList ControllerModelList
+}
+
+func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInfo) {
+	for _, v := range list {
+		if _, ok := c[v.patternRe.String()]; ok {
+			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
+		} else {
+			v.makePattern()
+			c[v.patternRe.String()] = v
+		}
+	}
+}
+
+// 计算路由信息
+func (c *ControllerActionInfo) makePattern() {
+	pathPattern := c.RouterPattern
+	waitSortMap := map[string]string{}
+	waitSortArr := make([]int, 0)
+	sortMap := map[string]int{}
+	f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+	t := f.FindAllStringIndex(pathPattern, -1)
+	if len(t) > 1 {
+		panic("路由注册时发现{Controller}使用超过1次")
+	}
+	if len(t) == 1 {
+		waitSortMap[strconv.Itoa(t[0][0])] = "Controller"
+		waitSortArr = append(waitSortArr, t[0][0])
+	}
+	f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
+	t = f.FindAllStringIndex(pathPattern, -1)
+	if len(t) > 1 {
+		panic("路由注册时发现{Action}使用超过1次")
+	}
+	if len(t) == 1 {
+		waitSortMap[strconv.Itoa(t[0][0])] = "Action"
+		waitSortArr = append(waitSortArr, t[0][0])
+	}
+	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*(int|string)+[\ ]*}`)
+	t = f.FindAllStringIndex(pathPattern, -1)
+	for _, v := range t {
+		sl := strings.Trim(strings.Split(pathPattern[v[0]+1:v[1]], ":")[0], " ")
+		if _, ok := waitSortMap[sl]; ok {
+			panic("路由注册时发现{" + sl + "}使用超过1次")
+		}
+		println(sl)
+		waitSortArr = append(waitSortArr, v[0])
+		waitSortMap[strconv.Itoa(v[0])] = sl
+	}
+	sort.Ints(waitSortArr)
+	for k, v := range waitSortArr {
+		sortMap[waitSortMap[strconv.Itoa(v)]] = k + 1
+	}
+	fmt.Println(fmt.Sprintf("%+v", sortMap))
+	f = regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
+	f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
+	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*int[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `(-?[1-9]\d*)`)
+	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*string[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
+	f = regexp.MustCompile(`{[\ ]*int[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `-?[1-9]\d*`)
+	f = regexp.MustCompile(`{[\ ]*string[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `[\w+$]+`)
+	c.patternRe = regexp.MustCompile(pathPattern)
+	c.patternMap = sortMap
 }
 
 func newTree() *tree {

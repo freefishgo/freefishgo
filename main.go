@@ -10,7 +10,7 @@ type ctrTest struct {
 }
 
 func (c *ctrTest) GetControllerInfo() []*router.ControllerActionInfo {
-	println("默认GetControllerInfo")
+	println("不是默认GetControllerInfo")
 	return make([]*router.ControllerActionInfo, 0)
 }
 
