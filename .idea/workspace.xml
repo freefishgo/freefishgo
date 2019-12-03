@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2217649a-b500-443b-a5ff-d317bedb26f4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+    <list default="true" id="2217649a-b500-443b-a5ff-d317bedb26f4" name="Default Changelist" comment="优化路由匹配原则">
       <change beforePath="$PROJECT_DIR$/router/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/routerPattern.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/routerPattern.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/tree.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -119,7 +116,8 @@
     <MESSAGE value="building" />
     <MESSAGE value="Default Changelist" />
     <MESSAGE value="反射调用方法" />
-    <option name="LAST_COMMIT_MESSAGE" value="反射调用方法" />
+    <MESSAGE value="优化路由匹配原则" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化路由匹配原则" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -56,8 +56,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		tree.addPathTree(controllerName, actionName, getType.Elem(), controllerActionParameterStruct)
 	}
 
-	(c.sonController).GetControllerInfo()
-	c.controllerInfo = new(ControllerInfo)
+	tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList((c.sonController).GetControllerInfo()...)
 	return tree
 }
 

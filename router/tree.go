@@ -32,7 +32,7 @@ type tree struct {
 	ControllerModelList ControllerModelList
 }
 
-func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInfo) {
+func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInfo) ControllerModelList {
 	for _, v := range list {
 		if _, ok := c[v.patternRe.String()]; ok {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
@@ -41,6 +41,7 @@ func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInf
 			c[v.patternRe.String()] = v
 		}
 	}
+	return c
 }
 
 // 计算路由信息
