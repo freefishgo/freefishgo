@@ -25,7 +25,7 @@ type Controller struct {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	GetControllerInfo() []*ControllerActionInfo
+	GetControllerActionInfo() []*ControllerActionInfo
 	SetHttpContext(ctx *httpContext.HttpContext)
 }
 
@@ -55,8 +55,20 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		}
 		tree.addPathTree(controllerName, actionName, getType.Elem(), controllerActionParameterStruct)
 	}
-
-	tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList((c.sonController).GetControllerInfo()...)
+	controllerActionInfoList := (c.sonController).GetControllerActionInfo()
+	for _, v := range controllerActionInfoList {
+		ref := reflect.TypeOf(v.ControllerActionFunc)
+		if ref.Kind() != reflect.Func {
+			panic("路由注册时发现" + getType.String() + "." + "传参为非方法")
+		}
+		v.actionName = strings.ToLower(ref.Name())
+		v.controllerName = strings.ToLower(controllerName)
+		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.controllerName)
+		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
+		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
+		tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList(v)
+	}
 	return tree
 }
 
@@ -77,7 +89,7 @@ type ControllerActionInfo struct {
 }
 
 // 控制器属性设置 路由变量路由中只能出现一次
-func (c *Controller) GetControllerInfo() []*ControllerActionInfo {
+func (c *Controller) GetControllerActionInfo() []*ControllerActionInfo {
 	println("默认GetControllerInfo")
 	return make([]*ControllerActionInfo, 0)
 }

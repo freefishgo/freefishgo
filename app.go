@@ -26,18 +26,22 @@ func (app *app) AddHanlers(ctrles ...router.IController) {
 	}
 }
 
+// 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}`
+// 如果不进行路由注册  默认为/{ Controller}/{Action}
+func (app *app) AddMainRouter(list ...*router.ControllerActionInfo) {
+	app.handlers.AddMainRouter(list...)
+}
+
 func (app *app) Run() {
 	if app.Config.Listen.EnableHTTP {
-		go func() {
-			addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
-			app.Server = &http.Server{
-				Addr: addr,
-				//ReadTimeout:    app.Server.ReadTimeout,
-				//WriteTimeout:   app.Server.WriteTimeout,
-				//MaxHeaderBytes: app.Server.MaxHeaderBytes,
-				Handler: app.handlers,
-			}
-			app.Server.ListenAndServe()
-		}()
+		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
+		app.Server = &http.Server{
+			Addr: addr,
+			//ReadTimeout:    app.Server.ReadTimeout,
+			//WriteTimeout:   app.Server.WriteTimeout,
+			//MaxHeaderBytes: app.Server.MaxHeaderBytes,
+			Handler: app.handlers,
+		}
+		app.Server.ListenAndServe()
 	}
 }

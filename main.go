@@ -9,7 +9,7 @@ type ctrTest struct {
 	router.Controller
 }
 
-func (c *ctrTest) GetControllerInfo() []*router.ControllerActionInfo {
+func (c *ctrTest) GetControllerActionInfo() []*router.ControllerActionInfo {
 	println("不是默认GetControllerInfo")
 	return make([]*router.ControllerActionInfo, 0)
 }

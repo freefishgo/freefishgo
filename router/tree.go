@@ -27,17 +27,17 @@ type ControllerModelList map[string]*ControllerActionInfo
 type tree struct {
 	ControllerList map[string]map[string]*ControllerInfo //静态路径
 	//主要路由节点
-	MainRouterList ControllerActionInfo
+	MainRouterList ControllerModelList
 	// 路由映射模型
 	ControllerModelList ControllerModelList
 }
 
 func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInfo) ControllerModelList {
 	for _, v := range list {
+		v.makePattern()
 		if _, ok := c[v.patternRe.String()]; ok {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
 		} else {
-			v.makePattern()
 			c[v.patternRe.String()] = v
 		}
 	}
@@ -47,6 +47,12 @@ func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInf
 // 计算路由信息
 func (c *ControllerActionInfo) makePattern() {
 	pathPattern := c.RouterPattern
+	if len(pathPattern) == 0 {
+		panic("设置的路由匹配模式不能为空")
+	}
+	if pathPattern[0] != '/' {
+		pathPattern = "/" + pathPattern
+	}
 	waitSortMap := map[string]string{}
 	waitSortArr := make([]int, 0)
 	sortMap := map[string]int{}
@@ -96,7 +102,7 @@ func (c *ControllerActionInfo) makePattern() {
 	pathPattern = f.ReplaceAllString(pathPattern, `-?[1-9]\d*`)
 	f = regexp.MustCompile(`{[\ ]*string[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `[\w+$]+`)
-	c.patternRe = regexp.MustCompile(pathPattern)
+	c.patternRe = regexp.MustCompile("^" + pathPattern + "$")
 	c.patternMap = sortMap
 }
 

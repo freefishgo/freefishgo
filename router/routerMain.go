@@ -7,12 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
-	"strings"
 )
 
 type ControllerRegister struct {
-	tree    *tree
-	adapter []*Pattern
+	tree *tree
 }
 
 func NewControllerRegister() *ControllerRegister {
@@ -24,6 +22,11 @@ func NewControllerRegister() *ControllerRegister {
 func (cr *ControllerRegister) AddHandlers(ctl IController) {
 	ctl.setSonController(ctl)
 	cr.tree = ctl.getControllerInfo(cr.tree)
+}
+
+// 主路由节点注册
+func (cr *ControllerRegister) AddMainRouter(ctlList ...*ControllerActionInfo) {
+	cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(ctlList...)
 }
 
 // http服务逻辑处理程序
@@ -39,8 +42,13 @@ func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Req
 	controllerAction := "mycontrolleractionstrut"
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u)
-	controllerName = f.ControllerName
-	controllerAction = f.ControllerAction
+	if f == nil {
+		controllerName = "ctrtest"
+		controllerAction = "mycontrolleractionstrut"
+	} else {
+		controllerName = f.GetControllerName()
+		controllerAction = f.GetControllerAction()
+	}
 	ctl, ok := c.tree.getControllerInfoByControllerNameControllerAction(controllerName, controllerAction)
 	if ok {
 		action := reflect.New(ctl.ControllerFunc)
@@ -89,24 +97,19 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) []byte {
 }
 
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
-func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL) *freeFishUrl {
-	f := new(freeFishUrl)
-	f.OtherKeyMap = map[string]interface{}{}
-	if u.Path != "/" {
-		urlList := strings.Split(u.Path[1:], "/")
-		if len(urlList) == 1 {
-			f.ControllerAction = strings.ToLower(urlList[0])
-			f.ControllerName = strings.ToLower(urlList[0])
-		} else if len(urlList) > 1 {
-			f.ControllerName = strings.ToLower(urlList[0])
-			f.ControllerAction = strings.ToLower(urlList[1])
-			for i := 2; i < len(urlList); i++ {
-				f.OtherKeyMap["id"] = urlList[i]
+func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL) (f *freeFishUrl) {
+	for _, v := range c.tree.MainRouterList {
+		sl := v.patternRe.FindStringSubmatch(u.Path)
+		if len(sl) != 0 {
+			f := new(freeFishUrl)
+			f.OtherKeyMap = map[string]interface{}{}
+			f.controllerAction = v.actionName
+			f.controllerName = v.controllerName
+			for k, m := range v.patternMap {
+				f.OtherKeyMap[k] = sl[m]
 			}
+			break
 		}
-	} else {
-		f.ControllerName = "ctrtest"
-		f.ControllerAction = "mycontrolleractionstrut"
 	}
 	return f
 }
