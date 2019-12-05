@@ -106,7 +106,7 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) []byte {
 }
 
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
-func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpContext.HttpMethod) (f *freeFishUrl) {
+func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpContext.HttpMethod) *freeFishUrl {
 	path := strings.ToLower(u.Path)
 	for _, v := range c.tree.MainRouterList {
 		sl := v.patternRe.FindStringSubmatch(path)
@@ -114,33 +114,39 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpConte
 			if _, ok := v.allowMethod[method]; !ok {
 				continue
 			}
-			f = new(freeFishUrl)
-			f.OtherKeyMap = map[string]interface{}{}
+			ff := new(freeFishUrl)
+			ff.OtherKeyMap = map[string]interface{}{}
 			for k, m := range v.patternMap {
-				f.OtherKeyMap[k] = sl[m]
+				ff.OtherKeyMap[k] = sl[m]
 			}
-			f.controllerAction = f.GetControllerAction(v)
-			f.controllerName = f.GetControllerName(v)
-			break
-		}
-	}
-	if f == nil {
-		for _, v := range c.tree.ControllerModelList {
-			sl := v.patternRe.FindStringSubmatch(path)
-			if len(sl) != 0 {
-				if _, ok := v.allowMethod[method]; !ok {
-					continue
-				}
-				f = new(freeFishUrl)
-				f.OtherKeyMap = map[string]interface{}{}
-				for k, m := range v.patternMap {
-					f.OtherKeyMap[k] = sl[m]
-				}
-				f.controllerAction = f.GetControllerAction(v)
-				f.controllerName = f.GetControllerName(v)
-				break
+			ff.controllerAction = ff.GetControllerAction(v)
+			ff.controllerName = ff.GetControllerName(v)
+			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+				ff.ControllerInfo = v
+				return ff
 			}
 		}
 	}
-	return f
+
+	for _, v := range c.tree.ControllerModelList {
+		sl := v.patternRe.FindStringSubmatch(path)
+		if len(sl) != 0 {
+			if _, ok := v.allowMethod[method]; !ok {
+				continue
+			}
+			ff := new(freeFishUrl)
+			ff.OtherKeyMap = map[string]interface{}{}
+			for k, m := range v.patternMap {
+				ff.OtherKeyMap[k] = sl[m]
+			}
+			ff.controllerAction = ff.GetControllerAction(v)
+			ff.controllerName = ff.GetControllerName(v)
+			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+				ff.ControllerInfo = v
+				return ff
+			}
+		}
+	}
+
+	return nil
 }

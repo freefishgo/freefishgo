@@ -11,6 +11,7 @@ type freeFishUrl struct {
 	controllerName   string
 	controllerAction string
 	OtherKeyMap      map[string]interface{}
+	ControllerInfo   *ControllerInfo
 }
 
 // 获取控制器名称

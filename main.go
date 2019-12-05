@@ -27,7 +27,10 @@ func (c *ctrTest) MyControllerActionStrut(Test *Test) {
 }
 func main() {
 	app := NewFreeFish()
+	// 注册控制器
 	app.AddHanlers(&ctrTest{})
+	// 注册主路由
+	app.AddMainRouter(&router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}", ControllerActionFuncName: "MyControllerActionStrut"})
 	app.Run()
 	time.Sleep(time.Hour)
 }
