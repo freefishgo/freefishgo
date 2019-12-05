@@ -3,7 +3,7 @@ module freeFishGo
 ### golang 通过结构体反射实现的典型的mvc架构
 
 ###// 继承router.Controller
-
+```go
 type ctrTest struct {
 	router.Controller
 }
@@ -20,7 +20,7 @@ type Test struct {
 	T1 string   `json:"tstst1"`
 	Id string   `json:"id"`
 }
-###// 控制器动作的处理方法    参数Test是通过反射自动注入的, 其中路由规则中的{id:int}中的id也能映射到参数中
+// 控制器动作的处理方法    参数Test是通过反射自动注入的, 其中路由规则中的{id:int}中的id也能映射到参数中
 func (c *ctrTest) MyControllerActionStrut(Test *Test) {
 	c.HttpContext.Response.Write([]byte(Test.Id))
 }
@@ -33,3 +33,4 @@ func main() {
 	app.Run()
 	time.Sleep(time.Hour)
 }
+```
