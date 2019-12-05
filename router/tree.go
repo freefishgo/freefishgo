@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"freeFishGo/httpContext"
 	"reflect"
 	"regexp"
 	"sort"
@@ -33,8 +34,18 @@ type tree struct {
 }
 
 func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInfo) ControllerModelList {
+	if c == nil {
+		c = ControllerModelList{}
+	}
 	for _, v := range list {
 		v.makePattern()
+		if len(v.AllowMethod) == 0 {
+			v.AllowMethod = append(v.AllowMethod, httpContext.MethodGet)
+		}
+		v.allowMethod = map[httpContext.HttpMethod]bool{}
+		for _, cc := range v.AllowMethod {
+			v.allowMethod[cc] = true
+		}
 		if _, ok := c[v.patternRe.String()]; ok {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
 		} else {

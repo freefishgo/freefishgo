@@ -57,11 +57,11 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	}
 	controllerActionInfoList := (c.sonController).GetControllerActionInfo()
 	for _, v := range controllerActionInfoList {
-		ref := reflect.TypeOf(v.ControllerActionFunc)
-		if ref.Kind() != reflect.Func {
-			panic("路由注册时发现" + getType.String() + "." + "传参为非方法")
+		_, ok := getType.MethodByName(v.ControllerActionFuncName)
+		if !ok {
+			panic(getType.String() + "方法" + v.ControllerActionFuncName + "不存在")
 		}
-		v.actionName = strings.ToLower(ref.Name())
+		v.actionName = strings.ToLower(v.ControllerActionFuncName)
 		v.controllerName = strings.ToLower(controllerName)
 		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.controllerName)
@@ -74,13 +74,13 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 
 type ControllerActionInfo struct {
 	// 传设置控制器的方法
-	ControllerActionFunc interface{}
+	ControllerActionFuncName string
 	//路由设置  如：/{Controller}/{Action}/{id:int}
 	// /home/index/123可以匹配成功
 	RouterPattern string
 	//允许的请求方法
-	AllowMethod []httpContext.HttpMethod
-
+	AllowMethod    []httpContext.HttpMethod
+	allowMethod    map[httpContext.HttpMethod]bool
 	controllerName string
 	actionName     string
 	patternRe      *regexp.Regexp

@@ -33,6 +33,7 @@ func (app *app) AddMainRouter(list ...*router.ControllerActionInfo) {
 }
 
 func (app *app) Run() {
+	app.handlers.MainRouterNil()
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
 		app.Server = &http.Server{
