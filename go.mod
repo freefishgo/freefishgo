@@ -6,7 +6,7 @@ module freeFishGo
 ```go
 type ctrTest struct {
 	router.Controller
-}
+	}
 ```
 ####
 // 更改指定方法的路由规则，未更改的采用的是主路由规则     未设置主路由的采用默认的/{ Controller}/{Action}
