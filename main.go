@@ -12,7 +12,7 @@ type ctrTest struct {
 func (c *ctrTest) GetControllerActionInfo() []*router.ControllerActionInfo {
 	println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}/{id:string}", ControllerActionFuncName: "MyControllerActionStrut"})
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}/{id:int}{string}/{int}", ControllerActionFuncName: "MyControllerActionStrut"})
 	return tmp
 }
 
