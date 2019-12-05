@@ -61,7 +61,7 @@ func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Req
 	if ok {
 		action := reflect.New(ctl.ControllerFunc)
 		var ic IController = action.Interface().(IController)
-		ic.SetHttpContext(ctx)
+		ic.setHttpContext(ctx)
 		r.ParseForm()
 		var param interface{}
 		if ctl.ControllerActionParameterStruct != nil {

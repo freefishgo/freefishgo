@@ -26,7 +26,7 @@ type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
 	GetControllerActionInfo() []*ControllerActionInfo
-	SetHttpContext(ctx *httpContext.HttpContext)
+	setHttpContext(ctx *httpContext.HttpContext)
 }
 
 // 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
@@ -100,7 +100,7 @@ func (c *Controller) setSonController(son IController) {
 }
 
 // http请求上下文注册
-func (c *Controller) SetHttpContext(ctx *httpContext.HttpContext) {
+func (c *Controller) setHttpContext(ctx *httpContext.HttpContext) {
 	c.HttpContext = ctx
 }
 
