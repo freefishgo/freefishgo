@@ -2,12 +2,13 @@ module freeFishGo
 
 ### golang 通过结构体反射实现的典型的mvc架构
 
-###// 继承router.Controller
+#### // 继承router.Controller
 ```go
 type ctrTest struct {
 	router.Controller
 }
 ```
+####
 // 更改指定方法的路由规则，未更改的采用的是主路由规则     未设置主路由的采用默认的/{ Controller}/{Action}
 func (c *ctrTest) GetControllerActionInfo() []*router.ControllerActionInfo {
 	println("不是默认GetControllerInfo")
