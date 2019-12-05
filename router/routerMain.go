@@ -119,8 +119,8 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpConte
 			for k, m := range v.patternMap {
 				f.OtherKeyMap[k] = sl[m]
 			}
-			f.controllerAction = f.GetControllerAction()
-			f.controllerName = f.GetControllerName()
+			f.controllerAction = f.GetControllerAction(v)
+			f.controllerName = f.GetControllerName(v)
 			break
 		}
 	}
@@ -136,8 +136,8 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpConte
 				for k, m := range v.patternMap {
 					f.OtherKeyMap[k] = sl[m]
 				}
-				f.controllerAction = f.GetControllerAction()
-				f.controllerName = f.GetControllerName()
+				f.controllerAction = f.GetControllerAction(v)
+				f.controllerName = f.GetControllerName(v)
 				break
 			}
 		}

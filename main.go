@@ -23,7 +23,7 @@ type Test struct {
 }
 
 func (c *ctrTest) MyControllerActionStrut(Test *Test) {
-	c.HttpContext.Response.Write([]byte(Test.T1))
+	c.HttpContext.Response.Write([]byte(Test.Id))
 }
 func main() {
 	app := NewFreeFish()

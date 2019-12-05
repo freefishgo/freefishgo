@@ -14,19 +14,19 @@ type freeFishUrl struct {
 }
 
 // 获取控制器名称
-func (f *freeFishUrl) GetControllerName() string {
+func (f *freeFishUrl) GetControllerName(c *ControllerActionInfo) string {
 	if v, ok := f.OtherKeyMap["Controller"]; ok {
 		return v.(string)
 	} else {
-		return f.controllerName
+		return c.controllerName
 	}
 }
 
 // 获取动作名称
-func (f *freeFishUrl) GetControllerAction() string {
+func (f *freeFishUrl) GetControllerAction(c *ControllerActionInfo) string {
 	if v, ok := f.OtherKeyMap["Action"]; ok {
 		return v.(string)
 	} else {
-		return f.controllerName
+		return c.actionName
 	}
 }
