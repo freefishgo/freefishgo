@@ -2,7 +2,6 @@ package main
 
 import (
 	"freeFishGo/router"
-	"time"
 )
 
 type ctrTest struct {
@@ -32,5 +31,4 @@ func main() {
 	// 注册主路由
 	app.AddMainRouter(&router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}", ControllerActionFuncName: "MyControllerActionStrut"})
 	app.Run()
-	time.Sleep(time.Hour)
 }
