@@ -1,8 +1,8 @@
 # freeFishGo
 golang 通过结构体反射实现的典型的mvc架构
 
-// 继承router.Controller
-
+##// 继承router.Controller
+```go
 type ctrTest struct {
 	router.Controller
 }
@@ -32,3 +32,4 @@ func main() {
 	app.Run()
 	time.Sleep(time.Hour)
 }
+```
