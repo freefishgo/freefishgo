@@ -45,18 +45,13 @@ func (c *ControllerRegister) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Request) (ctx *httpContext.HttpContext) {
 	ctx = new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	controllerName := "ctrtest"
-	controllerAction := "mycontrolleractionstrut"
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(r.Method))
 	if f == nil {
 		ctx.Response.Write([]byte("404错误"))
 		return
-	} else {
-		controllerName = f.controllerName
-		controllerAction = f.controllerAction
 	}
-	ctl, ok := c.tree.getControllerInfoByControllerNameControllerAction(controllerName, controllerAction)
+	ctl, ok := c.tree.getControllerInfoByControllerNameControllerAction(f.controllerName, f.controllerAction)
 	if ok {
 		action := reflect.New(ctl.ControllerFunc)
 		var ic IController = action.Interface().(IController)
