@@ -89,8 +89,10 @@ func (c *ControllerActionInfo) makePattern() {
 	t = f.FindAllStringIndex(pathPattern, -1)
 	for _, v := range t {
 		sl := strings.Trim(strings.Split(pathPattern[v[0]+1:v[1]], ":")[0], " ")
-		if _, ok := waitSortMap[sl]; ok {
-			panic("路由注册时发现{" + sl + "}使用超过1次")
+		for _, v := range waitSortMap {
+			if v == sl {
+				panic("路由注册时" + c.RouterPattern + "时发现{" + sl + "}使用超过1次")
+			}
 		}
 		println(sl)
 		waitSortArr = append(waitSortArr, v[0])

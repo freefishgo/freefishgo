@@ -48,6 +48,7 @@ func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Req
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(r.Method))
 	if f == nil {
+		ctx.Response.WriteHeader(404)
 		ctx.Response.Write([]byte("404错误"))
 		return
 	}
