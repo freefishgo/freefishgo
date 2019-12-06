@@ -26,9 +26,8 @@ func main() {
 	app := NewFreeFish()
 	// 注册控制器
 	app.AddHanlers(&ctrTest{})
-	// 注册主路由
-	app.AddMainRouter(&router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}", ControllerActionFuncName: "MyControllerActionStrut"})
+	// 注册主路由ControllerActionFuncName字段不用设置        设置了也不会生效
+	app.AddMainRouter(&router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}"})
 	app.Run()
-	time.Sleep(time.Hour)
 }
 ```
