@@ -39,6 +39,9 @@ func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInf
 	}
 	for _, v := range list {
 		v.makePattern()
+		if strings.Contains(v.patternRe.String(), "{") {
+			panic("添加的路由存在冲突，该路由为" + v.RouterPattern + ". 错误的变量")
+		}
 		if len(v.AllowMethod) == 0 {
 			v.AllowMethod = append(v.AllowMethod, httpContext.MethodGet)
 		}
