@@ -44,8 +44,7 @@ func (c *ControllerRegister) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 }
 func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Request) (ctx *httpContext.HttpContext) {
 	ctx = new(httpContext.HttpContext)
-	ctx.Request = r
-	ctx.Response = rw
+	ctx.SetContext(rw, r)
 	controllerName := "ctrtest"
 	controllerAction := "mycontrolleractionstrut"
 	u, _ := url.Parse(ctx.Request.RequestURI)

@@ -3,6 +3,11 @@ package httpContext
 import "net/http"
 
 type HttpContext struct {
-	Response http.ResponseWriter
-	Request  *http.Request
+	Response Response
+	Request  *Request
+}
+
+func (h *HttpContext) SetContext(rw http.ResponseWriter, r *http.Request) {
+	h.Response = Response{ResponseWriter: rw}
+	h.Request = &Request{Request: r}
 }

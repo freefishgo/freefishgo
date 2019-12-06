@@ -90,7 +90,6 @@ type ControllerActionInfo struct {
 
 // 控制器属性设置 路由变量路由中只能出现一次
 func (c *Controller) GetControllerActionInfo() []*ControllerActionInfo {
-	println("默认GetControllerInfo")
 	return make([]*ControllerActionInfo, 0)
 }
 
