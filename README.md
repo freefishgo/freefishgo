@@ -26,7 +26,7 @@ func main() {
 	app := NewFreeFish()
 	// 注册控制器
 	app.AddHanlers(&ctrTest{})
-	// 注册主路由ControllerActionFuncName字段不用设置        设置了也不会生效
+	// 注册主路由ControllerActionFuncName字段不用设置        设置了也不会生效; 目前系统变量 有Controller，Action，int，string，allString
 	app.AddMainRouter(&router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}"})
 	app.Run()
 }
