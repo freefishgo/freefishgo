@@ -106,7 +106,7 @@ func (c *Controller) setHttpContext(ctx *httpContext.HttpContext) {
 // 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"GetControllerInfo": true}
+		"GetControllerActionInfo": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}

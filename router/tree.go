@@ -88,7 +88,7 @@ func (c *ControllerActionInfo) makePattern() {
 		waitSortMap[strconv.Itoa(t[0][0])] = "Action"
 		waitSortArr = append(waitSortArr, t[0][0])
 	}
-	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*(int|string)+[\ ]*}`)
+	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*(int|string|allString)+[\ ]*}`)
 	t = f.FindAllStringIndex(pathPattern, -1)
 	for _, v := range t {
 		sl := strings.Trim(strings.Split(pathPattern[v[0]+1:v[1]], ":")[0], " ")
@@ -114,10 +114,18 @@ func (c *ControllerActionInfo) makePattern() {
 	pathPattern = f.ReplaceAllString(pathPattern, `(-?[1-9]\d+)`)
 	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*string[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
+
+	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*allString[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `(.*?)`)
+
 	f = regexp.MustCompile(`{[\ ]*int[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `-?[1-9]\d+`)
 	f = regexp.MustCompile(`{[\ ]*string[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `[\w+$]+`)
+
+	f = regexp.MustCompile(`{[\ ]*allString[\ ]*}`)
+	pathPattern = f.ReplaceAllString(pathPattern, `.*?`)
+
 	c.patternRe = regexp.MustCompile("^" + pathPattern + "$")
 	c.patternMap = sortMap
 }
