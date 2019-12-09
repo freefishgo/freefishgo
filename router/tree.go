@@ -143,8 +143,16 @@ func (t *tree) addPathTree(controllerName string, controllerAction string, contr
 	controllerInfo.ControllerName = controllerName
 	controllerInfo.ControllerFunc = controllerFunc
 	controllerInfo.ControllerActionParameterStruct = ControllerActionParameterStruct
-	if _, ok := t.ControllerList[controllerName]; !ok {
-		t.ControllerList[strings.ToLower(controllerName)] = map[string]*ControllerInfo{}
+	re := regexp.MustCompile(`([\w+$]+)Controller$`)
+	tmpControllerNameList := re.FindStringSubmatch(controllerName)
+	if len(tmpControllerNameList) == 2 {
+		if _, ok := t.ControllerList[strings.ToLower(tmpControllerNameList[1])]; !ok {
+			t.ControllerList[strings.ToLower(tmpControllerNameList[1])] = map[string]*ControllerInfo{}
+		}
+	} else {
+		if _, ok := t.ControllerList[strings.ToLower(controllerName)]; !ok {
+			t.ControllerList[strings.ToLower(controllerName)] = map[string]*ControllerInfo{}
+		}
 	}
 
 	t.ControllerList[strings.ToLower(controllerName)][strings.ToLower(controllerAction)] = controllerInfo
