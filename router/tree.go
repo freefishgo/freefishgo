@@ -146,16 +146,18 @@ func (t *tree) addPathTree(controllerName string, controllerAction string, contr
 	re := regexp.MustCompile(`([\w+$]+)Controller$`)
 	tmpControllerNameList := re.FindStringSubmatch(controllerName)
 	if len(tmpControllerNameList) == 2 {
-		if _, ok := t.ControllerList[strings.ToLower(tmpControllerNameList[1])]; !ok {
-			t.ControllerList[strings.ToLower(tmpControllerNameList[1])] = map[string]*ControllerInfo{}
+		controllerName = strings.ToLower(tmpControllerNameList[1])
+		if _, ok := t.ControllerList[controllerName]; !ok {
+			t.ControllerList[controllerName] = map[string]*ControllerInfo{}
 		}
 	} else {
-		if _, ok := t.ControllerList[strings.ToLower(controllerName)]; !ok {
-			t.ControllerList[strings.ToLower(controllerName)] = map[string]*ControllerInfo{}
+		controllerName := strings.ToLower(controllerName)
+		if _, ok := t.ControllerList[controllerName]; !ok {
+			t.ControllerList[controllerName] = map[string]*ControllerInfo{}
 		}
 	}
 
-	t.ControllerList[strings.ToLower(controllerName)][strings.ToLower(controllerAction)] = controllerInfo
+	t.ControllerList[controllerName][strings.ToLower(controllerAction)] = controllerInfo
 }
 
 //  根据控制器名字和动作名字获取控制器
