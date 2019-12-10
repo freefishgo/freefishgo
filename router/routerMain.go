@@ -40,28 +40,28 @@ func (cr *ControllerRegister) MainRouterNil() {
 // http服务逻辑处理程序
 func (c *ControllerRegister) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	println(r.RequestURI)
-	c.analysisRequest(rw, r)
-}
-func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Request) (ctx *httpContext.HttpContext) {
-	ctx = new(httpContext.HttpContext)
+	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
+	c.analysisRequest(ctx)
+}
+func (c *ControllerRegister) analysisRequest(ctx *httpContext.HttpContext) *httpContext.HttpContext {
 	u, _ := url.Parse(ctx.Request.RequestURI)
-	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(r.Method))
+	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(ctx.Request.Method))
 	if f == nil {
 		ctx.Response.WriteHeader(404)
 		ctx.Response.Write([]byte("404错误"))
-		return
+		return ctx
 	}
 	ctl, ok := c.tree.getControllerInfoByControllerNameControllerAction(f.controllerName, f.controllerAction)
 	if ok {
 		action := reflect.New(ctl.ControllerFunc)
 		var ic IController = action.Interface().(IController)
 		ic.setHttpContext(ctx)
-		r.ParseForm()
+		ctx.Request.ParseForm()
 		var param interface{}
 		if ctl.ControllerActionParameterStruct != nil {
 			param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-			data := fromToSimpleMap(r.Form, f.OtherKeyMap)
+			data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
 			json.Unmarshal(data, param)
 		}
 		println(fmt.Sprintf("数据：%+v", param))
@@ -69,7 +69,7 @@ func (c *ControllerRegister) analysisRequest(rw http.ResponseWriter, r *http.Req
 	} else {
 		ctx.Response.Write([]byte("404错误"))
 	}
-	return
+	return ctx
 }
 
 //根据参数获取对应的Values
