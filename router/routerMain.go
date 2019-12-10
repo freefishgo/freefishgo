@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"freeFishGo/httpContext"
-	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
@@ -38,13 +37,10 @@ func (cr *ControllerRegister) MainRouterNil() {
 }
 
 // http服务逻辑处理程序
-func (c *ControllerRegister) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	println(r.RequestURI)
-	ctx := new(httpContext.HttpContext)
-	ctx.SetContext(rw, r)
-	c.analysisRequest(ctx)
-}
-func (c *ControllerRegister) analysisRequest(ctx *httpContext.HttpContext) *httpContext.HttpContext {
+//func (c *ControllerRegister) Middleware(ctx *httpContext.HttpContext) {
+//	c.AnalysisRequest(ctx)
+//}
+func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *httpContext.HttpContext {
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(ctx.Request.Method))
 	if f == nil {
