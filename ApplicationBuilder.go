@@ -20,6 +20,7 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	return freeFish
 }
 func (app *ApplicationBuilder) Run() {
+	app.middlewareSorting()
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
 		app.Server = &http.Server{
@@ -73,7 +74,7 @@ func (link *MiddlewareLink) Next(ctx *httpContext.HttpContext) *httpContext.Http
 // 中间件注册接口
 func (app *ApplicationBuilder) UseMiddleware(middleware IMiddleware) *ApplicationBuilder {
 	if app.handler.middlewareList == nil {
-		app = NewApplicationBuilder()
+		app.handler.middlewareList = []IMiddleware{}
 	}
 	app.handler.middlewareList = append(app.handler.middlewareList, middleware)
 	return app
