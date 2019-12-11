@@ -63,8 +63,10 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		}
 		v.actionName = strings.ToLower(v.ControllerActionFuncName)
 		v.controllerName = strings.ToLower(controllerName)
-		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
-		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.controllerName)
+		f := regexp.MustCompile(`Controller$`)
+		controllerName = f.ReplaceAllString(controllerName, "")
+		f = regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
 		tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList(v)

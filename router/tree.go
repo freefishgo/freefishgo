@@ -143,20 +143,23 @@ func (t *tree) addPathTree(controllerName string, controllerAction string, contr
 	controllerInfo.ControllerName = controllerName
 	controllerInfo.ControllerFunc = controllerFunc
 	controllerInfo.ControllerActionParameterStruct = ControllerActionParameterStruct
-	re := regexp.MustCompile(`([\w+$]+)Controller$`)
-	tmpControllerNameList := re.FindStringSubmatch(controllerName)
-	if len(tmpControllerNameList) == 2 {
-		controllerName = strings.ToLower(tmpControllerNameList[1])
-		if _, ok := t.ControllerList[controllerName]; !ok {
-			t.ControllerList[controllerName] = map[string]*ControllerInfo{}
-		}
-	} else {
-		controllerName := strings.ToLower(controllerName)
-		if _, ok := t.ControllerList[controllerName]; !ok {
-			t.ControllerList[controllerName] = map[string]*ControllerInfo{}
-		}
+	//re := regexp.MustCompile(`([\w+$]+)Controller$`)
+	//tmpControllerNameList := re.FindStringSubmatch(controllerName)
+	//if len(tmpControllerNameList) == 2 {
+	//	controllerName = strings.ToLower(tmpControllerNameList[1])
+	//	if _, ok := t.ControllerList[controllerName]; !ok {
+	//		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
+	//	}
+	//} else {
+	//	controllerName = strings.ToLower(controllerName)
+	//	if _, ok := t.ControllerList[controllerName]; !ok {
+	//		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
+	//	}
+	//}
+	controllerName = strings.ToLower(controllerName)
+	if _, ok := t.ControllerList[controllerName]; !ok {
+		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
 	}
-
 	t.ControllerList[controllerName][strings.ToLower(controllerAction)] = controllerInfo
 }
 
