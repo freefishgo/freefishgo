@@ -1,9 +1,9 @@
 package freeFishGo
 
 import (
-	"fmt"
 	"freeFishGo/httpContext"
 	"freeFishGo/router"
+	"log"
 )
 
 type MvcApp struct {
@@ -18,7 +18,7 @@ func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, link *MiddlewareLink
 }
 func (mvc *MvcApp) LastInit() {
 	mvc.handlers.MainRouterNil()
-	fmt.Println("MVC注册成功并完成LastInit初始化")
+	log.Println("MVC注册成功并完成LastInit初始化")
 }
 
 func NewFreeFishMvcApp() *MvcApp {

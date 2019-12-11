@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"freeFishGo/httpContext"
 	"reflect"
 	"regexp"
@@ -97,7 +96,6 @@ func (c *ControllerActionInfo) makePattern() {
 				panic("路由注册时" + c.RouterPattern + "时发现{" + sl + "}使用超过1次")
 			}
 		}
-		println(sl)
 		waitSortArr = append(waitSortArr, v[0])
 		waitSortMap[strconv.Itoa(v[0])] = sl
 	}
@@ -105,7 +103,6 @@ func (c *ControllerActionInfo) makePattern() {
 	for k, v := range waitSortArr {
 		sortMap[waitSortMap[strconv.Itoa(v)]] = k + 1
 	}
-	fmt.Println(fmt.Sprintf("%+v", sortMap))
 	f = regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
 	f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"freeFishGo/httpContext"
+	"log"
 	"net/url"
 	"reflect"
 	"strings"
@@ -60,7 +61,7 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 			data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
 			json.Unmarshal(data, param)
 		}
-		println(fmt.Sprintf("数据：%+v", param))
+		log.Println(fmt.Sprintf("数据：%+v", param))
 		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 	} else {
 		ctx.Response.Write([]byte("404错误"))

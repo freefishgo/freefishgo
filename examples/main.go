@@ -5,6 +5,7 @@ import (
 	free "freeFishGo"
 	"freeFishGo/httpContext"
 	"freeFishGo/router"
+	"log"
 	"time"
 )
 
@@ -13,7 +14,7 @@ type ctrTestController struct {
 }
 
 func (c *ctrTestController) GetControllerActionInfo() []*router.ControllerActionInfo {
-	println("不是默认GetControllerInfo")
+	log.Println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
 	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}/{allString}", ControllerActionFuncName: "MyControllerActionStrut"})
 	return tmp
@@ -38,7 +39,7 @@ type mid struct {
 func (m *mid) Middleware(ctx *httpContext.HttpContext, next *free.MiddlewareLink) *httpContext.HttpContext {
 	dt := time.Now()
 	ctxtmp := next.Next(ctx)
-	fmt.Println("处理时间为:" + (time.Now().Sub(dt)).String())
+	log.Println("处理时间为:" + (time.Now().Sub(dt)).String())
 	return ctxtmp
 }
 

@@ -1,9 +1,9 @@
 package freeFishGo
 
 import (
-	"fmt"
 	"freeFishGo/config"
 	"freeFishGo/httpContext"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -49,7 +49,6 @@ type ApplicationHandler struct {
 
 // http服务逻辑处理程序
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	println(r.RequestURI)
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
 	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next)
@@ -111,5 +110,5 @@ func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next *
 	return ctx
 }
 func (last *LastFrameMiddleware) LastInit() {
-	fmt.Println("管道最后一层设置完成")
+	log.Println("管道最后一层设置完成")
 }
