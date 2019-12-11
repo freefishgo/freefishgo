@@ -38,6 +38,7 @@ type mid struct {
 
 func (m *mid) Middleware(ctx *httpContext.HttpContext, next *free.MiddlewareLink) *httpContext.HttpContext {
 	dt := time.Now()
+	log.Println(ctx.Request.URL)
 	ctxtmp := next.Next(ctx)
 	log.Println("处理时间为:" + (time.Now().Sub(dt)).String())
 	return ctxtmp
