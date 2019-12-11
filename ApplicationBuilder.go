@@ -1,6 +1,7 @@
 package freeFishGo
 
 import (
+	"fmt"
 	"freeFishGo/config"
 	"freeFishGo/httpContext"
 	"net/http"
@@ -60,6 +61,8 @@ func NewApplicationBuilder() *ApplicationBuilder {
 // 中间件类型接口
 type IMiddleware interface {
 	Middleware(ctx *httpContext.HttpContext, next *MiddlewareLink) *httpContext.HttpContext
+	//注册框架后 框架会自动调用这个函数
+	LastInit()
 }
 type MiddlewareLink struct {
 	val  IMiddleware
@@ -86,12 +89,14 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 	tmpMid := app.handler.middlewareLink
 	for i := 0; i < len(app.handler.middlewareList); i++ {
 		tmpMid.val = app.handler.middlewareList[i]
+		tmpMid.val.LastInit()
 		tmpMid.next = new(MiddlewareLink)
 		tmpMid = tmpMid.next
 	}
 	if tmpMid.next == nil {
 		tmpMid.next = new(MiddlewareLink)
 		tmpMid.next.val = &LastFrameMiddleware{}
+		tmpMid.next.val.LastInit()
 	}
 	return app
 }
@@ -102,4 +107,7 @@ type LastFrameMiddleware struct {
 
 func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next *MiddlewareLink) *httpContext.HttpContext {
 	return ctx
+}
+func (last *LastFrameMiddleware) LastInit() {
+	fmt.Println("管道最后一层设置完成")
 }

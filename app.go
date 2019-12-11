@@ -1,6 +1,7 @@
 package freeFishGo
 
 import (
+	"fmt"
 	"freeFishGo/httpContext"
 	"freeFishGo/router"
 )
@@ -12,8 +13,12 @@ type MvcApp struct {
 }
 
 // http服务逻辑处理程序
-func (c *MvcApp) Middleware(ctx *httpContext.HttpContext, link *MiddlewareLink) *httpContext.HttpContext {
-	return link.Next(c.handlers.AnalysisRequest(ctx))
+func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, link *MiddlewareLink) *httpContext.HttpContext {
+	return link.Next(mvc.handlers.AnalysisRequest(ctx))
+}
+func (mvc *MvcApp) LastInit() {
+	mvc.handlers.MainRouterNil()
+	fmt.Println("MVC注册成功并完成LastInit初始化")
 }
 
 func NewFreeFishMvcApp() *MvcApp {
@@ -33,19 +38,4 @@ func (app *MvcApp) AddHanlers(ctrles ...router.IController) {
 // 如果不进行路由注册  默认为/{ Controller}/{Action}   router.ControllerActionInfo中 ControllerActionFuncName不用设置  设置了也不会生效
 func (app *MvcApp) AddMainRouter(list ...*router.ControllerActionInfo) {
 	app.handlers.AddMainRouter(list...)
-}
-
-func (app *MvcApp) Run() {
-	app.handlers.MainRouterNil()
-	//if app.Config.Listen.EnableHTTP {
-	//	addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
-	//	app.Server = &http.Server{
-	//		Addr: addr,
-	//		//ReadTimeout:    MvcApp.Server.ReadTimeout,
-	//		//WriteTimeout:   MvcApp.Server.WriteTimeout,
-	//		//MaxHeaderBytes: MvcApp.Server.MaxHeaderBytes,
-	//		Handler: app.handlers,
-	//	}
-	//	app.Server.ListenAndServe()
-	//}
 }
