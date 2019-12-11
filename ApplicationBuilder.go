@@ -71,7 +71,7 @@ type MiddlewareLink struct {
 
 // 执行下一个中间件
 func (link *MiddlewareLink) Next(ctx *httpContext.HttpContext) *httpContext.HttpContext {
-	return link.next.val.Middleware(ctx, link.next.next)
+	return link.val.Middleware(ctx, link.next)
 }
 
 // 中间件注册接口
@@ -93,10 +93,9 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 		tmpMid.next = new(MiddlewareLink)
 		tmpMid = tmpMid.next
 	}
-	if tmpMid.next == nil {
-		tmpMid.next = new(MiddlewareLink)
-		tmpMid.next.val = &LastFrameMiddleware{}
-		tmpMid.next.val.LastInit()
+	if tmpMid.val == nil {
+		tmpMid.val = &LastFrameMiddleware{}
+		tmpMid.val.LastInit()
 	}
 	return app
 }
