@@ -31,7 +31,10 @@ func (app *ApplicationBuilder) Run() {
 			//MaxHeaderBytes: MvcApp.Server.MaxHeaderBytes,
 			Handler: app.handler,
 		}
-		app.Server.ListenAndServe()
+		if err := app.Server.ListenAndServe(); err != nil {
+			panic(err.Error())
+		}
+
 	}
 }
 
