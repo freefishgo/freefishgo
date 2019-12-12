@@ -16,7 +16,7 @@ type ctrTestController struct {
 func (c *ctrTestController) GetControllerActionInfo() []*router.ControllerActionInfo {
 	log.Println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}/{allString}", ControllerActionFuncName: "MyControllerActionStrut"})
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrut"})
 	return tmp
 }
 
@@ -29,7 +29,11 @@ type Test struct {
 func (c *ctrTestController) MyControllerActionStrut(Test *Test) {
 	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }
+
 func (c *ctrTestController) My(Test *Test) {
+	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
+}
+func (c *ctrTestController) My1(Test *Test) {
 	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }
 

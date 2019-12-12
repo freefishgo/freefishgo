@@ -64,6 +64,7 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 		log.Println(fmt.Sprintf("数据：%+v", param))
 		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 	} else {
+		ctx.Response.WriteHeader(404)
 		ctx.Response.Write([]byte("404错误"))
 	}
 	return ctx
