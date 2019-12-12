@@ -53,6 +53,8 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 				panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针,且只能设置一个结构体指针")
 			}
 		}
+		f := regexp.MustCompile(`Controller$`)
+		controllerName = f.ReplaceAllString(controllerName, "")
 		tree.addPathTree(controllerName, actionName, getType.Elem(), controllerActionParameterStruct)
 	}
 	controllerActionInfoList := (c.sonController).GetControllerActionInfo()
@@ -63,9 +65,9 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		}
 		v.actionName = strings.ToLower(v.ControllerActionFuncName)
 		v.controllerName = strings.ToLower(controllerName)
-		f := regexp.MustCompile(`Controller$`)
-		controllerName = f.ReplaceAllString(controllerName, "")
-		f = regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+		//f := regexp.MustCompile(`Controller$`)
+		//controllerName = f.ReplaceAllString(controllerName, "")
+		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
