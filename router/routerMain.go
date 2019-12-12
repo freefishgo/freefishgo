@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"freeFishGo/httpContext"
+	"html/template"
+	"io/ioutil"
 	"log"
 	"net/url"
 	"reflect"
@@ -53,7 +55,7 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 	if ok {
 		action := reflect.New(ctl.ControllerFunc)
 		var ic IController = action.Interface().(IController)
-		ic.setHttpContext(ctx)
+		ic.initController(ctx)
 		ctx.Request.ParseForm()
 		var param interface{}
 		if ctl.ControllerActionParameterStruct != nil {
@@ -63,11 +65,29 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 		}
 		log.Println(fmt.Sprintf("数据：%+v", param))
 		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
+		if !ctx.Response.Started {
+			c := ic.getController()
+			tmpHtml(c)
+			log.Println(fmt.Sprintf("数据：%+v", ic.getController()))
+		}
 	} else {
 		ctx.Response.WriteHeader(404)
 		ctx.Response.Write([]byte("404错误"))
 	}
 	return ctx
+}
+
+func tmpHtml(c *Controller) (err error) {
+	if b, err := ioutil.ReadFile(c.TplPath); err == nil {
+		// 创建一个新的模板，并且载入内容
+		log.Println(string(b))
+		if t, err := template.New("webpage").Parse(string(b)); err == nil {
+			return t.Execute(c.HttpContext.Response, c.Data)
+		}
+	} else {
+		panic(err.Error())
+	}
+	return
 }
 
 //根据参数获取对应的Values

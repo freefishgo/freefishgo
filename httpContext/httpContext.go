@@ -8,6 +8,6 @@ type HttpContext struct {
 }
 
 func (h *HttpContext) SetContext(rw http.ResponseWriter, r *http.Request) {
-	h.Response = Response{ResponseWriter: rw}
+	h.Response = Response{ResponseWriter: rw, req: r, Started: false}
 	h.Request = &Request{Request: r}
 }

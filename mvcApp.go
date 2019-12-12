@@ -14,7 +14,8 @@ type MvcApp struct {
 
 // http服务逻辑处理程序
 func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, link *MiddlewareLink) *httpContext.HttpContext {
-	return link.Next(mvc.handlers.AnalysisRequest(ctx))
+	ctx = mvc.handlers.AnalysisRequest(ctx)
+	return link.Next(ctx)
 }
 func (mvc *MvcApp) LastInit() {
 	mvc.handlers.MainRouterNil()

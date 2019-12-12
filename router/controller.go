@@ -19,6 +19,14 @@ type Controller struct {
 	HttpContext    *httpContext.HttpContext
 	controllerInfo *ControllerInfo
 	sonController  IController
+
+	// 模板数据
+	Data    map[interface{}]interface{}
+	TplPath string
+}
+
+func (c *Controller) getController() *Controller {
+	return c
 }
 
 // 控制器的基本数据结构
@@ -26,7 +34,8 @@ type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
 	GetControllerActionInfo() []*ControllerActionInfo
-	setHttpContext(ctx *httpContext.HttpContext)
+	initController(ctx *httpContext.HttpContext)
+	getController() *Controller
 }
 
 // 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
@@ -92,6 +101,12 @@ type ControllerActionInfo struct {
 	patternMap map[string]int
 }
 
+// 设置允许的http请求方法
+func (c *ControllerActionInfo) SetAllowMethod(methods ...httpContext.HttpMethod) *ControllerActionInfo {
+	c.AllowMethod = methods
+	return c
+}
+
 // 控制器属性设置 路由变量路由中只能出现一次
 func (c *Controller) GetControllerActionInfo() []*ControllerActionInfo {
 	return make([]*ControllerActionInfo, 0)
@@ -103,14 +118,15 @@ func (c *Controller) setSonController(son IController) {
 }
 
 // http请求上下文注册
-func (c *Controller) setHttpContext(ctx *httpContext.HttpContext) {
+func (c *Controller) initController(ctx *httpContext.HttpContext) {
 	c.HttpContext = ctx
+	c.Data = map[interface{}]interface{}{}
 }
 
 // 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"GetControllerActionInfo": true}
+		"GetControllerActionInfo": true, "SetTplPath": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}
