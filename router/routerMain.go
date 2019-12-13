@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 )
@@ -78,14 +80,16 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 }
 
 func tmpHtml(c *Controller) (err error) {
-	if b, err := ioutil.ReadFile(c.TplPath); err == nil {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	log.Println(filepath.Join(dir, c.TplPath))
+	if b, err := ioutil.ReadFile(filepath.Join(dir, c.TplPath)); err == nil {
 		// 创建一个新的模板，并且载入内容
 		log.Println(string(b))
 		if t, err := template.New("webpage").Parse(string(b)); err == nil {
 			return t.Execute(c.HttpContext.Response, c.Data)
 		}
 	} else {
-		panic(err.Error())
+		log.Println(err.Error())
 	}
 	return
 }
