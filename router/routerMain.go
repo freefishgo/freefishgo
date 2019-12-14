@@ -18,6 +18,8 @@ type ControllerRegister struct {
 	WebConfig *config.WebConfig
 }
 
+// 实例化一个mvc注册器
+
 func NewControllerRegister() *ControllerRegister {
 	controllerRegister := new(ControllerRegister)
 	controllerRegister.tree = newTree()

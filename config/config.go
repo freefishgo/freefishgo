@@ -5,17 +5,13 @@ type Config struct {
 	RunMode             string
 	RouterCaseSensitive bool
 	ServerName          string
-	RecoverPanic        bool
-	//请求出来出错的的处理函数
-	//
-	//RecoverFunc         func(*httpContext.Context)
-	CopyRequestBody    bool
-	EnableGzip         bool
-	MaxMemory          int64
-	EnableErrorsShow   bool
-	EnableErrorsRender bool
-	Listen             Listen
-	Log                LogConfig
+	CopyRequestBody     bool
+	EnableGzip          bool
+	MaxMemory           int64
+	EnableErrorsShow    bool
+	EnableErrorsRender  bool
+	Listen              Listen
+	Log                 LogConfig
 }
 
 type Listen struct {
@@ -69,14 +65,11 @@ func NewConfig() *Config {
 		AppName:             "freeFishGo",
 		RouterCaseSensitive: true,
 		ServerName:          "freeFishGoServer:" + VERSION,
-		RecoverPanic:        true,
-		//请求出来出错的的处理函数
-		//RecoverFunc:         recoverPanic,
-		CopyRequestBody:    false,
-		EnableGzip:         false,
-		MaxMemory:          1 << 26, //64MB
-		EnableErrorsShow:   true,
-		EnableErrorsRender: true,
+		CopyRequestBody:     false,
+		EnableGzip:          false,
+		MaxMemory:           1 << 26, //64MB
+		EnableErrorsShow:    true,
+		EnableErrorsRender:  true,
 		Listen: Listen{
 			ServerTimeOut: 0,
 			ListenTCP4:    false,
