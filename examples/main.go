@@ -42,10 +42,10 @@ func (c *ctrTestController) My1(Test *Test) {
 type mid struct {
 }
 
-func (m *mid) Middleware(ctx *httpContext.HttpContext, next *free.MiddlewareLink) *httpContext.HttpContext {
+func (m *mid) Middleware(ctx *httpContext.HttpContext, next free.Next) *httpContext.HttpContext {
 	dt := time.Now()
 	log.Println(ctx.Request.URL)
-	ctxtmp := next.Next(ctx)
+	ctxtmp := next(ctx)
 	log.Println("处理时间为:" + (time.Now().Sub(dt)).String())
 	return ctxtmp
 }

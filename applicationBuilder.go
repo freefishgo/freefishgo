@@ -51,7 +51,7 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next)
+	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.Next)
 
 }
 
@@ -60,9 +60,11 @@ func NewApplicationBuilder() *ApplicationBuilder {
 	return new(ApplicationBuilder)
 }
 
+type Next func(*httpContext.HttpContext) *httpContext.HttpContext
+
 // 中间件类型接口
 type IMiddleware interface {
-	Middleware(ctx *httpContext.HttpContext, next *MiddlewareLink) *httpContext.HttpContext
+	Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext
 	//注册框架后 框架会自动调用这个函数
 	LastInit()
 }
@@ -73,7 +75,7 @@ type MiddlewareLink struct {
 
 // 执行下一个中间件
 func (link *MiddlewareLink) Next(ctx *httpContext.HttpContext) *httpContext.HttpContext {
-	return link.val.Middleware(ctx, link.next)
+	return link.val.Middleware(ctx, link.next.Next)
 }
 
 // 中间件注册接口
@@ -106,7 +108,7 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 type LastFrameMiddleware struct {
 }
 
-func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next *MiddlewareLink) *httpContext.HttpContext {
+func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
 	return ctx
 }
 func (last *LastFrameMiddleware) LastInit() {
