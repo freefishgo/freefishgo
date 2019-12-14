@@ -3,7 +3,6 @@ package freeFishGo
 import (
 	"freeFishGo/config"
 	"freeFishGo/httpContext"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -51,7 +50,7 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.Next)
+	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 
 }
 
@@ -74,8 +73,8 @@ type MiddlewareLink struct {
 }
 
 // 执行下一个中间件
-func (link *MiddlewareLink) Next(ctx *httpContext.HttpContext) *httpContext.HttpContext {
-	return link.val.Middleware(ctx, link.next.Next)
+func (link *MiddlewareLink) innerNext(ctx *httpContext.HttpContext) *httpContext.HttpContext {
+	return link.val.Middleware(ctx, link.next.innerNext)
 }
 
 // 中间件注册接口
@@ -112,5 +111,4 @@ func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next N
 	return ctx
 }
 func (last *LastFrameMiddleware) LastInit() {
-	log.Println("管道最后一层设置完成")
 }
