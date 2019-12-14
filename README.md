@@ -30,7 +30,10 @@ type Test struct {
 }
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/ctrTest/MyControllerActionStrut
 func (c *ctrTestController) MyControllerActionStrut(Test *Test) {
-	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
+	c.Data["Website"] = Test.Id
+	c.Data["Email"] = Test.T1
+	//c.HttpContext.Response.Write([]byte("hahaha"))
+	c.UseTplPath()
 }
 // 新添加一个Action 该方法的路由为/ctrTest/My
 func (c *ctrTestController) My(Test *Test) {
