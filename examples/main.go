@@ -33,7 +33,7 @@ type Test struct {
 func (c *ctrTestController) MyControllerActionStrutPost(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	//c.HttpContext.Response.Write([]byte("hahaha"))
+	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
 	c.UseTplPath()
 }
 

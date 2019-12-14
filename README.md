@@ -1,5 +1,5 @@
 # freeFishGo
-golang 通过结构体反射实现的典型的mvc架构
+golang 通过结构体反射实现的典型的mvc架构 尝试可以看代码文件中examples/main.go
 ```go
 package main
 
@@ -31,7 +31,7 @@ type Test struct {
 func (c *ctrTestController) MyControllerActionStrutPost(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	//c.HttpContext.Response.Write([]byte("hahaha"))
+	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
 	c.UseTplPath()
 }
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/ctrTest/MyControllerActionStrut 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
