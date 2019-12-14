@@ -119,6 +119,22 @@ func replaceActionName(actionName string) string {
 
 }
 
+func isHaveHttpMethod(actionName string) bool {
+	actionName = strings.ToUpper(actionName)
+	httpMethodList := []httpContext.HttpMethod{httpContext.MethodPost,
+		httpContext.MethodConnect, httpContext.MethodDelete,
+		httpContext.MethodGet, httpContext.MethodHead, httpContext.MethodOptions,
+		httpContext.MethodPatch, httpContext.MethodPut, httpContext.MethodTrace}
+	for _, v := range httpMethodList {
+		f := regexp.MustCompile(string(v) + "$")
+		if f.MatchString(actionName) {
+			return true
+		}
+	}
+	return false
+
+}
+
 type ControllerActionInfo struct {
 	// 传设置控制器的方法
 	ControllerActionFuncName string

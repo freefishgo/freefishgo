@@ -149,6 +149,9 @@ func (t *tree) addPathTree(controllerName string, controllerAction string, contr
 	if _, ok := t.ControllerList[controllerName]; !ok {
 		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
 	}
+	if !isHaveHttpMethod(controllerAction) {
+		controllerAction += "get"
+	}
 	t.ControllerList[controllerName][strings.ToLower(controllerAction)] = controllerInfo
 }
 
