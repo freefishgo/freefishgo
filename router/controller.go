@@ -110,19 +110,19 @@ type ControllerActionInfo struct {
 	// /home/index/123可以匹配成功
 	RouterPattern string
 	//允许的请求方法
-	AllowMethod    []httpContext.HttpMethod
-	allowMethod    map[httpContext.HttpMethod]bool
-	controllerName string
-	actionName     string
-	patternRe      *regexp.Regexp
+	allowMethodSlice []httpContext.HttpMethod
+	allowMethod      map[httpContext.HttpMethod]bool
+	controllerName   string
+	actionName       string
+	patternRe        *regexp.Regexp
 	//正则匹配出来的变量地址映射变量映射
 	patternMap map[string]int
 }
 
 // 设置允许的http请求方法
-func (c *ControllerActionInfo) SetAllowMethod(methods ...httpContext.HttpMethod) *ControllerActionInfo {
-	c.AllowMethod = methods
-	return c
+func (c ControllerActionInfo) SetAllowMethod(methods ...httpContext.HttpMethod) *ControllerActionInfo {
+	c.allowMethodSlice = methods
+	return &c
 }
 
 // 控制器属性设置 路由变量路由中只能出现一次

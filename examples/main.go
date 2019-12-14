@@ -16,7 +16,7 @@ type ctrTestController struct {
 func (c *ctrTestController) GetControllerActionInfo() []*router.ControllerActionInfo {
 	log.Println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrut"})
+	tmp = append(tmp, router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrut"}.SetAllowMethod(httpContext.MethodPost))
 	return tmp
 }
 
