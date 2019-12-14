@@ -77,7 +77,7 @@ func main() {
 	// 实例化一个mvc服务
 	app := free.NewFreeFishMvcApp()
 	// 注册控制器
-	app.AddHanlers(&ctrTestController{})
+	app.AddHandlers(&ctrTestController{})
 	// 注册主路由ControllerActionFuncName字段不用设置        设置了也不会生效
 	app.AddMainRouter(&router.ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}"})
 	build := free.NewFreeFishApplicationBuilder()

@@ -34,7 +34,7 @@ func NewFreeFishMvcApp() *MvcApp {
 	return freeFish
 }
 
-func (app *MvcApp) AddHanlers(ctrles ...router.IController) {
+func (app *MvcApp) AddHandlers(ctrles ...router.IController) {
 	for i := 0; i < len(ctrles); i++ {
 		app.handlers.AddHandlers(ctrles[i])
 	}
