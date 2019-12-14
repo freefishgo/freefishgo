@@ -1,7 +1,6 @@
 package router
 
 import (
-	"freeFishGo/httpContext"
 	"reflect"
 	"regexp"
 	"sort"
@@ -40,13 +39,6 @@ func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInf
 		v.makePattern()
 		if strings.Contains(v.patternRe.String(), "{") {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern + ". 错误的变量")
-		}
-		if len(v.allowMethodSlice) == 0 {
-			v.allowMethodSlice = append(v.allowMethodSlice, httpContext.MethodGet)
-		}
-		v.allowMethod = map[httpContext.HttpMethod]bool{}
-		for _, cc := range v.allowMethodSlice {
-			v.allowMethod[cc] = true
 		}
 		if _, ok := c[v.patternRe.String()]; ok {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)

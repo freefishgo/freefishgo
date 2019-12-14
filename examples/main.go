@@ -16,7 +16,7 @@ type ctrTestController struct {
 func (c *ctrTestController) GetControllerActionInfo() []*router.ControllerActionInfo {
 	log.Println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrut"}.SetAllowMethod(httpContext.MethodPost))
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrutPost"})
 	return tmp
 }
 
@@ -26,14 +26,21 @@ type Test struct {
 	Id string   `json:"id"`
 }
 
-func (c *ctrTestController) MyControllerActionStrut(Test *Test) {
+func (c *ctrTestController) MyControllerActionStrutPost(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	//c.HttpContext.Response.Write([]byte("hahaha"))
 	c.UseTplPath()
 }
 
-func (c *ctrTestController) My(Test *Test) {
+func (c *ctrTestController) MyControllerActionStrutGet(Test *Test) {
+	c.Data["Website"] = Test.Id
+	c.Data["Email"] = Test.T1
+	//c.HttpContext.Response.Write([]byte("hahaha"))
+	c.UseTplPath()
+}
+
+func (c *ctrTestController) MyGET(Test *Test) {
 	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }
 func (c *ctrTestController) My1(Test *Test) {

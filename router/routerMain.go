@@ -55,30 +55,26 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 		ctx.Response.WriteHeader(404)
 		return ctx
 	}
-	ctl, ok := c.tree.getControllerInfoByControllerNameControllerAction(f.controllerName, f.controllerAction)
-	if ok {
-		action := reflect.New(ctl.ControllerFunc)
-		var ic IController = action.Interface().(IController)
-		ic.initController(ctx)
-		ctx.Request.ParseForm()
-		var param interface{}
-		if ctl.ControllerActionParameterStruct != nil {
-			param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-			data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
-			json.Unmarshal(data, param)
+	ctl := f.ControllerInfo
+	action := reflect.New(ctl.ControllerFunc)
+	var ic IController = action.Interface().(IController)
+	ic.initController(ctx)
+	ctx.Request.ParseForm()
+	var param interface{}
+	if ctl.ControllerActionParameterStruct != nil {
+		param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
+		data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
+		json.Unmarshal(data, param)
+	}
+	action.MethodByName(ctl.ControllerAction).Call(getValues(param))
+	if !ctx.Response.Started {
+		con := ic.getController()
+		con.controllerName = ctl.ControllerName
+		con.actionName = ctl.ControllerAction
+		err := c.tmpHtml(con)
+		if err != nil {
+			panic(err)
 		}
-		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
-		if !ctx.Response.Started {
-			con := ic.getController()
-			con.controllerName = ctl.ControllerName
-			con.actionName = ctl.ControllerAction
-			err := c.tmpHtml(con)
-			if err != nil {
-				panic(err)
-			}
-		}
-	} else {
-		ctx.Response.WriteHeader(404)
 	}
 	return ctx
 }
@@ -87,7 +83,7 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 	if c.isUseTplPath {
 		dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 		if c.tplPath == "" {
-			c.tplPath = filepath.Join(c.controllerName, c.actionName+".fish")
+			c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
 		}
 		path := filepath.Join(dir, ctr.WebConfig.ViewsPath, c.tplPath)
 		if b, err := ioutil.ReadFile(path); err == nil {
@@ -138,15 +134,12 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpConte
 	for _, v := range c.tree.MainRouterList {
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
-			if _, ok := v.allowMethod[method]; !ok {
-				continue
-			}
 			ff := new(freeFishUrl)
 			ff.OtherKeyMap = map[string]interface{}{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
-			ff.controllerAction = ff.GetControllerAction(v)
+			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
 			ff.controllerName = ff.GetControllerName(v)
 			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
 				ff.ControllerInfo = v
@@ -158,15 +151,12 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpConte
 	for _, v := range c.tree.ControllerModelList {
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
-			if _, ok := v.allowMethod[method]; !ok {
-				continue
-			}
 			ff := new(freeFishUrl)
 			ff.OtherKeyMap = map[string]interface{}{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
-			ff.controllerAction = ff.GetControllerAction(v)
+			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
 			ff.controllerName = ff.GetControllerName(v)
 			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
 				ff.ControllerInfo = v

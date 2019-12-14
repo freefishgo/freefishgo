@@ -90,7 +90,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		if !ok {
 			panic(getType.String() + "方法" + v.ControllerActionFuncName + "不存在")
 		}
-		v.actionName = strings.ToLower(v.ControllerActionFuncName)
+		v.actionName = replaceActionName(v.ControllerActionFuncName)
 		v.controllerName = strings.ToLower(controllerName)
 		//f := regexp.MustCompile(`Controller$`)
 		//controllerName = f.ReplaceAllString(controllerName, "")
@@ -103,26 +103,33 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	return tree
 }
 
+func replaceActionName(actionName string) string {
+	actionName = strings.ToUpper(actionName)
+	httpMethodList := []httpContext.HttpMethod{httpContext.MethodPost,
+		httpContext.MethodConnect, httpContext.MethodDelete,
+		httpContext.MethodGet, httpContext.MethodHead, httpContext.MethodOptions,
+		httpContext.MethodPatch, httpContext.MethodPut, httpContext.MethodTrace}
+	for _, v := range httpMethodList {
+		f := regexp.MustCompile(string(v) + "$")
+		if f.MatchString(actionName) {
+			return strings.ToLower(f.ReplaceAllString(actionName, ""))
+		}
+	}
+	return actionName
+
+}
+
 type ControllerActionInfo struct {
 	// 传设置控制器的方法
 	ControllerActionFuncName string
 	//路由设置  如：/{Controller}/{Action}/{id:int}
 	// /home/index/123可以匹配成功
-	RouterPattern string
-	//允许的请求方法
-	allowMethodSlice []httpContext.HttpMethod
-	allowMethod      map[httpContext.HttpMethod]bool
-	controllerName   string
-	actionName       string
-	patternRe        *regexp.Regexp
+	RouterPattern  string
+	controllerName string
+	actionName     string
+	patternRe      *regexp.Regexp
 	//正则匹配出来的变量地址映射变量映射
 	patternMap map[string]int
-}
-
-// 设置允许的http请求方法
-func (c ControllerActionInfo) SetAllowMethod(methods ...httpContext.HttpMethod) *ControllerActionInfo {
-	c.allowMethodSlice = methods
-	return &c
 }
 
 // 控制器属性设置 路由变量路由中只能出现一次
