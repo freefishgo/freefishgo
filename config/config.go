@@ -15,7 +15,6 @@ type Config struct {
 	EnableErrorsShow   bool
 	EnableErrorsRender bool
 	Listen             Listen
-	WebConfig          WebConfig
 	Log                LogConfig
 }
 
@@ -33,13 +32,10 @@ type Listen struct {
 	HTTPSKeyFile  string
 }
 type WebConfig struct {
-	AutoRender             bool
-	StaticDir              map[string]string
-	StaticExtensionsToGzip []string
-	TemplateLeft           string
-	TemplateRight          string
-	ViewsPath              string
-	Session                SessionConfig
+	TemplateLeft  string
+	TemplateRight string
+	ViewsPath     string
+	Session       SessionConfig
 }
 
 func NewWebConfig() *WebConfig {
@@ -93,28 +89,6 @@ func NewConfig() *Config {
 			HTTPSPort:     10443,
 			HTTPSCertFile: "",
 			HTTPSKeyFile:  "",
-		},
-		WebConfig: WebConfig{
-			AutoRender:             true,
-			StaticDir:              map[string]string{"/static": "static"},
-			StaticExtensionsToGzip: []string{".css", ".js"},
-			TemplateLeft:           "{{",
-			TemplateRight:          "}}",
-			ViewsPath:              "views",
-			Session: SessionConfig{
-				SessionOn:                    false,
-				SessionProvider:              "memory",
-				SessionName:                  "beegosessionID",
-				SessionGCMaxLifetime:         3600,
-				SessionProviderConfig:        "",
-				SessionDisableHTTPOnly:       false,
-				SessionCookieLifeTime:        0, //set cookie default is the browser life
-				SessionAutoSetCookie:         true,
-				SessionDomain:                "",
-				SessionEnableSidInHTTPHeader: false, // enable store/get the sessionId into/from http headers
-				SessionNameInHTTPHeader:      "Beegosessionid",
-				SessionEnableSidInURLQuery:   false, // enable get the sessionId from Url Query params
-			},
 		},
 		Log: LogConfig{},
 	}
