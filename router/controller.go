@@ -29,8 +29,11 @@ type Controller struct {
 }
 
 // 使用模板的路径并启动调用模板
+//
 // 管道中任意地方调用Controller.HttpContext.Response.Write() 方法会失效
+//
 // 不使用路径会用v.ViewsPath/{Controller}/{Action}.fish
+//
 // 多路径只用最后一个
 func (c *Controller) UseTplPath(tplPath ...string) {
 	c.isUseTplPath = true
