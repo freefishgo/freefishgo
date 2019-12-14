@@ -41,6 +41,11 @@ type WebConfig struct {
 	ViewsPath              string
 	Session                SessionConfig
 }
+
+func NewWebConfig() *WebConfig {
+	return &WebConfig{ViewsPath: "views", TemplateLeft: "{{", TemplateRight: "}}"}
+}
+
 type SessionConfig struct {
 	SessionOn                    bool
 	SessionProvider              string

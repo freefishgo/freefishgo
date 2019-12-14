@@ -25,7 +25,6 @@ func (mvc *MvcApp) LastInit() {
 func NewFreeFishMvcApp() *MvcApp {
 	freeFish := new(MvcApp)
 	freeFish.handlers = router.NewControllerRegister()
-	//freeFish.Config = config.NewConfig()
 	return freeFish
 }
 
