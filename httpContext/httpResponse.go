@@ -32,7 +32,7 @@ func (r *Response) RemoveCookie(ck *http.Cookie) {
 }
 
 // 回复数据
-func (r Response) Write(b []byte) (int, error) {
+func (r *Response) Write(b []byte) (int, error) {
 	r.Started = true
 	return r.ResponseWriter.Write(b)
 }

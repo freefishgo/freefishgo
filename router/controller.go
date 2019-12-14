@@ -21,8 +21,23 @@ type Controller struct {
 	sonController  IController
 
 	// 模板数据
-	Data    map[interface{}]interface{}
-	TplPath string
+	Data           map[interface{}]interface{}
+	tplPath        string
+	isUseTplPath   bool
+	controllerName string
+	actionName     string
+}
+
+// 使用模板的路径并启动调用模板
+// 管道中任意地方调用Controller.HttpContext.Response.Write() 方法会失效
+// 不使用路径会用v.ViewsPath/{Controller}/{Action}.fish
+// 多路径只用最后一个
+func (c *Controller) UseTplPath(tplPath ...string) {
+	c.isUseTplPath = true
+	len := len(tplPath)
+	if len != 0 {
+		c.tplPath = tplPath[len-1]
+	}
 }
 
 func (c *Controller) getController() *Controller {
@@ -126,7 +141,7 @@ func (c *Controller) initController(ctx *httpContext.HttpContext) {
 // 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"GetControllerActionInfo": true, "SetTplPath": true}
+		"GetControllerActionInfo": true, "SetTplPath": true, "UseTplPath": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}

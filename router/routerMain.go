@@ -65,15 +65,15 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 			data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
 			json.Unmarshal(data, param)
 		}
-		//log.Println(fmt.Sprintf("数据：%+v", param))
 		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 		if !ctx.Response.Started {
 			con := ic.getController()
+			con.controllerName = ctl.ControllerName
+			con.actionName = ctl.ControllerAction
 			err := c.tmpHtml(con)
 			if err != nil {
 				panic(err)
 			}
-			//log.Println(fmt.Sprintf("数据：%+v", ic.getController()))
 		}
 	} else {
 		ctx.Response.WriteHeader(404)
@@ -81,17 +81,25 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 	return ctx
 }
 
-func (ctr *ControllerRegister) tmpHtml(c *Controller) (err error) {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if b, err := ioutil.ReadFile(filepath.Join(dir, c.TplPath)); err == nil {
-		// 创建一个新的模板，并且载入内容
-		if t, err := template.New(filepath.Join(dir, c.TplPath)).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
-			return t.Execute(c.HttpContext.Response, c.Data)
+func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
+	if c.isUseTplPath {
+		dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+		if c.tplPath == "" {
+			c.tplPath = filepath.Join(c.controllerName, c.actionName+".fish")
 		}
-	} else {
-		return err
+		path := filepath.Join(dir, ctr.WebConfig.ViewsPath, c.tplPath)
+		if b, err := ioutil.ReadFile(path); err == nil {
+			// 创建一个新的模板，并且载入内容
+			if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
+				return t.Execute(c.HttpContext.Response.ResponseWriter, c.Data)
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
-	return
+	return nil
 }
 
 //根据参数获取对应的Values

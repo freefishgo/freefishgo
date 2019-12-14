@@ -29,7 +29,8 @@ type Test struct {
 func (c *ctrTestController) MyControllerActionStrut(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	c.TplPath = "index.tpl"
+	//c.HttpContext.Response.Write([]byte("hahaha"))
+	c.UseTplPath()
 }
 
 func (c *ctrTestController) My(Test *Test) {
