@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type ControllerInfo struct {
+type controllerInfo struct {
 	ControllerFunc                  reflect.Type //请求事件的处理函数
 	ControllerName                  string       //控制器名称
 	ControllerAction                string       //控制器处理方法
@@ -17,7 +17,7 @@ type ControllerInfo struct {
 // http请求逻辑控制器
 type Controller struct {
 	HttpContext    *httpContext.HttpContext
-	controllerInfo *ControllerInfo
+	controllerInfo *controllerInfo
 	sonController  IController
 
 	// 模板数据
@@ -51,7 +51,7 @@ func (c *Controller) getController() *Controller {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	GetControllerActionInfo() []*ControllerActionInfo
+	SetInfo() []*ControllerActionInfo
 	initController(ctx *httpContext.HttpContext)
 	getController() *Controller
 }
@@ -84,7 +84,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		controllerName = f.ReplaceAllString(controllerName, "")
 		tree.addPathTree(controllerName, actionName, getType.Elem(), controllerActionParameterStruct)
 	}
-	controllerActionInfoList := (c.sonController).GetControllerActionInfo()
+	controllerActionInfoList := (c.sonController).SetInfo()
 	for _, v := range controllerActionInfoList {
 		_, ok := getType.MethodByName(v.ControllerActionFuncName)
 		if !ok {
@@ -115,7 +115,7 @@ func replaceActionName(actionName string) string {
 			return strings.ToLower(f.ReplaceAllString(actionName, ""))
 		}
 	}
-	return actionName
+	return strings.ToLower(actionName)
 
 }
 
@@ -149,7 +149,7 @@ type ControllerActionInfo struct {
 }
 
 // 控制器属性设置 路由变量路由中只能出现一次
-func (c *Controller) GetControllerActionInfo() []*ControllerActionInfo {
+func (c *Controller) SetInfo() []*ControllerActionInfo {
 	return make([]*ControllerActionInfo, 0)
 }
 
@@ -167,7 +167,7 @@ func (c *Controller) initController(ctx *httpContext.HttpContext) {
 // 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"GetControllerActionInfo": true, "SetTplPath": true, "UseTplPath": true}
+		"SetInfo": true, "SetTplPath": true, "UseTplPath": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}

@@ -27,25 +27,25 @@ type Test struct {
 	T1 string   `json:"tstst1"`
 	Id string   `json:"id"`
 }
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/ctrTest/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求
+Main
 func (c *ctrTestController) MyControllerActionStrutPost(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
 	c.UseTplPath()
 }
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/ctrTest/MyControllerActionStrut 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
+Main
 func (c *ctrTestController) MyControllerActionStrutGet(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	//c.HttpContext.Response.Write([]byte("hahaha"))
 	c.UseTplPath()
 }
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/ctrTest/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
+Main
 func (c *ctrTestController) MyGET(Test *Test) {
 	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/ctrTest/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
+Main
 func (c *ctrTestController) My1(Test *Test) {
 	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }

@@ -21,19 +21,19 @@ import (
 //	controllerAction string           //控制器处理方法
 //}
 // 路由映射模型
-type ControllerModelList map[string]*ControllerActionInfo
+type controllerModelList map[string]*ControllerActionInfo
 
 type tree struct {
-	ControllerList map[string]map[string]*ControllerInfo //静态路径
+	ControllerList map[string]map[string]*controllerInfo //静态路径
 	//主要路由节点
-	MainRouterList ControllerModelList
+	MainRouterList controllerModelList
 	// 路由映射模型
-	ControllerModelList ControllerModelList
+	ControllerModelList controllerModelList
 }
 
-func (c ControllerModelList) AddControllerModelList(list ...*ControllerActionInfo) ControllerModelList {
+func (c controllerModelList) AddControllerModelList(list ...*ControllerActionInfo) controllerModelList {
 	if c == nil {
-		c = ControllerModelList{}
+		c = controllerModelList{}
 	}
 	for _, v := range list {
 		v.makePattern()
@@ -121,42 +121,42 @@ func (c *ControllerActionInfo) makePattern() {
 
 func newTree() *tree {
 	tree := new(tree)
-	tree.ControllerList = map[string]map[string]*ControllerInfo{}
+	tree.ControllerList = map[string]map[string]*controllerInfo{}
 	return tree
 }
 
 // 控制器注册
 func (t *tree) addPathTree(controllerName string, controllerAction string, controllerFunc reflect.Type, ControllerActionParameterStruct reflect.Type) {
-	controllerInfo := new(ControllerInfo)
-	controllerInfo.ControllerAction = controllerAction
-	controllerInfo.ControllerName = controllerName
-	controllerInfo.ControllerFunc = controllerFunc
-	controllerInfo.ControllerActionParameterStruct = ControllerActionParameterStruct
+	controllerInfo1 := new(controllerInfo)
+	controllerInfo1.ControllerAction = controllerAction
+	controllerInfo1.ControllerName = controllerName
+	controllerInfo1.ControllerFunc = controllerFunc
+	controllerInfo1.ControllerActionParameterStruct = ControllerActionParameterStruct
 	//re := regexp.MustCompile(`([\w+$]+)Controller$`)
 	//tmpControllerNameList := re.FindStringSubmatch(controllerName)
 	//if len(tmpControllerNameList) == 2 {
 	//	controllerName = strings.ToLower(tmpControllerNameList[1])
 	//	if _, ok := t.ControllerList[controllerName]; !ok {
-	//		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
+	//		t.ControllerList[controllerName] = map[string]*controllerInfo{}
 	//	}
 	//} else {
 	//	controllerName = strings.ToLower(controllerName)
 	//	if _, ok := t.ControllerList[controllerName]; !ok {
-	//		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
+	//		t.ControllerList[controllerName] = map[string]*controllerInfo{}
 	//	}
 	//}
 	controllerName = strings.ToLower(controllerName)
 	if _, ok := t.ControllerList[controllerName]; !ok {
-		t.ControllerList[controllerName] = map[string]*ControllerInfo{}
+		t.ControllerList[controllerName] = map[string]*controllerInfo{}
 	}
 	if !isHaveHttpMethod(controllerAction) {
 		controllerAction += "get"
 	}
-	t.ControllerList[controllerName][strings.ToLower(controllerAction)] = controllerInfo
+	t.ControllerList[controllerName][strings.ToLower(controllerAction)] = controllerInfo1
 }
 
 //  根据控制器名字和动作名字获取控制器
-func (t *tree) getControllerInfoByControllerNameControllerAction(controllerName string, controllerAction string) (*ControllerInfo, bool) {
+func (t *tree) getControllerInfoByControllerNameControllerAction(controllerName string, controllerAction string) (*controllerInfo, bool) {
 	if v, ok := t.ControllerList[controllerName]; ok {
 		if v, ok := v[controllerAction]; ok {
 			return v, true

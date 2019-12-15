@@ -1,6 +1,6 @@
 package router
 
-type Pattern struct {
+type pattern struct {
 	PatternString  string
 	ControllerName string
 	ActionName     string
@@ -11,7 +11,7 @@ type freeFishUrl struct {
 	controllerName   string
 	controllerAction string
 	OtherKeyMap      map[string]interface{}
-	ControllerInfo   *ControllerInfo
+	ControllerInfo   *controllerInfo
 }
 
 // 获取控制器名称

@@ -4,6 +4,8 @@ import (
 	"freeFishGo/httpContext"
 	"freeFishGo/router"
 	"log"
+	"os"
+	"path/filepath"
 )
 
 type MvcApp struct {
@@ -29,14 +31,16 @@ func (mvc *MvcApp) LastInit() {
 }
 
 func NewFreeFishMvcApp() *MvcApp {
+	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	os.Chdir(dir)
 	freeFish := new(MvcApp)
 	freeFish.handlers = router.NewControllerRegister()
 	return freeFish
 }
 
-func (app *MvcApp) AddHandlers(ctrles ...router.IController) {
-	for i := 0; i < len(ctrles); i++ {
-		app.handlers.AddHandlers(ctrles[i])
+func (app *MvcApp) AddHandlers(ic ...router.IController) {
+	for i := 0; i < len(ic); i++ {
+		app.handlers.AddHandlers(ic[i])
 	}
 }
 

@@ -13,9 +13,10 @@ type ApplicationBuilder struct {
 	handler *ApplicationHandler
 }
 
+// 创建一个ApplicationBuilder管道
 func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	freeFish := new(ApplicationBuilder)
-	freeFish.handler = NewApplicationHandler()
+	freeFish.handler = newApplicationHandler()
 	freeFish.Config = config.NewConfig()
 	return freeFish
 }
@@ -37,7 +38,7 @@ func (app *ApplicationBuilder) Run() {
 	}
 }
 
-func NewApplicationHandler() *ApplicationHandler {
+func newApplicationHandler() *ApplicationHandler {
 	return new(ApplicationHandler)
 }
 
@@ -52,11 +53,6 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.SetContext(rw, r)
 	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 
-}
-
-// 创建一个ApplicationBuilder管道
-func NewApplicationBuilder() *ApplicationBuilder {
-	return new(ApplicationBuilder)
 }
 
 type Next func(*httpContext.HttpContext) *httpContext.HttpContext
