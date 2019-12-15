@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-// 实现mvc控制器的处理ctrTest为控制器 {Controller}的值
+// 实现mvc控制器的处理Main为控制器 {Controller}的值
 type MainController struct {
 	router.Controller
 }

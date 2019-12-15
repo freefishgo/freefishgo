@@ -12,6 +12,7 @@ type staticController struct {
 	router.Controller
 }
 
+// 控制器注册
 func init() {
 	fishgo.AddHandlers(&staticController{})
 }
@@ -20,6 +21,7 @@ type data struct {
 	Path string `json:"path"`
 }
 
+// 提供静态资源服务
 func (static *staticController) StaticFile(d *data) {
 	if b, err := ioutil.ReadFile(filepath.Join("static", d.Path)); err == nil {
 		static.HttpContext.Response.Write(b)
