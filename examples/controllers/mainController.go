@@ -14,7 +14,7 @@ type MainController struct {
 
 // 注册控制器
 func init() {
-	fishgo.AddHandlers(&MainController{})
+	fishgo.Mvc.AddHandlers(&MainController{})
 }
 
 // SetInfo()特殊定制指定action的路由

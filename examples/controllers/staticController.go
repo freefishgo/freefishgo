@@ -14,7 +14,7 @@ type staticController struct {
 
 // 控制器注册
 func init() {
-	fishgo.AddHandlers(&staticController{})
+	fishgo.Mvc.AddHandlers(&staticController{})
 }
 
 type data struct {
