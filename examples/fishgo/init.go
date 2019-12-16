@@ -1,7 +1,7 @@
 package fishgo
 
 import (
-	"freeFishGo"
+	"github.com/freeFishGo"
 )
 
 var Mvc *freeFishGo.MvcApp

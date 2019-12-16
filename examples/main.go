@@ -1,11 +1,11 @@
 package main
 
 import (
-	"freeFishGo"
-	_ "freeFishGo/examples/controllers"
-	"freeFishGo/examples/fishgo"
-	"freeFishGo/examples/middlewares"
-	_ "freeFishGo/examples/routers"
+	"github.com/freeFishGo"
+	_ "github.com/freeFishGo/examples/controllers"
+	"github.com/freeFishGo/examples/fishgo"
+	"github.com/freeFishGo/examples/middlewares"
+	_ "github.com/freeFishGo/examples/routers"
 )
 
 var build *freeFishGo.ApplicationBuilder
