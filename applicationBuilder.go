@@ -52,7 +52,8 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-
+	ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+	ctx.Response.ResponseWriter.Write(ctx.Response.GetWaitWriteData())
 }
 
 type Next func(*httpContext.HttpContext) *httpContext.HttpContext
@@ -93,20 +94,19 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 		tmpMid = tmpMid.next
 	}
 	if tmpMid.val == nil {
-		tmpMid.val = &LastFrameMiddleware{}
+		tmpMid.val = &lastFrameMiddleware{}
 		tmpMid.val.LastInit()
 	}
 	return app
 }
 
 // 框架最后一个中间件
-type LastFrameMiddleware struct {
+type lastFrameMiddleware struct {
 }
 
-func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
-	ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
-	ctx.Response.ResponseWriter.Write(ctx.Response.GetWaitWriteData())
+func (last *lastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
 	return ctx
 }
-func (last *LastFrameMiddleware) LastInit() {
+func (last *lastFrameMiddleware) LastInit() {
+
 }
