@@ -1,8 +1,8 @@
 package freeFishGo
 
 import (
-	"freeFishGo/config"
-	"freeFishGo/httpContext"
+	"github.com/freeFishGo/config"
+	"github.com/freeFishGo/httpContext"
 	"net/http"
 	"strconv"
 )

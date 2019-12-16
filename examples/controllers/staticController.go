@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"freeFishGo/examples/fishgo"
-	"freeFishGo/router"
+	"github.com/freeFishGo/examples/fishgo"
+	"github.com/freeFishGo/router"
 	"io/ioutil"
 	"log"
 	"path/filepath"

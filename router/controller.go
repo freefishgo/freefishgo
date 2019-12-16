@@ -1,7 +1,7 @@
 package router
 
 import (
-	"freeFishGo/httpContext"
+	"github.com/freeFishGo/httpContext"
 	"reflect"
 	"regexp"
 	"strings"

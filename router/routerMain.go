@@ -2,8 +2,8 @@ package router
 
 import (
 	"encoding/json"
-	"freeFishGo/config"
-	"freeFishGo/httpContext"
+	"github.com/freeFishGo/config"
+	"github.com/freeFishGo/httpContext"
 	"html/template"
 	"io/ioutil"
 	"net/url"

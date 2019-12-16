@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	free "freeFishGo"
-	"freeFishGo/httpContext"
+	free "github.com/freeFishGo"
+	"github.com/freeFishGo/httpContext"
 	"log"
 	"time"
 )

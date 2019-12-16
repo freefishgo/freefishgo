@@ -1,8 +1,8 @@
 package freeFishGo
 
 import (
-	"freeFishGo/httpContext"
-	"freeFishGo/router"
+	"github.com/freeFishGo/httpContext"
+	"github.com/freeFishGo/router"
 	"log"
 	"os"
 	"path/filepath"
