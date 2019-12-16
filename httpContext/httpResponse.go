@@ -55,3 +55,6 @@ func (r *Response) GetWaitWriteData() []byte {
 func (r *Response) ClearWaitWriteData() {
 	r.writeData = nil
 }
+func (r *Response) Redirect(redirectPath string) {
+	http.Redirect(r, r.req, redirectPath, 302)
+}

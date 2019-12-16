@@ -19,7 +19,7 @@ func init() {
 // SetInfo()特殊定制指定action的路由
 func (c *MainController) SetInfo() []*router.ControllerActionInfo {
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrut"})
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrutGet"})
 	return tmp
 }
 
@@ -31,7 +31,7 @@ type Test struct {
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求
-func (c *MainController) MyControllerActionStrut(Test *Test) {
+func (c *MainController) MyControllerActionStrutPost(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
@@ -48,7 +48,7 @@ func (c *MainController) MyControllerActionStrutGet(Test *Test) {
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
 func (c *MainController) MyGET(Test *Test) {
-	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
+	c.HttpContext.Response.Redirect("/haha/main/MyControllerActionStrut/fafafd4646er?id=我喜")
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看

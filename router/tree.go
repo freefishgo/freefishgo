@@ -152,6 +152,9 @@ func (t *tree) addPathTree(controllerName string, controllerAction string, contr
 	if !isHaveHttpMethod(controllerAction) {
 		controllerAction += "get"
 	}
+	if _, ok := t.ControllerList[controllerName][strings.ToLower(controllerAction)]; ok {
+		panic("进行控制器注入时发现{Controller}:" + controllerName + ",{Action}:" + strings.ToLower(controllerAction) + "重复注入。请注意{Controller}{Action}是不区分大小写的，且actionGet等效于action")
+	}
 	t.ControllerList[controllerName][strings.ToLower(controllerAction)] = controllerInfo1
 }
 
