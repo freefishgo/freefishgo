@@ -19,5 +19,6 @@ func main() {
 	build.UseMiddleware(&middlewares.Mid{})
 	// 把mvc实例注册到管道中
 	build.UseMiddleware(fishgo.Mvc)
+	build.Config.Listen.HTTPPort = 8080
 	build.Run()
 }

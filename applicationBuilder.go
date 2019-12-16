@@ -8,7 +8,7 @@ import (
 )
 
 type ApplicationBuilder struct {
-	Server  *http.Server
+	server  *http.Server
 	Config  *config.Config
 	handler *ApplicationHandler
 }
@@ -24,14 +24,14 @@ func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
-		app.Server = &http.Server{
+		app.server = &http.Server{
 			Addr: addr,
 			//ReadTimeout:    MvcApp.Server.ReadTimeout,
 			//WriteTimeout:   MvcApp.Server.WriteTimeout,
 			//MaxHeaderBytes: MvcApp.Server.MaxHeaderBytes,
 			Handler: app.handler,
 		}
-		if err := app.Server.ListenAndServe(); err != nil {
+		if err := app.server.ListenAndServe(); err != nil {
 			panic(err.Error())
 		}
 
