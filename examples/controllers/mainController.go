@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/router"
-	"log"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
@@ -19,7 +18,6 @@ func init() {
 
 // SetInfo()特殊定制指定action的路由
 func (c *MainController) SetInfo() []*router.ControllerActionInfo {
-	log.Println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
 	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrutPost"})
 	return tmp

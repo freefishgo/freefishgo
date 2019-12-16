@@ -4,7 +4,6 @@ import (
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/router"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 )
 
@@ -32,7 +31,6 @@ func (static *staticController) StaticFile(d *data) {
 }
 
 func (static *staticController) SetInfo() []*router.ControllerActionInfo {
-	log.Println("不是默认GetControllerInfo")
 	tmp := make([]*router.ControllerActionInfo, 0)
 	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "static/{path:allString}", ControllerActionFuncName: "StaticFile"})
 	return tmp
