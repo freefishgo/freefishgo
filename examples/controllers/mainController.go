@@ -19,7 +19,7 @@ func init() {
 // SetInfo()特殊定制指定action的路由
 func (c *MainController) SetInfo() []*router.ControllerActionInfo {
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrutPost"})
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrut"})
 	return tmp
 }
 
@@ -31,7 +31,7 @@ type Test struct {
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求
-func (c *MainController) MyControllerActionStrutPost(Test *Test) {
+func (c *MainController) MyControllerActionStrut(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
