@@ -4,6 +4,7 @@ import (
 	free "github.com/freeFishGo"
 	"github.com/freeFishGo/httpContext"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -14,9 +15,8 @@ type Mid struct {
 // 中间件打印mvc框架处理请求的时间
 func (m *Mid) Middleware(ctx *httpContext.HttpContext, next free.Next) *httpContext.HttpContext {
 	dt := time.Now()
-	log.Println(ctx.Request.URL)
 	ctxtmp := next(ctx)
-	log.Println("处理时间为:" + (time.Now().Sub(dt)).String())
+	log.Println("路径:" + ctx.Request.URL.Path + "  处理时间为:" + (time.Now().Sub(dt)).String() + "  响应状态：" + strconv.Itoa(ctx.Response.ReadStatusCode()))
 	return ctxtmp
 }
 

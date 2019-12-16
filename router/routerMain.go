@@ -78,7 +78,6 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 	}
 	return ctx
 }
-
 func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 	if c.isUseTplPath {
 		dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -89,7 +88,7 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 		if b, err := ioutil.ReadFile(path); err == nil {
 			// 创建一个新的模板，并且载入内容
 			if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
-				return t.Execute(c.HttpContext.Response.ResponseWriter, c.Data)
+				return t.Execute(&c.HttpContext.Response, c.Data)
 			} else {
 				return err
 			}

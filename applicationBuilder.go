@@ -51,7 +51,7 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
+	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 
 }
 
@@ -104,6 +104,8 @@ type LastFrameMiddleware struct {
 }
 
 func (last *LastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
+	ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+	ctx.Response.ResponseWriter.Write(ctx.Response.GetWaitWriteData())
 	return ctx
 }
 func (last *LastFrameMiddleware) LastInit() {
