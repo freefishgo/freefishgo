@@ -19,7 +19,8 @@ type Controller struct {
 	HttpContext    *httpContext.HttpContext
 	controllerInfo *controllerInfo
 	sonController  IController
-
+	// 查询阐述
+	Query map[string]interface{}
 	// 模板数据
 	Data map[interface{}]interface{}
 	// 如果母版页存在 则该内容会被填充到模板页的 .LayoutContent 变量中
@@ -31,6 +32,10 @@ type Controller struct {
 	LayoutPath string
 	//母版页子页面地址
 	LayoutSections map[string]string
+}
+
+func (c *Controller) setQuery(m map[string]interface{}) {
+	c.Query = m
 }
 
 // 使用模板的路径并启动调用模板
@@ -59,6 +64,7 @@ type IController interface {
 	SetInfo() []*ControllerActionInfo
 	initController(ctx *httpContext.HttpContext)
 	getController() *Controller
+	setQuery(map[string]interface{})
 }
 
 // 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写

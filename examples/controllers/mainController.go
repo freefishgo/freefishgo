@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/router"
+	"log"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
@@ -19,7 +20,7 @@ func init() {
 // SetInfo()特殊定制指定action的路由
 func (c *MainController) SetInfo() []*router.ControllerActionInfo {
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrutGet"})
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
 	return tmp
 }
 
@@ -31,31 +32,37 @@ type Test struct {
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求
-func (c *MainController) MyControllerActionStrutPost(Test *Test) {
+func (c *MainController) MyControllerActionStrut(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
 	c.UseTplPath()
 }
 
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/MyControllerActionStrut 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
-func (c *MainController) MyControllerActionStrutGet(Test *Test) {
+// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/LayoutTestGet 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
+
+// 由于在重新Controller的SetInfo方法
+//
+//&router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"}
+
+//所以实际路由为:/任意字符串/main/layoutTest/任意字符串er
+func (c *MainController) LayoutTestGet(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
+	log.Println(fmt.Sprintf("请求参数%+v", c.Query))
 	c.LayoutSections = map[string]string{}
 	c.LayoutSections["Scripts"] = "Other/Script.fish"
 	c.LayoutSections["HtmlHead"] = "Other/HtmlHead.fish"
 	c.LayoutPath = "layout.fish"
-	//c.HttpContext.Response.Write([]byte("hahaha"))
 	c.UseTplPath("Other/layoutSon.fish")
 }
 
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
+// My{Action}的值 该方法的默认路由为/Main/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看 重定向使用方法
 func (c *MainController) MyGET(Test *Test) {
-	c.HttpContext.Response.Redirect("/haha/main/MyControllerActionStrut/fafafd4646er?id=我喜")
+	c.HttpContext.Response.Redirect("/haha/main/LayoutTestGet/fafafd4646er?id=我喜")
 }
 
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
+// My1为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
 func (c *MainController) My1(Test *Test) {
 	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }

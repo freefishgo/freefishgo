@@ -8,7 +8,6 @@ import (
 	"github.com/freeFishGo/httpContext"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"net/url"
 	"path/filepath"
 	"reflect"
@@ -63,6 +62,7 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 	ic.initController(ctx)
 	ctx.Request.ParseForm()
 	var param interface{}
+	ic.setQuery(f.OtherKeyMap)
 	if ctl.ControllerActionParameterStruct != nil {
 		param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
 		data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
@@ -106,7 +106,6 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 
 				if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 					if err := t.Execute(&buf, section); err == nil {
-						log.Println(buf.String())
 						if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(buf.String()); err == nil {
 							return t.Execute(&c.HttpContext.Response, c.Data)
 						} else {
