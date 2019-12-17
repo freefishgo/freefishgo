@@ -42,8 +42,12 @@ func (c *MainController) MyControllerActionStrutPost(Test *Test) {
 func (c *MainController) MyControllerActionStrutGet(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
+	c.LayoutSections = map[string]string{}
+	c.LayoutSections["Scripts"] = "Other/Script.fish"
+	c.LayoutSections["HtmlHead"] = "Other/HtmlHead.fish"
+	c.LayoutPath = "layout.fish"
 	//c.HttpContext.Response.Write([]byte("hahaha"))
-	c.UseTplPath()
+	c.UseTplPath("Other/layoutSon.fish")
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看

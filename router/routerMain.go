@@ -1,13 +1,15 @@
 package router
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/url"
-	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -79,21 +81,60 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 	return ctx
 }
 func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
-	if c.isUseTplPath {
-		dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	if c.isUseTplPath || c.LayoutPath != "" {
+		if c.LayoutPath != "" {
+			path := filepath.Join(ctr.WebConfig.ViewsPath, c.LayoutPath)
+			if b, err := ioutil.ReadFile(path); err == nil {
+				section := map[string]interface{}{}
+				if c.tplPath == "" {
+					c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
+				}
+				path := filepath.Join(ctr.WebConfig.ViewsPath, c.tplPath)
+				if b, err := ioutil.ReadFile(path); err == nil {
+					section["LayoutContent"] = template.HTML(b)
+				} else {
+					return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
+				}
+				for k, v := range c.LayoutSections {
+					if b1, err := ioutil.ReadFile(filepath.Join(ctr.WebConfig.ViewsPath, v)); err == nil {
+						section[k] = template.HTML(b1)
+					} else {
+						return errors.New("操作母模板:" + c.LayoutPath + " 读取子模板: " + k + " 子模板地址:" + v + "时出错:" + err.Error())
+					}
+				}
+				var buf bytes.Buffer
+
+				if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
+					if err := t.Execute(&buf, section); err == nil {
+						log.Println(buf.String())
+						if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(buf.String()); err == nil {
+							return t.Execute(&c.HttpContext.Response, c.Data)
+						} else {
+							return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
+						}
+					} else {
+						return errors.New("格式化模板页时 母版页地址:" + c.LayoutPath + "时出错:" + err.Error())
+					}
+				} else {
+					return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
+				}
+			} else {
+				return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
+			}
+		}
 		if c.tplPath == "" {
 			c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
 		}
-		path := filepath.Join(dir, ctr.WebConfig.ViewsPath, c.tplPath)
+		path := filepath.Join(ctr.WebConfig.ViewsPath, c.tplPath)
 		if b, err := ioutil.ReadFile(path); err == nil {
 			// 创建一个新的模板，并且载入内容
 			if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 				return t.Execute(&c.HttpContext.Response, c.Data)
 			} else {
-				return err
+				return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 			}
 		} else {
-			return err
+			return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 		}
 	}
 	return nil
