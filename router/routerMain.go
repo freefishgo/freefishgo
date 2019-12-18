@@ -15,8 +15,9 @@ import (
 )
 
 type ControllerRegister struct {
-	tree      *tree
-	WebConfig *config.WebConfig
+	tree       *tree
+	WebConfig  *config.WebConfig
+	staticFile map[string]string
 }
 
 // 实例化一个mvc注册器
@@ -25,6 +26,7 @@ func NewControllerRegister() *ControllerRegister {
 	controllerRegister := new(ControllerRegister)
 	controllerRegister.tree = newTree()
 	controllerRegister.WebConfig = config.NewWebConfig()
+	controllerRegister.staticFile = map[string]string{}
 	return controllerRegister
 }
 
@@ -83,20 +85,18 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 	if c.isUseTplPath || c.LayoutPath != "" {
 		if c.LayoutPath != "" {
-			path := filepath.Join(ctr.WebConfig.ViewsPath, c.LayoutPath)
-			if b, err := ioutil.ReadFile(path); err == nil {
+			if b, err := ctr.htmlTpl(c.LayoutPath); err == nil {
 				section := map[string]interface{}{}
 				if c.tplPath == "" {
 					c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
 				}
-				path := filepath.Join(ctr.WebConfig.ViewsPath, c.tplPath)
-				if b, err := ioutil.ReadFile(path); err == nil {
+				if b, err := ctr.htmlTpl(c.tplPath); err == nil {
 					section["LayoutContent"] = template.HTML(b)
 				} else {
 					return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 				}
 				for k, v := range c.LayoutSections {
-					if b1, err := ioutil.ReadFile(filepath.Join(ctr.WebConfig.ViewsPath, v)); err == nil {
+					if b1, err := ctr.htmlTpl(v); err == nil {
 						section[k] = template.HTML(b1)
 					} else {
 						return errors.New("操作母模板:" + c.LayoutPath + " 读取子模板: " + k + " 子模板地址:" + v + "时出错:" + err.Error())
@@ -104,9 +104,9 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 				}
 				var buf bytes.Buffer
 
-				if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
+				if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 					if err := t.Execute(&buf, section); err == nil {
-						if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(buf.String()); err == nil {
+						if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(buf.String()); err == nil {
 							return t.Execute(&c.HttpContext.Response, c.Data)
 						} else {
 							return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
@@ -124,10 +124,9 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 		if c.tplPath == "" {
 			c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
 		}
-		path := filepath.Join(ctr.WebConfig.ViewsPath, c.tplPath)
-		if b, err := ioutil.ReadFile(path); err == nil {
+		if b, err := ctr.htmlTpl(c.tplPath); err == nil {
 			// 创建一个新的模板，并且载入内容
-			if t, err := template.New(path).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
+			if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 				return t.Execute(&c.HttpContext.Response, c.Data)
 			} else {
 				return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
@@ -137,6 +136,20 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 		}
 	}
 	return nil
+}
+
+func (ctr *ControllerRegister) htmlTpl(path string) (string, error) {
+	path = filepath.Join(ctr.WebConfig.ViewsPath, path)
+	if v, ok := ctr.staticFile[path]; ok {
+		return v, nil
+	} else {
+		if b, err := ioutil.ReadFile(path); err == nil {
+			ctr.staticFile[path] = string(b)
+			return ctr.staticFile[path], nil
+		} else {
+			return "", err
+		}
+	}
 }
 
 //根据参数获取对应的Values
