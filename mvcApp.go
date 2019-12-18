@@ -19,7 +19,10 @@ func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next Next) *httpCont
 	defer func() {
 		if err := recover(); err != nil {
 			ctx.Response.WriteHeader(500)
-			ctx.Response.Write([]byte(err.(error).Error()))
+			err, ok := err.(error)
+			if ok {
+				ctx.Response.Write([]byte(err.Error()))
+			}
 		}
 	}()
 	ctx = mvc.handlers.AnalysisRequest(ctx)

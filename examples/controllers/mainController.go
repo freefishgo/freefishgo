@@ -35,13 +35,13 @@ type Test struct {
 func (c *MainController) MyControllerActionStrut(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
+	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    即为Main/MyControllerActionStrut， c.UseTplPath()等效于c.UseTplPath("Main/MyControllerActionStrut")
 	c.UseTplPath()
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/LayoutTestGet 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
 
-// 由于在重新Controller的SetInfo方法
+// 由于重写Controller的SetInfo方法
 //
 //&router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"}
 
