@@ -17,7 +17,7 @@ import (
 type ControllerRegister struct {
 	tree       *tree
 	WebConfig  *config.WebConfig
-	staticFile map[string]string
+	staticFile map[string]template.HTML
 }
 
 // 实例化一个mvc注册器
@@ -26,7 +26,7 @@ func NewControllerRegister() *ControllerRegister {
 	controllerRegister := new(ControllerRegister)
 	controllerRegister.tree = newTree()
 	controllerRegister.WebConfig = config.NewWebConfig()
-	controllerRegister.staticFile = map[string]string{}
+	controllerRegister.staticFile = map[string]template.HTML{}
 	return controllerRegister
 }
 
@@ -91,13 +91,13 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 					c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
 				}
 				if b, err := ctr.htmlTpl(c.tplPath); err == nil {
-					section["LayoutContent"] = template.HTML(b)
+					section["LayoutContent"] = b
 				} else {
 					return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 				}
 				for k, v := range c.LayoutSections {
 					if b1, err := ctr.htmlTpl(v); err == nil {
-						section[k] = template.HTML(b1)
+						section[k] = b1
 					} else {
 						return errors.New("操作母模板:" + c.LayoutPath + " 读取子模板: " + k + " 子模板地址:" + v + "时出错:" + err.Error())
 					}
@@ -138,14 +138,15 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 	return nil
 }
 
-func (ctr *ControllerRegister) htmlTpl(path string) (string, error) {
-	path = filepath.Join(ctr.WebConfig.ViewsPath, path)
+func (ctr *ControllerRegister) htmlTpl(path string) (template.HTML, error) {
 	if v, ok := ctr.staticFile[path]; ok {
 		return v, nil
 	} else {
-		if b, err := ioutil.ReadFile(path); err == nil {
-			ctr.staticFile[path] = string(b)
-			return ctr.staticFile[path], nil
+		temPath := filepath.Join(ctr.WebConfig.ViewsPath, path)
+		if b, err := ioutil.ReadFile(temPath); err == nil {
+			html := template.HTML(b)
+			ctr.staticFile[path] = html
+			return html, nil
 		} else {
 			return "", err
 		}

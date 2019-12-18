@@ -12,6 +12,8 @@ type Config struct {
 	EnableErrorsRender  bool
 	Listen              Listen
 	Log                 LogConfig
+
+	MaxWriteCacheByte int64
 }
 
 type Listen struct {
@@ -69,6 +71,7 @@ func NewConfig() *Config {
 		EnableGzip:          false,
 		MaxMemory:           1 << 26, //64MB
 		EnableErrorsShow:    true,
+		MaxWriteCacheByte:   1 << 20,
 		EnableErrorsRender:  true,
 		Listen: Listen{
 			ServerTimeOut: 0,

@@ -13,8 +13,14 @@ type Response struct {
 	// 回复状态
 	status int
 	//写到前端的数据
-	writeData []byte
+	writeData             []byte
+	alreadyWriteDataSize  int64
+	MaxWriteCacheByteSize int64
 	//Cookies []*http.Cookie
+}
+
+func (r *Response) GetAlreadyWriteDataSize() int64 {
+	return r.alreadyWriteDataSize
 }
 
 // 设置Cookie
@@ -46,6 +52,12 @@ func (r *Response) RemoveCookie(ck *http.Cookie) {
 // 添加回复数据
 func (r *Response) Write(b []byte) (int, error) {
 	r.Started = true
+	lens := int64(len(r.writeData))
+	if lens > r.MaxWriteCacheByteSize {
+		r.ResponseWriter.Write(r.writeData)
+		r.alreadyWriteDataSize += lens
+		r.writeData = r.writeData[0:0]
+	}
 	r.writeData = append(r.writeData, b...)
 	return len(b), nil
 }

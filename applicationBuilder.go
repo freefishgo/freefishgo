@@ -24,6 +24,7 @@ func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
+		app.handler.config = app.Config
 		app.server = &http.Server{
 			Addr: addr,
 			//ReadTimeout:    MvcApp.Server.ReadTimeout,
@@ -45,14 +46,18 @@ func newApplicationHandler() *ApplicationHandler {
 type ApplicationHandler struct {
 	middlewareList []IMiddleware
 	middlewareLink *MiddlewareLink
+	config         *config.Config
 }
 
 // http服务逻辑处理程序
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
+	ctx.Response.MaxWriteCacheByteSize = app.config.MaxWriteCacheByte
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+	if ctx.Response.GetAlreadyWriteDataSize() == 0 {
+		ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+	}
 	ctx.Response.ResponseWriter.Write(ctx.Response.GetWaitWriteData())
 }
 
