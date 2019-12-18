@@ -1,6 +1,7 @@
 package httpContext
 
 import (
+	"compress/gzip"
 	"net/http"
 	"time"
 )
@@ -11,16 +12,10 @@ type Response struct {
 	// 是否调用过Write
 	Started bool
 	// 回复状态
-	status int
-	//写到前端的数据
-	writeData             []byte
-	alreadyWriteDataSize  int64
-	MaxWriteCacheByteSize int64
+	status     int
+	Gzip       *gzip.Writer
+	IsOpenGzip bool
 	//Cookies []*http.Cookie
-}
-
-func (r *Response) GetAlreadyWriteDataSize() int64 {
-	return r.alreadyWriteDataSize
 }
 
 // 设置Cookie
@@ -49,26 +44,33 @@ func (r *Response) RemoveCookie(ck *http.Cookie) {
 	http.SetCookie(r, ck)
 }
 
-// 添加回复数据
-func (r *Response) Write(b []byte) (int, error) {
-	r.Started = true
-	lens := int64(len(r.writeData))
-	if lens > r.MaxWriteCacheByteSize {
-		r.ResponseWriter.Write(r.writeData)
-		r.alreadyWriteDataSize += lens
-		r.writeData = r.writeData[0:0]
-	}
-	r.writeData = append(r.writeData, b...)
-	return len(b), nil
+type buf struct {
+	r *Response
 }
 
-func (r *Response) GetWaitWriteData() []byte {
-	return r.writeData
+func (buf *buf) Write(p []byte) (n int, err error) {
+	return buf.r.ResponseWriter.Write(p)
 }
-func (r *Response) ClearWaitWriteData() {
-	r.Started = false
-	r.writeData = nil
+
+// 添加回复数据
+func (r *Response) Write(b []byte) (int, error) {
+
+	if !r.Started {
+		r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
+		r.ResponseWriter.Header().Set("Content-Type", "text")
+		r.ResponseWriter.WriteHeader(r.status)
+	}
+	r.Started = true
+	if r.IsOpenGzip {
+		if r.Gzip == nil {
+			buf := buf{r: r}
+			r.Gzip = gzip.NewWriter(&buf)
+		}
+		return r.Gzip.Write(b)
+	}
+	return r.ResponseWriter.Write(b)
 }
 func (r *Response) Redirect(redirectPath string) {
-	http.Redirect(r, r.req, redirectPath, 302)
+	r.status = 302
+	http.Redirect(r.ResponseWriter, r.req, redirectPath, 302)
 }

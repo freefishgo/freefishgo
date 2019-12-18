@@ -53,12 +53,17 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	ctx.Response.MaxWriteCacheByteSize = app.config.MaxWriteCacheByte
+	ctx.Response.IsOpenGzip = app.config.IsOpenGzip
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	if ctx.Response.GetAlreadyWriteDataSize() == 0 {
-		ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+	if ctx.Response.Gzip != nil {
+		ctx.Response.Gzip.Close()
 	}
-	ctx.Response.ResponseWriter.Write(ctx.Response.GetWaitWriteData())
+	if ctx.Response.Started {
+
+	} else {
+		ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+		ctx.Response.ResponseWriter.Write([]byte("你好哟"))
+	}
 }
 
 type Next func(*httpContext.HttpContext) *httpContext.HttpContext

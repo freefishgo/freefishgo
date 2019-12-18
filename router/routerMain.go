@@ -64,11 +64,15 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *http
 	ic.initController(ctx)
 	ctx.Request.ParseForm()
 	var param interface{}
-	ic.setQuery(f.OtherKeyMap)
+	data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
+	ic.setQuery(data)
 	if ctl.ControllerActionParameterStruct != nil {
 		param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-		data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
-		json.Unmarshal(data, param)
+		dataString, err := json.Marshal(data)
+		if err != nil {
+			panic(err.Error())
+		}
+		json.Unmarshal(dataString, param)
 	}
 	action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 	if !ctx.Response.Started {
@@ -162,7 +166,7 @@ func getValues(param ...interface{}) []reflect.Value {
 	return vals
 }
 
-func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) []byte {
+func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]interface{} {
 	dic := map[string]interface{}{}
 	for k, val := range v {
 		if len(val) == 1 {
@@ -174,11 +178,7 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) []byte {
 	for k, val := range addKeyVal {
 		dic[k] = val
 	}
-	data, err := json.Marshal(dic)
-	if err != nil {
-		panic(err.Error())
-	}
-	return data
+	return dic
 }
 
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
