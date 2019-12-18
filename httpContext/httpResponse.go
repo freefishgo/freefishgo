@@ -39,6 +39,7 @@ func (r *Response) ReadStatusCode() int {
 
 // 通过cookie移除Cookie
 func (r *Response) RemoveCookie(ck *http.Cookie) {
+	ck.Expires = time.Now()
 	http.SetCookie(r, ck)
 }
 
@@ -53,6 +54,7 @@ func (r *Response) GetWaitWriteData() []byte {
 	return r.writeData
 }
 func (r *Response) ClearWaitWriteData() {
+	r.Started = false
 	r.writeData = nil
 }
 func (r *Response) Redirect(redirectPath string) {
