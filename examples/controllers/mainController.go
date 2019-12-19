@@ -58,11 +58,11 @@ func (c *MainController) LayoutTestGet(Test *Test) {
 
 // My{Action}的值 该方法的默认路由为/Main/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看 重定向使用方法
 func (c *MainController) MyGET(Test *Test) {
-	c.HttpContext.Response.Redirect("/haha/main/LayoutTestGet/fafafd4646er?id=我喜")
+	c.Response.Redirect("/haha/main/LayoutTestGet/fafafd4646er?id=我喜")
 }
 
 // My1为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
 func (c *MainController) My1(Test *Test) {
 	log.Println(http.Response{}.Request.URL)
-	c.HttpContext.Response.WriteJson(Test)
+	c.Response.WriteJson(Test)
 }

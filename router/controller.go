@@ -16,7 +16,9 @@ type controllerInfo struct {
 
 // http请求逻辑控制器
 type Controller struct {
-	HttpContext    *httpContext.HttpContext
+	//HttpContext    *httpContext.HttpContext
+	Response       httpContext.Response
+	Request        *httpContext.Request
 	controllerInfo *controllerInfo
 	sonController  IController
 	// 查询阐述
@@ -171,7 +173,8 @@ func (c *Controller) setSonController(son IController) {
 
 // http请求上下文注册
 func (c *Controller) initController(ctx *httpContext.HttpContext) {
-	c.HttpContext = ctx
+	c.Response = ctx.Response
+	c.Request = ctx.Request
 	c.Data = map[interface{}]interface{}{}
 }
 

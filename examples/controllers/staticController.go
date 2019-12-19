@@ -23,10 +23,10 @@ type data struct {
 // 提供静态资源服务
 func (static *staticController) StaticFile(d *data) {
 	if b, err := ioutil.ReadFile(filepath.Join("static", d.Path)); err == nil {
-		static.HttpContext.Response.Write(b)
+		static.Response.Write(b)
 	} else {
-		static.HttpContext.Response.WriteHeader(404)
-		static.HttpContext.Response.Write([]byte(err.Error()))
+		static.Response.WriteHeader(404)
+		static.Response.Write([]byte(err.Error()))
 	}
 }
 
