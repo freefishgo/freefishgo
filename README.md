@@ -43,11 +43,11 @@ func (c *ctrTestController) MyControllerActionStrutGet(Test *Test) {
 }
 Main
 func (c *ctrTestController) MyGET(Test *Test) {
-	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
+	c.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }
 Main
 func (c *ctrTestController) My1(Test *Test) {
-	c.HttpContext.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
+	c.Response.Write([]byte(fmt.Sprintf("数据为：%+v", Test)))
 }
 // 例子： 组装一个Middleware服务，实现打印mvc框架处理请求的时间
 type mid struct {
