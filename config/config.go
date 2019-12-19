@@ -7,6 +7,7 @@ type Config struct {
 	ServerName          string
 	CopyRequestBody     bool
 	EnableGzip          bool
+	NeedGzipLen         int
 	MaxMemory           int64
 	EnableErrorsShow    bool
 	EnableErrorsRender  bool
@@ -72,6 +73,7 @@ func NewConfig() *Config {
 		MaxMemory:           1 << 26, //64MB
 		EnableErrorsShow:    true,
 		IsOpenGzip:          true,
+		NeedGzipLen:         1 << 11,
 		EnableErrorsRender:  true,
 		Listen: Listen{
 			ServerTimeOut: 0,

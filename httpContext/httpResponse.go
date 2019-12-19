@@ -2,6 +2,7 @@ package httpContext
 
 import (
 	"compress/gzip"
+	"log"
 	"net/http"
 	"time"
 )
@@ -12,9 +13,11 @@ type Response struct {
 	// 是否调用过Write
 	Started bool
 	// 回复状态
-	status     int
-	Gzip       *gzip.Writer
-	IsOpenGzip bool
+	status      int
+	Gzip        *gzip.Writer
+	IsOpenGzip  bool
+	NeedGzipLen int
+	isGzip      bool
 	//Cookies []*http.Cookie
 }
 
@@ -54,19 +57,26 @@ func (buf *buf) Write(p []byte) (n int, err error) {
 
 // 添加回复数据
 func (r *Response) Write(b []byte) (int, error) {
-
-	if !r.Started {
-		r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
-		r.ResponseWriter.Header().Set("Content-Type", "text")
-		r.ResponseWriter.WriteHeader(r.status)
-	}
-	r.Started = true
-	if r.IsOpenGzip {
+	defer func() {
+		r.Started = true
+	}()
+	log.Println(len(b))
+	log.Println(r.NeedGzipLen)
+	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b)) {
+		if !r.Started {
+			r.isGzip = true
+			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
+			r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(b))
+			r.ResponseWriter.WriteHeader(r.status)
+		}
 		if r.Gzip == nil {
 			buf := buf{r: r}
 			r.Gzip = gzip.NewWriter(&buf)
 		}
 		return r.Gzip.Write(b)
+	}
+	if !r.Started {
+		r.ResponseWriter.WriteHeader(r.status)
 	}
 	return r.ResponseWriter.Write(b)
 }

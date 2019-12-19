@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/router"
-	"log"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
@@ -20,7 +19,7 @@ func init() {
 // SetInfo()特殊定制指定action的路由
 func (c *MainController) SetInfo() []*router.ControllerActionInfo {
 	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
+	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
 	return tmp
 }
 
@@ -49,7 +48,6 @@ func (c *MainController) MyControllerActionStrut(Test *Test) {
 func (c *MainController) LayoutTestGet(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	log.Println(fmt.Sprintf("请求参数%+v", c.Query))
 	c.LayoutSections = map[string]string{}
 	c.LayoutSections["Scripts"] = "Other/Script.fish"
 	c.LayoutSections["HtmlHead"] = "Other/HtmlHead.fish"

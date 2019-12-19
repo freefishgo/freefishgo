@@ -54,15 +54,13 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
 	ctx.Response.IsOpenGzip = app.config.IsOpenGzip
+	ctx.Response.NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 	if ctx.Response.Gzip != nil {
 		ctx.Response.Gzip.Close()
 	}
-	if ctx.Response.Started {
-
-	} else {
+	if !ctx.Response.Started {
 		ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
-		ctx.Response.ResponseWriter.Write([]byte("你好哟"))
 	}
 }
 
