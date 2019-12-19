@@ -15,17 +15,9 @@ type MvcApp struct {
 }
 
 // http服务逻辑处理程序
-func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
-	defer func() {
-		if err := recover(); err != nil {
-			ctx.Response.WriteHeader(500)
-			err, ok := err.(error)
-			if ok {
-				ctx.Response.Write([]byte(err.Error()))
-			}
-		}
-	}()
-	ctx = mvc.handlers.AnalysisRequest(ctx)
+func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next Next) (c *httpContext.HttpContext) {
+	c = ctx
+	ctx = mvc.handlers.AnalysisRequest(ctx, mvc.handlers.WebConfig)
 	return next(ctx)
 }
 func (mvc *MvcApp) LastInit() {

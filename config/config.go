@@ -1,5 +1,9 @@
 package config
 
+import (
+	"github.com/freeFishGo/httpContext"
+)
+
 type Config struct {
 	AppName             string
 	RunMode             string
@@ -8,11 +12,15 @@ type Config struct {
 	CopyRequestBody     bool
 	EnableGzip          bool
 	NeedGzipLen         int
-	MaxMemory           int64
-	EnableErrorsShow    bool
-	EnableErrorsRender  bool
-	Listen              Listen
-	Log                 LogConfig
+
+	RecoverPanic bool
+	RecoverFunc  func(ctx *httpContext.HttpContext, e error, Stack []byte)
+
+	MaxMemory          int64
+	EnableErrorsShow   bool
+	EnableErrorsRender bool
+	Listen             Listen
+	Log                LogConfig
 
 	IsOpenGzip bool
 }
@@ -34,6 +42,8 @@ type WebConfig struct {
 	TemplateLeft  string
 	TemplateRight string
 	ViewsPath     string
+	RecoverPanic  bool
+	RecoverFunc   func(ctx *httpContext.HttpContext, e error, Stack []byte)
 	Session       SessionConfig
 }
 

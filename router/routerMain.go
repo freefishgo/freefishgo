@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"reflect"
+	"runtime/debug"
 	"strings"
 )
 
@@ -51,7 +52,22 @@ func (cr *ControllerRegister) MainRouterNil() {
 //func (c *ControllerRegister) Middleware(ctx *httpContext.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext) *httpContext.HttpContext {
+func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *config.WebConfig) (cont *httpContext.HttpContext) {
+	cont = ctx
+	defer func() {
+		if err := recover(); err != nil {
+			err, _ := err.(error)
+			if cnf.RecoverPanic {
+				cnf.RecoverFunc(ctx, err, debug.Stack())
+			} else {
+				if ctx != nil {
+					ctx.Response.WriteHeader(500)
+					ctx.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>` + "服务器内部错误 500:" + err.Error() + "\r\n\r\n\r\n</div><pre>" + string(debug.Stack()) + `</pre></div></body></html>`))
+				}
+			}
+		}
+	}()
+
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(ctx.Request.Method))
 	if f == nil {

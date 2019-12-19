@@ -2,8 +2,9 @@ package httpContext
 
 import (
 	"compress/gzip"
-	"log"
+	"encoding/json"
 	"net/http"
+	"regexp"
 	"time"
 )
 
@@ -18,6 +19,7 @@ type Response struct {
 	IsOpenGzip  bool
 	NeedGzipLen int
 	isGzip      bool
+	MsgData     map[string]interface{}
 	//Cookies []*http.Cookie
 }
 
@@ -55,18 +57,18 @@ func (buf *buf) Write(p []byte) (n int, err error) {
 	return buf.r.ResponseWriter.Write(p)
 }
 
-// 添加回复数据
+// 写入前端的数据
 func (r *Response) Write(b []byte) (int, error) {
 	defer func() {
 		r.Started = true
 	}()
-	log.Println(len(b))
-	log.Println(r.NeedGzipLen)
 	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b)) {
 		if !r.Started {
 			r.isGzip = true
 			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
-			r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(b))
+			if r.ResponseWriter.Header().Get("Content-Type") == "" {
+				r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(b))
+			}
 			r.ResponseWriter.WriteHeader(r.status)
 		}
 		if r.Gzip == nil {
@@ -80,6 +82,25 @@ func (r *Response) Write(b []byte) (int, error) {
 	}
 	return r.ResponseWriter.Write(b)
 }
+
+// 写入前端的json数据
+func (r *Response) WriteJson(i interface{}) error {
+	if b, err := json.Marshal(i); err == nil {
+		contentType := http.DetectContentType(b)
+		f := regexp.MustCompile(`(;[\ ]?charset=.*)`)
+		t := f.FindAllStringSubmatch(contentType, 1)
+		contentType = "application/json"
+		if len(t) > 0 && len(t[0]) > 0 {
+			contentType = contentType + t[0][0]
+		}
+		r.ResponseWriter.Header().Set("Content-Type", contentType)
+		_, err = r.Write(b)
+		return err
+	} else {
+		return err
+	}
+}
+
 func (r *Response) Redirect(redirectPath string) {
 	r.status = 302
 	http.Redirect(r.ResponseWriter, r.req, redirectPath, 302)

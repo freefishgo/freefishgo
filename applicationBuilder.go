@@ -4,6 +4,7 @@ import (
 	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 )
 
@@ -53,12 +54,27 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
+	defer func() {
+		if ctx != nil && ctx.Response.Gzip != nil {
+			ctx.Response.Gzip.Close()
+		}
+	}()
+	defer func() {
+		if err := recover(); err != nil {
+			err, _ := err.(error)
+			if app.config.RecoverPanic {
+				app.config.RecoverFunc(ctx, err, debug.Stack())
+			} else {
+				if ctx != nil {
+					ctx.Response.WriteHeader(500)
+					ctx.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>` + "服务器内部错误 500:" + err.Error() + "\r\n\r\n\r\n</div><pre>" + string(debug.Stack()) + `</pre></div></body></html>`))
+				}
+			}
+		}
+	}()
 	ctx.Response.IsOpenGzip = app.config.IsOpenGzip
 	ctx.Response.NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	if ctx.Response.Gzip != nil {
-		ctx.Response.Gzip.Close()
-	}
 	if !ctx.Response.Started {
 		ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
 	}
