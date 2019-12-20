@@ -62,7 +62,7 @@ func (r *Response) Write(b []byte) (int, error) {
 	defer func() {
 		r.Started = true
 	}()
-	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b)) {
+	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b) && !r.Started) {
 		if !r.Started {
 			r.isGzip = true
 			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
