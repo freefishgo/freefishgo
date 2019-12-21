@@ -102,6 +102,6 @@ func (r *Response) WriteJson(i interface{}) error {
 }
 
 func (r *Response) Redirect(redirectPath string) {
-	r.status = 302
+	r.WriteHeader(302)
 	http.Redirect(r.ResponseWriter, r.req, redirectPath, 302)
 }

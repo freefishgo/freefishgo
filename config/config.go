@@ -82,7 +82,7 @@ func NewConfig() *Config {
 		EnableGzip:          false,
 		MaxMemory:           1 << 26, //64MB
 		EnableErrorsShow:    true,
-		IsOpenGzip:          true,
+		IsOpenGzip:          false,
 		NeedGzipLen:         1 << 11,
 		EnableErrorsRender:  true,
 		Listen: Listen{

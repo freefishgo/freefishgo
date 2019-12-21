@@ -3,8 +3,6 @@ package controllers
 import (
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/router"
-	"log"
-	"net/http"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
@@ -62,7 +60,6 @@ func (c *MainController) MyGET(Test *Test) {
 }
 
 // My1为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
-func (c *MainController) My1(Test *Test) {
-	log.Println(http.Response{}.Request.URL)
-	c.Response.WriteJson(Test)
+func (c *MainController) My1() {
+	c.Response.WriteJson("Test")
 }

@@ -79,18 +79,20 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *
 	var ic IController = action.Interface().(IController)
 	ic.initController(ctx)
 	ctx.Request.ParseForm()
-	var param interface{}
 	data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
 	ic.setQuery(data)
 	if ctl.ControllerActionParameterStruct != nil {
+		var param interface{}
 		param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
 		dataString, err := json.Marshal(data)
 		if err != nil {
 			panic(err.Error())
 		}
 		json.Unmarshal(dataString, param)
+		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
+	} else {
+		action.MethodByName(ctl.ControllerAction).Call(nil)
 	}
-	action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 	if !ctx.Response.Started {
 		con := ic.getController()
 		con.controllerName = ctl.ControllerName
@@ -127,7 +129,7 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 				if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 					if err := t.Execute(&buf, section); err == nil {
 						if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(buf.String()); err == nil {
-							return t.Execute(&c.Response, c.Data)
+							return t.Execute(c.Response, c.Data)
 						} else {
 							return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 						}
@@ -147,7 +149,7 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 		if b, err := ctr.htmlTpl(c.tplPath); err == nil {
 			// 创建一个新的模板，并且载入内容
 			if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
-				return t.Execute(&c.Response, c.Data)
+				return t.Execute(c.Response, c.Data)
 			} else {
 				return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 			}

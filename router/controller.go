@@ -17,7 +17,7 @@ type controllerInfo struct {
 // http请求逻辑控制器
 type Controller struct {
 	//HttpContext    *httpContext.HttpContext
-	Response       httpContext.Response
+	Response       *httpContext.Response
 	Request        *httpContext.Request
 	controllerInfo *controllerInfo
 	sonController  IController
@@ -81,16 +81,18 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 			continue
 		}
 		var controllerActionParameterStruct reflect.Type = nil
-		if me.Type.NumIn() == 2 {
-			tmp := me.Type.In(1)
-			if tmp.Kind() == reflect.Ptr {
-				if tmp.Elem().Kind() == reflect.Struct {
-					controllerActionParameterStruct = tmp.Elem()
+		if me.Type.NumIn() <= 2 {
+			if me.Type.NumIn() == 2 {
+				tmp := me.Type.In(1)
+				if tmp.Kind() == reflect.Ptr {
+					if tmp.Elem().Kind() == reflect.Struct {
+						controllerActionParameterStruct = tmp.Elem()
+					} else {
+						panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针或者无参,且只能设置一个结构体指针")
+					}
 				} else {
-					panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针,且只能设置一个结构体指针")
+					panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针或者无参,且只能设置一个结构体指针")
 				}
-			} else {
-				panic("方法" + getType.String() + "." + me.Name + "错误:只能传结构体指针,且只能设置一个结构体指针")
 			}
 		}
 		f := regexp.MustCompile(`Controller$`)
