@@ -54,6 +54,7 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
+	ctx.Response.SessionAliveTime = app.config.SessionAliveTime
 	defer func() {
 		if ctx != nil && ctx.Response.Gzip != nil {
 			ctx.Response.Gzip.Close()

@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/freeFishGo/httpContext"
+	"time"
 )
 
 type Config struct {
@@ -12,9 +13,9 @@ type Config struct {
 	CopyRequestBody     bool
 	EnableGzip          bool
 	NeedGzipLen         int
-
-	RecoverPanic bool
-	RecoverFunc  func(ctx *httpContext.HttpContext, e error, Stack []byte)
+	SessionAliveTime    time.Duration
+	RecoverPanic        bool
+	RecoverFunc         func(ctx *httpContext.HttpContext, e error, Stack []byte)
 
 	MaxMemory          int64
 	EnableErrorsShow   bool
@@ -84,6 +85,7 @@ func NewConfig() *Config {
 		EnableErrorsShow:    true,
 		IsOpenGzip:          true,
 		NeedGzipLen:         1 << 11,
+		SessionAliveTime:    time.Minute * 20,
 		EnableErrorsRender:  true,
 		Listen: Listen{
 			ServerTimeOut: 0,
