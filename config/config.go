@@ -16,12 +16,13 @@ type Config struct {
 	SessionAliveTime    time.Duration
 	RecoverPanic        bool
 	RecoverFunc         func(ctx *httpContext.HttpContext, e error, Stack []byte)
-
-	MaxMemory          int64
-	EnableErrorsShow   bool
-	EnableErrorsRender bool
-	Listen             Listen
-	Log                LogConfig
+	SessionCookieName   string
+	IsOpenSession       bool
+	MaxMemory           int64
+	EnableErrorsShow    bool
+	EnableErrorsRender  bool
+	Listen              Listen
+	Log                 LogConfig
 
 	IsOpenGzip bool
 }
@@ -85,7 +86,9 @@ func NewConfig() *Config {
 		EnableErrorsShow:    true,
 		IsOpenGzip:          true,
 		NeedGzipLen:         1 << 11,
+		IsOpenSession:       false,
 		SessionAliveTime:    time.Minute * 20,
+		SessionCookieName:   "fishCookie",
 		EnableErrorsRender:  true,
 		Listen: Listen{
 			ServerTimeOut: 0,

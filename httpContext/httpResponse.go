@@ -3,6 +3,7 @@ package httpContext
 import (
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"regexp"
 	"time"
@@ -22,84 +23,100 @@ type Response struct {
 	MsgData     map[string]interface{}
 	//Cookies []*http.Cookie
 
-	sessionFunc      ISession
-	session          map[string]interface{}
-	isGetSession     bool
-	sessionName      string
-	SessionAliveTime time.Duration
+	sessionFunc        ISession
+	session            map[string]interface{}
+	isGetSession       bool
+	SessionName        string
+	SessionCookieName  string
+	SessionAliveTime   time.Duration
+	isUpdateSessionKey bool
+	sessionIsUpdate    bool
 }
 
 // Session接口
 type ISession interface {
-	getSession(KeyValue string) (map[string]interface{}, error)
-	getSessionKeyValue() (string, error)
-	setSession(SessionName string, m map[string]interface{}, duration time.Duration) error
-	removeSession(KeyValue string)
+	GetSession(KeyValue string) (map[string]interface{}, error)
+	GetSessionKeyValue() (string, error)
+	SetSession(SessionName string, m map[string]interface{}, duration time.Duration) error
+	UpdateDataTime(SessionName string, duration time.Duration) error
+}
+
+func (r *Response) getSessionKeyValue() (string, error) {
+	r.isUpdateSessionKey = true
+	return r.sessionFunc.GetSessionKeyValue()
 }
 
 func (r *Response) RemoveSession() {
 	r.session = nil
-	r.isGetSession = true
-	if r.sessionName != "" {
-		r.sessionFunc.removeSession(r.sessionName)
+	r.isGetSession = false
+	r.sessionIsUpdate = false
+	r.sessionFunc.UpdateDataTime(r.SessionName, time.Duration(0))
+	r.SessionName = ""
+}
+
+func (r *Response) GetSession(key string) (interface{}, bool) {
+	if r.SessionName == "" {
+		return nil, false
+	}
+	if !r.isGetSession {
+		var err error
+		if err = r.getSession(); err == nil {
+			r.isGetSession = true
+			if r.session == nil {
+				return nil, false
+			}
+		}
+	}
+	v, ok := r.session[key]
+	return v, ok
+}
+
+func (r *Response) getSession() error {
+	if r.SessionName == "" {
+		return errors.New("没有设置Session")
+	}
+	var err error
+	if !r.isGetSession {
+		if r.session, err = r.sessionFunc.GetSession(r.SessionName); err == nil {
+			if r.session == nil {
+				r.SessionName = ""
+			}
+			r.isGetSession = true
+		}
+	}
+	return err
+}
+
+func (r *Response) UpdateSession() error {
+	if r.SessionName == "" {
+		return nil
+	}
+	if r.sessionIsUpdate {
+		return r.sessionFunc.SetSession(r.SessionName, r.session, r.SessionAliveTime)
+	} else {
+		return r.sessionFunc.UpdateDataTime(r.SessionName, r.SessionAliveTime)
 	}
 }
 
-func (r *Response) GetSession() (map[string]interface{}, error) {
-	if r.isGetSession {
-		return r.session, nil
-	} else {
-		var err error
-		if r.sessionName == "" {
-			return r.session, err
-		} else {
-			if r.session, err = r.sessionFunc.getSession(r.sessionName); err == nil {
-				r.isGetSession = true
-			}
-		}
-		return r.session, err
-	}
-}
-
-func (r *Response) SetSession(key string, val interface{}) error {
-	if r.isGetSession {
-		if r.session == nil {
-			r.session = map[string]interface{}{}
-		}
-		r.session[key] = val
-		if r.sessionName == "" {
-			if key, err := r.sessionFunc.getSessionKeyValue(); err == nil {
-				return r.sessionFunc.setSession(key, r.session, r.SessionAliveTime)
-			} else {
-				return err
-			}
-		} else {
-			return r.sessionFunc.setSession(key, r.session, r.SessionAliveTime)
-		}
-	} else {
-		var err error
-		if r.session, err = r.GetSession(); err != nil {
-			return err
-		}
-		if r.session == nil {
-			r.session = map[string]interface{}{}
-		}
-		r.session[key] = val
-		if r.sessionName == "" {
-			if key, err := r.sessionFunc.getSessionKeyValue(); err == nil {
-				return r.sessionFunc.setSession(key, r.session, r.SessionAliveTime)
-			} else {
-				return err
-			}
-		} else {
-			return r.sessionFunc.setSession(key, r.session, r.SessionAliveTime)
+func (r *Response) SetSession(key string, val interface{}) {
+	if r.SessionName == "" {
+		if SessionName, err := r.sessionFunc.GetSessionKeyValue(); err == nil {
+			r.SessionName = SessionName
 		}
 	}
+	r.sessionIsUpdate = true
+	r.getSession()
+	r.session[key] = val
 }
 
 // 设置Cookie
 func (r *Response) SetCookie(c *http.Cookie) {
 	http.SetCookie(r, c)
+}
+
+// 设置Cookie
+func (r *Response) SetCookieUseKeyValue(key string, val string) {
+	http.SetCookie(r, &http.Cookie{Name: key, Value: val})
 }
 
 // 通过cookie名字移除Cookie
@@ -138,6 +155,9 @@ func (r *Response) Write(b []byte) (int, error) {
 	}()
 	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b) && !r.Started) {
 		if !r.Started {
+			if r.SessionName != "" && r.isUpdateSessionKey {
+				r.SetSession(r.SessionCookieName, r.SessionName)
+			}
 			r.isGzip = true
 			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
 			if r.ResponseWriter.Header().Get("Content-Type") == "" {
@@ -152,6 +172,9 @@ func (r *Response) Write(b []byte) (int, error) {
 		return r.Gzip.Write(b)
 	}
 	if !r.Started {
+		if r.SessionName != "" && r.isUpdateSessionKey {
+			r.SetSession(r.SessionCookieName, r.SessionName)
+		}
 		r.ResponseWriter.WriteHeader(r.status)
 	}
 	return r.ResponseWriter.Write(b)

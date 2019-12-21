@@ -2,6 +2,7 @@ package freeFishGo
 
 import (
 	"github.com/freeFishGo/config"
+	"github.com/freeFishGo/fishSession"
 	"github.com/freeFishGo/httpContext"
 	"net/http"
 	"runtime/debug"
@@ -14,6 +15,10 @@ type ApplicationBuilder struct {
 	handler *ApplicationHandler
 }
 
+func (app *ApplicationBuilder) InjectionSession(session httpContext.ISession) {
+	app.handler.session = session
+}
+
 // 创建一个ApplicationBuilder管道
 func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	freeFish := new(ApplicationBuilder)
@@ -23,6 +28,9 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 }
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
+	if app.handler.session == nil {
+		app.handler.session = &fishSession.Session{}
+	}
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
 		app.handler.config = app.Config
@@ -48,19 +56,30 @@ type ApplicationHandler struct {
 	middlewareList []IMiddleware
 	middlewareLink *MiddlewareLink
 	config         *config.Config
+	session        httpContext.ISession
 }
 
 // http服务逻辑处理程序
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	ctx.Response.SessionAliveTime = app.config.SessionAliveTime
+	if app.config.IsOpenSession {
+		ctx.Response.SessionCookieName = app.config.SessionCookieName
+		ctx.Response.SessionAliveTime = app.config.SessionAliveTime
+		cookie, err := ctx.Request.Cookie(app.config.SessionCookieName)
+		if err == nil {
+			ctx.Response.SessionName = cookie.Value
+		}
+	}
 	defer func() {
 		if ctx != nil && ctx.Response.Gzip != nil {
 			ctx.Response.Gzip.Close()
 		}
 	}()
 	defer func() {
+		if app.config.IsOpenSession {
+			ctx.Response.UpdateSession()
+		}
 		if err := recover(); err != nil {
 			err, _ := err.(error)
 			if app.config.RecoverPanic {
