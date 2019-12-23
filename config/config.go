@@ -20,11 +20,9 @@ type Config struct {
 }
 
 type Listen struct {
-	AutoTLS        bool
 	ServerTimeOut  time.Duration
 	WriteTimeout   time.Duration
 	MaxHeaderBytes int
-	ListenTCP4     bool
 	EnableHTTP     bool
 	HTTPAddr       string
 	HTTPPort       int
@@ -61,9 +59,7 @@ func NewConfig() *Config {
 		SessionCookieName: "fishCookie",
 		Listen: Listen{
 			ServerTimeOut: 0,
-			ListenTCP4:    false,
 			EnableHTTP:    true,
-			AutoTLS:       false,
 			HTTPAddr:      "",
 			HTTPPort:      8080,
 			EnableHTTPS:   true,
