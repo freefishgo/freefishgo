@@ -26,7 +26,7 @@ type Response struct {
 	sessionFunc        ISession
 	session            map[interface{}]interface{}
 	isGetSession       bool
-	SessionName        string
+	SessionId          string
 	SessionCookieName  string
 	SessionAliveTime   time.Duration
 	isUpdateSessionKey bool
@@ -42,6 +42,10 @@ type ISession interface {
 	RemoveBySessionID(sessionID string) error
 }
 
+func (r *Response) SetISession(i ISession) {
+	r.sessionFunc = i
+}
+
 func (r *Response) getSessionKeyValue() (string, error) {
 	r.isUpdateSessionKey = true
 	return r.sessionFunc.GetSessionKeyValue()
@@ -51,36 +55,36 @@ func (r *Response) RemoveSession() {
 	r.session = nil
 	r.isGetSession = false
 	r.sessionIsUpdate = false
-	r.sessionFunc.RemoveBySessionID(r.SessionName)
-	r.SessionName = ""
+	r.sessionFunc.RemoveBySessionID(r.SessionId)
+	r.SessionId = ""
 }
 
-func (r *Response) GetSession(key string) (interface{}, bool) {
-	if r.SessionName == "" {
-		return nil, false
+func (r *Response) GetSession(key string) interface{} {
+	if r.SessionId == "" {
+		return nil
 	}
 	if !r.isGetSession {
 		var err error
 		if err = r.getSession(); err == nil {
 			r.isGetSession = true
 			if r.session == nil {
-				return nil, false
+				return nil
 			}
 		}
 	}
-	v, ok := r.session[key]
-	return v, ok
+	v, _ := r.session[key]
+	return v
 }
 
 func (r *Response) getSession() error {
-	if r.SessionName == "" {
+	if r.SessionId == "" {
 		return errors.New("没有设置Session")
 	}
 	var err error
 	if !r.isGetSession {
-		if r.session, err = r.sessionFunc.GetSession(r.SessionName); err == nil {
+		if r.session, err = r.sessionFunc.GetSession(r.SessionId); err == nil {
 			if r.session == nil {
-				r.SessionName = ""
+				r.SessionId = ""
 			}
 			r.isGetSession = true
 		}
@@ -89,23 +93,27 @@ func (r *Response) getSession() error {
 }
 
 func (r *Response) UpdateSession() error {
-	if r.SessionName == "" {
+	if r.SessionId == "" {
 		return nil
 	}
 	if r.sessionIsUpdate {
-		return r.sessionFunc.SetSession(r.SessionName, r.session)
+		return r.sessionFunc.SetSession(r.SessionId, r.session)
 	}
 	return nil
 }
 
 func (r *Response) SetSession(key string, val interface{}) {
-	if r.SessionName == "" {
-		if SessionName, err := r.sessionFunc.GetSessionKeyValue(); err == nil {
-			r.SessionName = SessionName
-		}
-	}
 	r.sessionIsUpdate = true
 	r.getSession()
+	if r.SessionId == "" {
+		r.isUpdateSessionKey = true
+		if SessionName, err := r.sessionFunc.GetSessionKeyValue(); err == nil {
+			r.SessionId = SessionName
+		}
+	}
+	if r.session == nil {
+		r.session = map[interface{}]interface{}{}
+	}
 	r.session[key] = val
 }
 
@@ -116,7 +124,7 @@ func (r *Response) SetCookie(c *http.Cookie) {
 
 // 设置Cookie
 func (r *Response) SetCookieUseKeyValue(key string, val string) {
-	http.SetCookie(r, &http.Cookie{Name: key, Value: val})
+	http.SetCookie(r.ResponseWriter, &http.Cookie{Name: key, Value: val})
 }
 
 // 通过cookie名字移除Cookie
@@ -155,8 +163,8 @@ func (r *Response) Write(b []byte) (int, error) {
 	}()
 	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b) && !r.Started) {
 		if !r.Started {
-			if r.SessionName != "" && r.isUpdateSessionKey {
-				r.SetSession(r.SessionCookieName, r.SessionName)
+			if r.SessionId != "" && r.isUpdateSessionKey {
+				r.SetCookieUseKeyValue(r.SessionCookieName, r.SessionId)
 			}
 			r.isGzip = true
 			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
@@ -172,8 +180,8 @@ func (r *Response) Write(b []byte) (int, error) {
 		return r.Gzip.Write(b)
 	}
 	if !r.Started {
-		if r.SessionName != "" && r.isUpdateSessionKey {
-			r.SetSession(r.SessionCookieName, r.SessionName)
+		if r.SessionId != "" && r.isUpdateSessionKey {
+			r.SetCookieUseKeyValue(r.SessionCookieName, r.SessionId)
 		}
 		r.ResponseWriter.WriteHeader(r.status)
 	}

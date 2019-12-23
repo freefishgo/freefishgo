@@ -25,11 +25,7 @@ func (mgr *SessionMgr) GetSessionKeyValue() (string, error) {
 func (mgr *SessionMgr) SetSession(sessionID string, m map[interface{}]interface{}) error {
 	mgr.mLock.Lock()
 	defer mgr.mLock.Unlock()
-
-	if session, ok := mgr.mSessions[sessionID]; ok {
-		session.mValues = m
-	}
-
+	mgr.mSessions[sessionID] = &Session{mValues: m, mLastTimeAccessed: time.Now()}
 	return nil
 }
 
@@ -123,7 +119,6 @@ func (mgr *SessionMgr) NewSessionID() string {
 //——————————————————————————
 /*会话*/
 type Session struct {
-	mSessionID        string                      //唯一id
 	mLastTimeAccessed time.Time                   //最后访问时间
 	mValues           map[interface{}]interface{} //其它对应值(保存用户所对应的一些值，比如用户权限之类)
 }

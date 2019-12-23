@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/router"
+	"log"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
@@ -45,6 +46,13 @@ func (c *MainController) MyControllerActionStrut(Test *Test) {
 
 //所以实际路由为:/任意字符串/main/layoutTest/任意字符串er
 func (c *MainController) LayoutTestGet(Test *Test) {
+	session := c.Response.GetSession("SetSession")
+	if session == nil {
+		log.Println("session为空")
+	} else {
+		log.Println("session不为空 值为:" + session.(string))
+	}
+	c.Response.SetSession("SetSession", "成功了")
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	c.LayoutSections = map[string]string{}

@@ -86,7 +86,7 @@ func NewConfig() *Config {
 		EnableErrorsShow:    true,
 		IsOpenGzip:          true,
 		NeedGzipLen:         1 << 11,
-		IsOpenSession:       false,
+		IsOpenSession:       true,
 		SessionAliveTime:    time.Minute * 20,
 		SessionCookieName:   "fishCookie",
 		EnableErrorsRender:  true,

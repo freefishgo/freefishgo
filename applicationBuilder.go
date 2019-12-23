@@ -28,6 +28,7 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 }
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
+	app.handler.config = app.Config
 	if app.Config.IsOpenSession {
 		if app.handler.session == nil {
 			app.handler.session = fishSession.NewSessionMgr(app.handler.config.SessionAliveTime)
@@ -36,7 +37,6 @@ func (app *ApplicationBuilder) Run() {
 	}
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
-		app.handler.config = app.Config
 		app.server = &http.Server{
 			Addr: addr,
 			//ReadTimeout:    MvcApp.Server.ReadTimeout,
@@ -67,11 +67,12 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
 	if app.config.IsOpenSession {
+		ctx.Response.SetISession(app.session)
 		ctx.Response.SessionCookieName = app.config.SessionCookieName
 		ctx.Response.SessionAliveTime = app.config.SessionAliveTime
 		cookie, err := ctx.Request.Cookie(app.config.SessionCookieName)
 		if err == nil {
-			ctx.Response.SessionName = cookie.Value
+			ctx.Response.SessionId = cookie.Value
 		}
 	}
 	defer func() {
