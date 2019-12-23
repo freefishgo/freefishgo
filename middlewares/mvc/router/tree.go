@@ -29,6 +29,7 @@ type tree struct {
 	MainRouterList controllerModelList
 	// 路由映射模型
 	ControllerModelList controllerModelList
+	CloseMainRouter     map[string]map[string]bool
 }
 
 func (c controllerModelList) AddControllerModelList(list ...*ControllerActionInfo) controllerModelList {

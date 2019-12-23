@@ -212,6 +212,9 @@ func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpConte
 			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
 			ff.controllerName = ff.GetControllerName(v)
 			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+				if c.tree.CloseMainRouter[ff.controllerName][ff.controllerAction] {
+					break
+				}
 				ff.ControllerInfo = v
 				return ff
 			}

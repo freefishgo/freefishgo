@@ -99,6 +99,9 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		controllerName = f.ReplaceAllString(controllerName, "")
 		tree.addPathTree(controllerName, actionName, getType.Elem(), controllerActionParameterStruct)
 	}
+	if tree.CloseMainRouter == nil {
+		tree.CloseMainRouter = map[string]map[string]bool{}
+	}
 	controllerActionInfoList := (c.sonController).SetInfo()
 	for _, v := range controllerActionInfoList {
 		_, ok := getType.MethodByName(v.ControllerActionFuncName)
@@ -114,6 +117,12 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
 		tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList(v)
+		if tree.CloseMainRouter[v.controllerName] == nil {
+			tree.CloseMainRouter[v.controllerName] = map[string]bool{}
+			tree.CloseMainRouter[v.controllerName][v.actionName] = true
+		} else {
+			tree.CloseMainRouter[v.controllerName][v.actionName] = true
+		}
 	}
 	return tree
 }
