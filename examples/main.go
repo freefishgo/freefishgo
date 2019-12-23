@@ -6,6 +6,7 @@ import (
 	"github.com/freeFishGo/examples/fishgo"
 	"github.com/freeFishGo/examples/middlewares"
 	_ "github.com/freeFishGo/examples/routers"
+	fishMiddleware "github.com/freeFishGo/middlewares"
 )
 
 var build *freeFishGo.ApplicationBuilder
@@ -17,6 +18,7 @@ func init() {
 func main() {
 	// 通过注册中间件来实现注册服务
 	build.UseMiddleware(&middlewares.Mid{})
+	build.UseMiddleware(&fishMiddleware.HttpToHttps{})
 	// 把mvc实例注册到管道中
 	build.UseMiddleware(fishgo.Mvc)
 	build.Config.Listen.HTTPPort = 8080

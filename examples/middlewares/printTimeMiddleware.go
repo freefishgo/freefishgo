@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	free "github.com/freeFishGo"
+	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
 	"log"
 	"strconv"
@@ -21,6 +22,6 @@ func (m *Mid) Middleware(ctx *httpContext.HttpContext, next free.Next) *httpCont
 }
 
 // 中间件注册是调用函数进行该中间件最后的设置
-func (m *Mid) LastInit() {
+func (*Mid) LastInit(*config.Config) {
 	//panic("implement me")
 }

@@ -20,17 +20,19 @@ type Config struct {
 }
 
 type Listen struct {
-	AutoTLS       bool
-	ServerTimeOut int64
-	ListenTCP4    bool
-	EnableHTTP    bool
-	HTTPAddr      string
-	HTTPPort      int
-	EnableHTTPS   bool
-	HTTPSAddr     string
-	HTTPSPort     int
-	HTTPSCertFile string
-	HTTPSKeyFile  string
+	AutoTLS        bool
+	ServerTimeOut  time.Duration
+	WriteTimeout   time.Duration
+	MaxHeaderBytes int
+	ListenTCP4     bool
+	EnableHTTP     bool
+	HTTPAddr       string
+	HTTPPort       int
+	EnableHTTPS    bool
+	HTTPSAddr      string
+	HTTPSPort      int
+	HTTPSCertFile  string
+	HTTPSKeyFile   string
 }
 type WebConfig struct {
 	TemplateLeft  string
@@ -64,9 +66,9 @@ func NewConfig() *Config {
 			AutoTLS:       false,
 			HTTPAddr:      "",
 			HTTPPort:      8080,
-			EnableHTTPS:   false,
+			EnableHTTPS:   true,
 			HTTPSAddr:     "",
-			HTTPSPort:     10443,
+			HTTPSPort:     8081,
 			HTTPSCertFile: "",
 			HTTPSKeyFile:  "",
 		},

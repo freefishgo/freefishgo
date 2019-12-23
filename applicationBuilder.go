@@ -10,7 +10,6 @@ import (
 )
 
 type ApplicationBuilder struct {
-	server  *http.Server
 	Config  *config.Config
 	handler *ApplicationHandler
 }
@@ -37,18 +36,33 @@ func (app *ApplicationBuilder) Run() {
 	}
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
-		app.server = &http.Server{
-			Addr: addr,
-			//ReadTimeout:    MvcApp.Server.ReadTimeout,
-			//WriteTimeout:   MvcApp.Server.WriteTimeout,
-			//MaxHeaderBytes: MvcApp.Server.MaxHeaderBytes,
-			Handler: app.handler,
-		}
-		if err := app.server.ListenAndServe(); err != nil {
+		err := (&http.Server{
+			Addr:           addr,
+			ReadTimeout:    app.Config.Listen.ServerTimeOut,
+			WriteTimeout:   app.Config.Listen.WriteTimeout,
+			MaxHeaderBytes: app.Config.Listen.MaxHeaderBytes,
+			Handler:        app.handler,
+		}).ListenAndServe()
+		if err != nil {
 			panic(err.Error())
 		}
 
 	}
+	if app.Config.Listen.EnableHTTPS {
+		addr := app.Config.Listen.HTTPSAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPSPort)
+		err := (&http.Server{
+			Addr:           addr,
+			ReadTimeout:    app.Config.Listen.ServerTimeOut,
+			WriteTimeout:   app.Config.Listen.WriteTimeout,
+			MaxHeaderBytes: app.Config.Listen.MaxHeaderBytes,
+			Handler:        app.handler,
+		}).ListenAndServeTLS(app.Config.Listen.HTTPSCertFile, app.Config.Listen.HTTPSKeyFile)
+		if err != nil {
+			panic(err.Error())
+		}
+
+	}
+
 }
 
 func newApplicationHandler() *ApplicationHandler {
@@ -110,7 +124,7 @@ type Next func(*httpContext.HttpContext) *httpContext.HttpContext
 type IMiddleware interface {
 	Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext
 	//注册框架后 框架会自动调用这个函数
-	LastInit()
+	LastInit(*config.Config)
 }
 type MiddlewareLink struct {
 	val  IMiddleware
@@ -137,13 +151,13 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 	tmpMid := app.handler.middlewareLink
 	for i := 0; i < len(app.handler.middlewareList); i++ {
 		tmpMid.val = app.handler.middlewareList[i]
-		tmpMid.val.LastInit()
+		tmpMid.val.LastInit(app.Config)
 		tmpMid.next = new(MiddlewareLink)
 		tmpMid = tmpMid.next
 	}
 	if tmpMid.val == nil {
 		tmpMid.val = &lastFrameMiddleware{}
-		tmpMid.val.LastInit()
+		tmpMid.val.LastInit(app.Config)
 	}
 	return app
 }
@@ -155,6 +169,6 @@ type lastFrameMiddleware struct {
 func (last *lastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
 	return ctx
 }
-func (last *lastFrameMiddleware) LastInit() {
+func (last *lastFrameMiddleware) LastInit(config *config.Config) {
 
 }

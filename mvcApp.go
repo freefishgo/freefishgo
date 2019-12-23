@@ -1,6 +1,7 @@
 package freeFishGo
 
 import (
+	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
 	"github.com/freeFishGo/router"
 	"log"
@@ -20,7 +21,7 @@ func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next Next) (c *httpC
 	ctx = mvc.handlers.AnalysisRequest(ctx, mvc.handlers.WebConfig)
 	return next(ctx)
 }
-func (mvc *MvcApp) LastInit() {
+func (mvc *MvcApp) LastInit(cnf *config.Config) {
 	mvc.handlers.MainRouterNil()
 	log.Println("MVC注册成功并完成LastInit初始化")
 }
