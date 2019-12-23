@@ -20,11 +20,11 @@ type Response struct {
 	IsOpenGzip  bool
 	NeedGzipLen int
 	isGzip      bool
-	MsgData     map[string]interface{}
+	MsgData     map[interface{}]interface{}
 	//Cookies []*http.Cookie
 
 	sessionFunc        ISession
-	session            map[string]interface{}
+	session            map[interface{}]interface{}
 	isGetSession       bool
 	SessionName        string
 	SessionCookieName  string
@@ -35,10 +35,11 @@ type Response struct {
 
 // Session接口
 type ISession interface {
-	GetSession(KeyValue string) (map[string]interface{}, error)
+	Init(SessionAliveTime time.Duration) error
+	GetSession(sessionID string) (map[interface{}]interface{}, error)
 	GetSessionKeyValue() (string, error)
-	SetSession(SessionName string, m map[string]interface{}, duration time.Duration) error
-	UpdateDataTime(SessionName string, duration time.Duration) error
+	SetSession(sessionID string, m map[interface{}]interface{}) error
+	RemoveBySessionID(sessionID string) error
 }
 
 func (r *Response) getSessionKeyValue() (string, error) {
@@ -50,7 +51,7 @@ func (r *Response) RemoveSession() {
 	r.session = nil
 	r.isGetSession = false
 	r.sessionIsUpdate = false
-	r.sessionFunc.UpdateDataTime(r.SessionName, time.Duration(0))
+	r.sessionFunc.RemoveBySessionID(r.SessionName)
 	r.SessionName = ""
 }
 
@@ -92,10 +93,9 @@ func (r *Response) UpdateSession() error {
 		return nil
 	}
 	if r.sessionIsUpdate {
-		return r.sessionFunc.SetSession(r.SessionName, r.session, r.SessionAliveTime)
-	} else {
-		return r.sessionFunc.UpdateDataTime(r.SessionName, r.SessionAliveTime)
+		return r.sessionFunc.SetSession(r.SessionName, r.session)
 	}
+	return nil
 }
 
 func (r *Response) SetSession(key string, val interface{}) {

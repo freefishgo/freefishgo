@@ -28,8 +28,11 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 }
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
-	if app.handler.session == nil {
-		app.handler.session = &fishSession.Session{}
+	if app.Config.IsOpenSession {
+		if app.handler.session == nil {
+			app.handler.session = fishSession.NewSessionMgr(app.handler.config.SessionAliveTime)
+		}
+		app.handler.session.Init(app.handler.config.SessionAliveTime)
 	}
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
