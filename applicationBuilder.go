@@ -29,7 +29,7 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	app.handler.config = app.Config
-	if app.Config.IsOpenSession {
+	if app.Config.EnableSession {
 		if app.handler.session == nil {
 			app.handler.session = fishSession.NewSessionMgr(app.handler.config.SessionAliveTime)
 		}
@@ -66,7 +66,7 @@ type ApplicationHandler struct {
 func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
-	if app.config.IsOpenSession {
+	if app.config.EnableSession {
 		ctx.Response.SetISession(app.session)
 		ctx.Response.SessionCookieName = app.config.SessionCookieName
 		ctx.Response.SessionAliveTime = app.config.SessionAliveTime
@@ -81,7 +81,7 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 		}
 	}()
 	defer func() {
-		if app.config.IsOpenSession {
+		if app.config.EnableSession {
 			ctx.Response.UpdateSession()
 		}
 		if err := recover(); err != nil {
@@ -96,7 +96,7 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 			}
 		}
 	}()
-	ctx.Response.IsOpenGzip = app.config.IsOpenGzip
+	ctx.Response.IsOpenGzip = app.config.EnableGzip
 	ctx.Response.NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 	if !ctx.Response.Started {

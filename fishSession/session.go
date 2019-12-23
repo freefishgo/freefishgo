@@ -11,8 +11,8 @@ import (
 
 /*Session会话管理*/
 type SessionMgr struct {
-	mLock        sync.RWMutex //互斥(保证线程安全)
-	mMaxLifeTime int64        //垃圾回收时间
+	mLock        sync.RWMutex  //互斥(保证线程安全)
+	mMaxLifeTime time.Duration //垃圾回收时间
 
 	mSessions map[string]*Session //保存session的指针[sessionID] = session
 }
@@ -25,7 +25,7 @@ func (mgr *SessionMgr) GetSessionKeyValue() (string, error) {
 func (mgr *SessionMgr) SetSession(sessionID string, m map[interface{}]interface{}) error {
 	mgr.mLock.Lock()
 	defer mgr.mLock.Unlock()
-	mgr.mSessions[sessionID] = &Session{mValues: m, mLastTimeAccessed: time.Now()}
+	mgr.mSessions[sessionID] = &Session{mValues: m, mLastTimeAccessed: time.Now().Add(mgr.mMaxLifeTime)}
 	return nil
 }
 
@@ -37,13 +37,13 @@ func (mgr *SessionMgr) RemoveBySessionID(sessionID string) error {
 }
 
 func (mgr *SessionMgr) Init(SessionAliveTime time.Duration) error {
-	mgr.mMaxLifeTime = int64(SessionAliveTime)
+	mgr.mMaxLifeTime = SessionAliveTime
 	return nil
 }
 
 //创建会话管理器(cookieName:在浏览器中cookie的名字;maxLifeTime:最长生命周期)
 func NewSessionMgr(maxLifeTime time.Duration) *SessionMgr {
-	mgr := &SessionMgr{mMaxLifeTime: int64(maxLifeTime), mSessions: make(map[string]*Session)}
+	mgr := &SessionMgr{mMaxLifeTime: maxLifeTime, mSessions: make(map[string]*Session)}
 
 	//启动定时回收
 	go mgr.GC()
@@ -57,7 +57,7 @@ func (mgr *SessionMgr) GetSession(sessionID string) (map[interface{}]interface{}
 	defer mgr.mLock.RUnlock()
 
 	if session, ok := mgr.mSessions[sessionID]; ok {
-		session.mLastTimeAccessed = time.Now()
+		session.mLastTimeAccessed = time.Now().Add(mgr.mMaxLifeTime)
 		return session.mValues, nil
 	}
 
@@ -97,13 +97,12 @@ func (mgr *SessionMgr) GC() {
 
 	for sessionID, session := range mgr.mSessions {
 		//删除超过时限的session
-		if session.mLastTimeAccessed.Unix()+mgr.mMaxLifeTime < time.Now().Unix() {
+		if session.mLastTimeAccessed.Before(time.Now()) {
 			delete(mgr.mSessions, sessionID)
 		}
 	}
-
 	//定时回收
-	time.AfterFunc(time.Duration(mgr.mMaxLifeTime)*time.Second, func() { mgr.GC() })
+	time.AfterFunc(time.Second*5, func() { mgr.GC() })
 }
 
 //创建唯一ID

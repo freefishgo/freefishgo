@@ -48,11 +48,12 @@ func (c *MainController) MyControllerActionStrut(Test *Test) {
 func (c *MainController) LayoutTestGet(Test *Test) {
 	session := c.Response.GetSession("SetSession")
 	if session == nil {
+		c.Response.SetSession("SetSession", "成功了")
 		log.Println("session为空")
 	} else {
 		log.Println("session不为空 值为:" + session.(string))
+		c.Response.SetSession("SetSession", "重置成功了")
 	}
-	c.Response.SetSession("SetSession", "成功了")
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	c.LayoutSections = map[string]string{}

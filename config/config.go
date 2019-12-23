@@ -6,25 +6,17 @@ import (
 )
 
 type Config struct {
-	AppName             string
-	RunMode             string
-	RouterCaseSensitive bool
-	ServerName          string
-	CopyRequestBody     bool
-	EnableGzip          bool
-	NeedGzipLen         int
-	SessionAliveTime    time.Duration
-	RecoverPanic        bool
-	RecoverFunc         func(ctx *httpContext.HttpContext, e error, Stack []byte)
-	SessionCookieName   string
-	IsOpenSession       bool
-	MaxMemory           int64
-	EnableErrorsShow    bool
-	EnableErrorsRender  bool
-	Listen              Listen
-	Log                 LogConfig
-
-	IsOpenGzip bool
+	AppName           string
+	RunMode           string
+	ServerName        string
+	EnableGzip        bool
+	NeedGzipLen       int
+	SessionAliveTime  time.Duration
+	RecoverPanic      bool
+	RecoverFunc       func(ctx *httpContext.HttpContext, e error, Stack []byte)
+	SessionCookieName string
+	EnableSession     bool
+	Listen            Listen
 }
 
 type Listen struct {
@@ -46,29 +38,10 @@ type WebConfig struct {
 	ViewsPath     string
 	RecoverPanic  bool
 	RecoverFunc   func(ctx *httpContext.HttpContext, e error, Stack []byte)
-	Session       SessionConfig
 }
 
 func NewWebConfig() *WebConfig {
 	return &WebConfig{ViewsPath: "views", TemplateLeft: "{{", TemplateRight: "}}"}
-}
-
-type SessionConfig struct {
-	SessionOn                    bool
-	SessionProvider              string
-	SessionName                  string
-	SessionGCMaxLifetime         int64
-	SessionProviderConfig        string
-	SessionCookieLifeTime        int
-	SessionAutoSetCookie         bool
-	SessionDomain                string
-	SessionDisableHTTPOnly       bool
-	SessionEnableSidInHTTPHeader bool
-	SessionNameInHTTPHeader      string
-	SessionEnableSidInURLQuery   bool
-}
-
-type LogConfig struct {
 }
 
 const (
@@ -77,19 +50,13 @@ const (
 
 func NewConfig() *Config {
 	return &Config{
-		AppName:             "freeFishGo",
-		RouterCaseSensitive: true,
-		ServerName:          "freeFishGoServer:" + VERSION,
-		CopyRequestBody:     false,
-		EnableGzip:          false,
-		MaxMemory:           1 << 26, //64MB
-		EnableErrorsShow:    true,
-		IsOpenGzip:          true,
-		NeedGzipLen:         1 << 11,
-		IsOpenSession:       true,
-		SessionAliveTime:    time.Minute * 20,
-		SessionCookieName:   "fishCookie",
-		EnableErrorsRender:  true,
+		AppName:           "freeFishGo",
+		ServerName:        "freeFishGoServer:" + VERSION,
+		EnableGzip:        true,
+		NeedGzipLen:       1 << 11,
+		EnableSession:     true,
+		SessionAliveTime:  time.Minute * 20,
+		SessionCookieName: "fishCookie",
 		Listen: Listen{
 			ServerTimeOut: 0,
 			ListenTCP4:    false,
@@ -103,6 +70,5 @@ func NewConfig() *Config {
 			HTTPSCertFile: "",
 			HTTPSKeyFile:  "",
 		},
-		Log: LogConfig{},
 	}
 }
