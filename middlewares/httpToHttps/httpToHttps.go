@@ -1,4 +1,4 @@
-package middlewares
+package httpToHttps
 
 import (
 	"github.com/freeFishGo"

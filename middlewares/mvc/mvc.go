@@ -1,10 +1,10 @@
-package middlewares
+package mvc
 
 import (
 	"github.com/freeFishGo"
 	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
-	"github.com/freeFishGo/router"
+	"github.com/freeFishGo/middlewares/mvc/router"
 	"log"
 	"os"
 	"path/filepath"

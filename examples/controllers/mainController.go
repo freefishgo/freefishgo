@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"github.com/freeFishGo/examples/fishgo"
-	"github.com/freeFishGo/router"
+	mvc "github.com/freeFishGo/middlewares/mvc/router"
 	"log"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
 type MainController struct {
-	router.Controller
+	mvc.Controller
 }
 
 // 注册控制器
@@ -17,9 +17,9 @@ func init() {
 }
 
 // SetInfo()特殊定制指定action的路由
-func (c *MainController) SetInfo() []*router.ControllerActionInfo {
-	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
+func (c *MainController) SetInfo() []*mvc.ControllerActionInfo {
+	tmp := make([]*mvc.ControllerActionInfo, 0)
+	tmp = append(tmp, &mvc.ControllerActionInfo{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
 	return tmp
 }
 

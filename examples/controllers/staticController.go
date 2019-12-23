@@ -2,13 +2,13 @@ package controllers
 
 import (
 	"github.com/freeFishGo/examples/fishgo"
-	"github.com/freeFishGo/router"
+	mvc "github.com/freeFishGo/middlewares/mvc/router"
 	"io/ioutil"
 	"path/filepath"
 )
 
 type staticController struct {
-	router.Controller
+	mvc.Controller
 }
 
 // 控制器注册
@@ -30,8 +30,8 @@ func (static *staticController) StaticFile(d *data) {
 	}
 }
 
-func (static *staticController) SetInfo() []*router.ControllerActionInfo {
-	tmp := make([]*router.ControllerActionInfo, 0)
-	tmp = append(tmp, &router.ControllerActionInfo{RouterPattern: "static/{path:allString}", ControllerActionFuncName: "StaticFile"})
+func (static *staticController) SetInfo() []*mvc.ControllerActionInfo {
+	tmp := make([]*mvc.ControllerActionInfo, 0)
+	tmp = append(tmp, &mvc.ControllerActionInfo{RouterPattern: "static/{path:allString}", ControllerActionFuncName: "StaticFile"})
 	return tmp
 }
