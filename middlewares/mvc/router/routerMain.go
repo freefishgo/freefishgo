@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
 	"html/template"
 	"io/ioutil"
@@ -17,7 +16,7 @@ import (
 
 type ControllerRegister struct {
 	tree       *tree
-	WebConfig  *config.WebConfig
+	WebConfig  *WebConfig
 	staticFile map[string]template.HTML
 }
 
@@ -26,7 +25,7 @@ type ControllerRegister struct {
 func NewControllerRegister() *ControllerRegister {
 	controllerRegister := new(ControllerRegister)
 	controllerRegister.tree = newTree()
-	controllerRegister.WebConfig = config.NewWebConfig()
+	controllerRegister.WebConfig = NewWebConfig()
 	controllerRegister.staticFile = map[string]template.HTML{}
 	return controllerRegister
 }
@@ -52,7 +51,7 @@ func (cr *ControllerRegister) MainRouterNil() {
 //func (c *ControllerRegister) Middleware(ctx *httpContext.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *config.WebConfig) (cont *httpContext.HttpContext) {
+func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *WebConfig) (cont *httpContext.HttpContext) {
 	cont = ctx
 	defer func() {
 		if err := recover(); err != nil {

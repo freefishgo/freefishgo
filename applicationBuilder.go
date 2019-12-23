@@ -104,7 +104,7 @@ func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 		if err := recover(); err != nil {
 			err, _ := err.(error)
 			if app.config.RecoverPanic {
-				app.config.RecoverFunc(ctx, err, debug.Stack())
+				//app.config.RecoverFunc(ctx, err, debug.Stack())
 			} else {
 				if ctx != nil {
 					ctx.Response.WriteHeader(500)

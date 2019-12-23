@@ -13,7 +13,7 @@ import (
 type MvcApp struct {
 	handlers *router.ControllerRegister
 	//Server   *http.Server
-	//Config   *config.Config
+	Config *router.WebConfig
 }
 
 // http服务逻辑处理程序
@@ -32,6 +32,7 @@ func NewFreeFishMvcApp() *MvcApp {
 	os.Chdir(dir)
 	freeFish := new(MvcApp)
 	freeFish.handlers = router.NewControllerRegister()
+	freeFish.Config = freeFish.handlers.WebConfig
 	return freeFish
 }
 

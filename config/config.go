@@ -32,17 +32,6 @@ type Listen struct {
 	HTTPSCertFile  string
 	HTTPSKeyFile   string
 }
-type WebConfig struct {
-	TemplateLeft  string
-	TemplateRight string
-	ViewsPath     string
-	RecoverPanic  bool
-	RecoverFunc   func(ctx *httpContext.HttpContext, e error, Stack []byte)
-}
-
-func NewWebConfig() *WebConfig {
-	return &WebConfig{ViewsPath: "views", TemplateLeft: "{{", TemplateRight: "}}"}
-}
 
 const (
 	VERSION = "1.00"

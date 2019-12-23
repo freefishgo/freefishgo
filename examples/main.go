@@ -1,18 +1,33 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/freeFishGo"
+	appConfig "github.com/freeFishGo/config"
 	_ "github.com/freeFishGo/examples/controllers"
 	"github.com/freeFishGo/examples/fishgo"
 	_ "github.com/freeFishGo/examples/routers"
 	"github.com/freeFishGo/middlewares/httpToHttps"
+	"github.com/freeFishGo/middlewares/mvc/router"
 	"github.com/freeFishGo/middlewares/printTimeMiddleware"
+	"os"
 )
 
 var build *freeFishGo.ApplicationBuilder
 
+type config struct {
+	*appConfig.Config
+	WebConfig *router.WebConfig
+}
+
 func init() {
 	build = freeFishGo.NewFreeFishApplicationBuilder()
+	conf := new(config)
+	f, _ := os.Open("conf/app.conf")
+	json.NewDecoder(f).Decode(conf)
+	build.Config = conf.Config
+	fishgo.Mvc.Config = conf.WebConfig
+
 }
 
 func main() {
