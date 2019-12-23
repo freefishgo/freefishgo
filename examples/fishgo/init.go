@@ -1,12 +1,12 @@
 package fishgo
 
 import (
-	"github.com/freeFishGo"
+	"github.com/freeFishGo/middlewares"
 )
 
-var Mvc *freeFishGo.MvcApp
+var Mvc *middlewares.MvcApp
 
 // 实例化一个mvc服务
 func init() {
-	Mvc = freeFishGo.NewFreeFishMvcApp()
+	Mvc = middlewares.NewFreeFishMvcApp()
 }

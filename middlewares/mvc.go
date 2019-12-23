@@ -1,6 +1,7 @@
-package freeFishGo
+package middlewares
 
 import (
+	"github.com/freeFishGo"
 	"github.com/freeFishGo/config"
 	"github.com/freeFishGo/httpContext"
 	"github.com/freeFishGo/router"
@@ -16,7 +17,7 @@ type MvcApp struct {
 }
 
 // http服务逻辑处理程序
-func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next Next) (c *httpContext.HttpContext) {
+func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next freeFishGo.Next) (c *httpContext.HttpContext) {
 	c = ctx
 	ctx = mvc.handlers.AnalysisRequest(ctx, mvc.handlers.WebConfig)
 	return next(ctx)

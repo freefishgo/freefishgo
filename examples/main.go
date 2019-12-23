@@ -16,8 +16,9 @@ func init() {
 }
 
 func main() {
-	// 通过注册中间件来实现注册服务
+	// 通过注册中间件来打印任务处理时间服务
 	build.UseMiddleware(&middlewares.Mid{})
+	// 利用中间件来实现http到https的转换
 	build.UseMiddleware(&fishMiddleware.HttpToHttps{})
 	// 把mvc实例注册到管道中
 	build.UseMiddleware(fishgo.Mvc)
