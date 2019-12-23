@@ -28,6 +28,7 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	app.handler.config = app.Config
+	errChan := make(chan error)
 	if app.Config.EnableSession {
 		if app.handler.session == nil {
 			app.handler.session = fishSession.NewSessionMgr(app.handler.config.SessionAliveTime)
@@ -36,31 +37,33 @@ func (app *ApplicationBuilder) Run() {
 	}
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
-		err := (&http.Server{
-			Addr:           addr,
-			ReadTimeout:    app.Config.Listen.ServerTimeOut,
-			WriteTimeout:   app.Config.Listen.WriteTimeout,
-			MaxHeaderBytes: app.Config.Listen.MaxHeaderBytes,
-			Handler:        app.handler,
-		}).ListenAndServe()
-		if err != nil {
-			panic(err.Error())
-		}
-
+		go func() {
+			errChan <- (&http.Server{
+				Addr:           addr,
+				ReadTimeout:    app.Config.Listen.ServerTimeOut,
+				WriteTimeout:   app.Config.Listen.WriteTimeout,
+				MaxHeaderBytes: app.Config.Listen.MaxHeaderBytes,
+				Handler:        app.handler,
+			}).ListenAndServe()
+		}()
 	}
 	if app.Config.Listen.EnableHTTPS {
 		addr := app.Config.Listen.HTTPSAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPSPort)
-		err := (&http.Server{
-			Addr:           addr,
-			ReadTimeout:    app.Config.Listen.ServerTimeOut,
-			WriteTimeout:   app.Config.Listen.WriteTimeout,
-			MaxHeaderBytes: app.Config.Listen.MaxHeaderBytes,
-			Handler:        app.handler,
-		}).ListenAndServeTLS(app.Config.Listen.HTTPSCertFile, app.Config.Listen.HTTPSKeyFile)
-		if err != nil {
-			panic(err.Error())
+		go func() {
+			errChan <- (&http.Server{
+				Addr:           addr,
+				ReadTimeout:    app.Config.Listen.ServerTimeOut,
+				WriteTimeout:   app.Config.Listen.WriteTimeout,
+				MaxHeaderBytes: app.Config.Listen.MaxHeaderBytes,
+				Handler:        app.handler,
+			}).ListenAndServeTLS(app.Config.Listen.HTTPSCertFile, app.Config.Listen.HTTPSKeyFile)
+		}()
+	}
+	for {
+		select {
+		case err := <-errChan:
+			panic(err)
 		}
-
 	}
 
 }

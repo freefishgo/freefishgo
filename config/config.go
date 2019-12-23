@@ -69,8 +69,8 @@ func NewConfig() *Config {
 			EnableHTTPS:   true,
 			HTTPSAddr:     "",
 			HTTPSPort:     8081,
-			HTTPSCertFile: "",
-			HTTPSKeyFile:  "",
+			HTTPSCertFile: "server.pem",
+			HTTPSKeyFile:  "server.key",
 		},
 	}
 }
