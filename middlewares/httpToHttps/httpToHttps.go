@@ -16,6 +16,9 @@ func (h *HttpToHttps) Middleware(ctx *freeFish.HttpContext, next freeFish.Next) 
 	if _host[1] == h.HTTPPort {
 		_host[1] = h.HTTPSPort
 		target := "https://" + strings.Join(_host, ":") + ctx.Request.URL.Path
+		if len(ctx.Request.URL.RawQuery) > 0 {
+			target += "?" + ctx.Request.URL.RawQuery
+		}
 		ctx.Response.Redirect(target)
 		return ctx
 	}
