@@ -42,13 +42,16 @@ var upgrade = websocket.Upgrader{
 }
 
 // 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
-func (r *Response) Upgrade(upgrades ...*websocket.Upgrader) (*websocket.Conn, error) {
-	r.Started = true
+func (r *Response) WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.Conn, err error) {
 	if upgrades == nil {
-		return upgrade.Upgrade(r, r.req, r.Header())
+		conn, err = upgrade.Upgrade(r, r.req, r.Header())
 	} else {
-		return upgrades[0].Upgrade(r, r.req, r.Header())
+		conn, err = upgrades[0].Upgrade(r, r.req, r.Header())
 	}
+	if err == nil {
+		r.Started = true
+	}
+	return
 }
 
 func (r *Response) Hijack() (net.Conn, *bufio.ReadWriter, error) {

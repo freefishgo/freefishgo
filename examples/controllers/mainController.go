@@ -74,7 +74,7 @@ func (c *MainController) My1() {
 }
 
 func (c *MainController) My2() {
-	if conn, err := c.Response.Upgrade(); err == nil {
+	if conn, err := c.Response.WebSocket(); err == nil {
 		for {
 			messageType, p, err := conn.ReadMessage()
 			if err != nil {
