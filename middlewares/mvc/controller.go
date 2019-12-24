@@ -108,8 +108,25 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		if !ok {
 			panic(getType.String() + "方法" + v.ControllerActionFuncName + "不存在")
 		}
-		v.actionName = replaceActionName(v.ControllerActionFuncName)
-		v.controllerName = strings.ToLower(controllerName)
+		if isHaveHttpMethod(v.ControllerActionFuncName) {
+			v.actionName = replaceActionName(v.ControllerActionFuncName)
+			v.controllerName = strings.ToLower(controllerName)
+			if tree.CloseMainRouter[v.controllerName] == nil {
+				tree.CloseMainRouter[v.controllerName] = map[string]bool{}
+				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)] = true
+			} else {
+				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)] = true
+			}
+		} else {
+			v.actionName = replaceActionName(v.ControllerActionFuncName)
+			v.controllerName = strings.ToLower(controllerName)
+			if tree.CloseMainRouter[v.controllerName] == nil {
+				tree.CloseMainRouter[v.controllerName] = map[string]bool{}
+				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)+"get"] = true
+			} else {
+				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)+"get"] = true
+			}
+		}
 		//f := regexp.MustCompile(`Controller$`)
 		//controllerName = f.ReplaceAllString(controllerName, "")
 		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
@@ -117,12 +134,6 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
 		tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList(v)
-		if tree.CloseMainRouter[v.controllerName] == nil {
-			tree.CloseMainRouter[v.controllerName] = map[string]bool{}
-			tree.CloseMainRouter[v.controllerName][v.actionName] = true
-		} else {
-			tree.CloseMainRouter[v.controllerName][v.actionName] = true
-		}
 	}
 	return tree
 }
