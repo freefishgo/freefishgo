@@ -70,5 +70,25 @@ func (c *MainController) MyGET(Test *Test) {
 
 // My1为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
 func (c *MainController) My1() {
-	c.Response.WriteJson("Test")
+	c.UseTplPath()
+}
+
+func (c *MainController) My2() {
+	if conn, err := c.Response.Upgrade(); err == nil {
+		for {
+			messageType, p, err := conn.ReadMessage()
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			if err := conn.WriteMessage(messageType, p); err != nil {
+				log.Println(err)
+				return
+			}
+			//conn.Close()
+			break
+		}
+	} else {
+		log.Println(err.Error())
+	}
 }

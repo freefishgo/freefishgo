@@ -1,13 +1,21 @@
 package freeFish
 
 import (
+	"bufio"
 	"compress/gzip"
 	"encoding/json"
 	"errors"
+	"github.com/gorilla/websocket"
+	"net"
 	"net/http"
 	"regexp"
 	"time"
 )
+
+var upgrade = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 type Response struct {
 	http.ResponseWriter
@@ -31,6 +39,16 @@ type Response struct {
 	SessionAliveTime   time.Duration
 	isUpdateSessionKey bool
 	sessionIsUpdate    bool
+}
+
+// 升级为WebSocket服务
+func (r *Response) Upgrade() (*websocket.Conn, error) {
+	r.Started = true
+	return upgrade.Upgrade(r, r.req, r.Header())
+}
+
+func (r *Response) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return r.ResponseWriter.(http.Hijacker).Hijack()
 }
 
 // Session接口
