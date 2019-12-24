@@ -1,4 +1,4 @@
-package router
+package mvc
 
 import (
 	"github.com/freeFishGo/httpContext"

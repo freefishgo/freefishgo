@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/freeFishGo/examples/fishgo"
-	mvc "github.com/freeFishGo/middlewares/mvc/router"
+	"github.com/freeFishGo/middlewares/mvc"
 	"io/ioutil"
 	"path/filepath"
 )

@@ -1,4 +1,4 @@
-package router
+package mvc
 
 import "github.com/freeFishGo/httpContext"
 
@@ -11,5 +11,5 @@ type WebConfig struct {
 }
 
 func NewWebConfig() *WebConfig {
-	return &WebConfig{ViewsPath: "views", TemplateLeft: "{{", TemplateRight: "}}"}
+	return &WebConfig{ViewsPath: "", TemplateLeft: "{{", TemplateRight: "}}"}
 }

@@ -1,4 +1,4 @@
-package router
+package mvc
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-type ControllerRegister struct {
+type controllerRegister struct {
 	tree       *tree
 	WebConfig  *WebConfig
 	staticFile map[string]template.HTML
@@ -22,36 +22,36 @@ type ControllerRegister struct {
 
 // 实例化一个mvc注册器
 
-func NewControllerRegister() *ControllerRegister {
-	controllerRegister := new(ControllerRegister)
+func NewControllerRegister() *controllerRegister {
+	controllerRegister := new(controllerRegister)
 	controllerRegister.tree = newTree()
-	controllerRegister.WebConfig = NewWebConfig()
 	controllerRegister.staticFile = map[string]template.HTML{}
 	return controllerRegister
 }
 
-func (cr *ControllerRegister) AddHandlers(ctl IController) {
+func (cr *controllerRegister) AddHandlers(ctl IController) {
 	ctl.setSonController(ctl)
 	cr.tree = ctl.getControllerInfo(cr.tree)
 }
 
 // 主路由节点注册，必须含有{Controller}和{Action}变量
-func (cr *ControllerRegister) AddMainRouter(ctlList ...*ControllerActionInfo) {
+func (cr *controllerRegister) AddMainRouter(ctlList ...*ControllerActionInfo) {
 	cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(ctlList...)
 }
 
 // 如果主路由为空注册一个默认主路由
-func (cr *ControllerRegister) MainRouterNil() {
+func (cr *controllerRegister) MainRouterNil() {
 	if cr.tree.MainRouterList == nil || len(cr.tree.MainRouterList) == 0 {
 		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}"})
 	}
 }
 
 // http服务逻辑处理程序
-//func (c *ControllerRegister) Middleware(ctx *httpContext.HttpContext) {
+//func (c *controllerRegister) Middleware(ctx *httpContext.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *WebConfig) (cont *httpContext.HttpContext) {
+func (c *controllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *WebConfig) (cont *httpContext.HttpContext) {
+	c.WebConfig = cnf
 	cont = ctx
 	defer func() {
 		if err := recover(); err != nil {
@@ -66,7 +66,6 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *
 			}
 		}
 	}()
-
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, httpContext.HttpMethod(ctx.Request.Method))
 	if f == nil {
@@ -103,7 +102,7 @@ func (c *ControllerRegister) AnalysisRequest(ctx *httpContext.HttpContext, cnf *
 	}
 	return ctx
 }
-func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
+func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 	if c.isUseTplPath || c.LayoutPath != "" {
 		if c.LayoutPath != "" {
 			if b, err := ctr.htmlTpl(c.LayoutPath); err == nil {
@@ -159,7 +158,7 @@ func (ctr *ControllerRegister) tmpHtml(c *Controller) error {
 	return nil
 }
 
-func (ctr *ControllerRegister) htmlTpl(path string) (template.HTML, error) {
+func (ctr *controllerRegister) htmlTpl(path string) (template.HTML, error) {
 	if v, ok := ctr.staticFile[path]; ok {
 		return v, nil
 	} else {
@@ -199,7 +198,7 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]
 }
 
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
-func (c *ControllerRegister) analysisUrlToGetAction(u *url.URL, method httpContext.HttpMethod) *freeFishUrl {
+func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method httpContext.HttpMethod) *freeFishUrl {
 	path := strings.ToLower(u.Path)
 	for _, v := range c.tree.MainRouterList {
 		sl := v.patternRe.FindStringSubmatch(path)

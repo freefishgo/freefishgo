@@ -1,4 +1,4 @@
-package router
+package mvc
 
 type pattern struct {
 	PatternString  string

@@ -5,7 +5,7 @@ import (
 	"github.com/freeFishGo"
 	appConfig "github.com/freeFishGo/config"
 	"github.com/freeFishGo/examples/fishgo"
-	"github.com/freeFishGo/middlewares/mvc/router"
+	"github.com/freeFishGo/middlewares/mvc"
 	"os"
 )
 
@@ -13,7 +13,7 @@ var Build *freeFishGo.ApplicationBuilder
 
 type config struct {
 	*appConfig.Config
-	WebConfig *router.WebConfig
+	WebConfig *mvc.WebConfig
 }
 
 func init() {
