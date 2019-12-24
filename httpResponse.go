@@ -57,16 +57,6 @@ func (r *Response) WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.C
 func (r *Response) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return r.ResponseWriter.(http.Hijacker).Hijack()
 }
-
-// Session接口
-type ISession interface {
-	Init(SessionAliveTime time.Duration) error
-	GetSession(sessionID string) (map[interface{}]interface{}, error)
-	GetSessionKeyValue() (string, error)
-	SetSession(sessionID string, m map[interface{}]interface{}) error
-	RemoveBySessionID(sessionID string) error
-}
-
 func (r *Response) SetISession(i ISession) {
 	r.sessionFunc = i
 }

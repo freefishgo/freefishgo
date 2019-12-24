@@ -6,7 +6,7 @@
         <script>
             var input = document.getElementById("input");
             var output = document.getElementById("output");
-            var socket = new WebSocket("ws://127.0.0.1:8080/main/my2");
+            var socket = new WebSocket("wss://127.0.0.1:8081/main/my2");
 
             socket.onopen = function () {
                 output.innerHTML += "Status: Connected\n";

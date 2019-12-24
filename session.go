@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+// Session接口
+type ISession interface {
+	Init(SessionAliveTime time.Duration) error
+	GetSession(sessionID string) (map[interface{}]interface{}, error)
+	GetSessionKeyValue() (string, error)
+	SetSession(sessionID string, m map[interface{}]interface{}) error
+	RemoveBySessionID(sessionID string) error
+}
+
 /*Session会话管理*/
 type SessionMgr struct {
 	mLock        sync.RWMutex  //互斥(保证线程安全)
