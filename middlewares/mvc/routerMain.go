@@ -165,6 +165,9 @@ func (ctr *controllerRegister) htmlTpl(path string) (template.HTML, error) {
 		temPath := filepath.Join(ctr.WebConfig.ViewsPath, path)
 		if b, err := ioutil.ReadFile(temPath); err == nil {
 			html := template.HTML(b)
+			if ctr.WebConfig.IsDevelopment {
+				return html, nil
+			}
 			ctr.staticFile[path] = html
 			return html, nil
 		} else {

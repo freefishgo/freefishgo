@@ -12,11 +12,6 @@ import (
 	"time"
 )
 
-var upgrade = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
 type Response struct {
 	http.ResponseWriter
 	req *http.Request
@@ -41,10 +36,19 @@ type Response struct {
 	sessionIsUpdate    bool
 }
 
-// 升级为WebSocket服务
-func (r *Response) Upgrade() (*websocket.Conn, error) {
+var upgrade = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+// 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
+func (r *Response) Upgrade(upgrades ...*websocket.Upgrader) (*websocket.Conn, error) {
 	r.Started = true
-	return upgrade.Upgrade(r, r.req, r.Header())
+	if upgrades == nil {
+		return upgrade.Upgrade(r, r.req, r.Header())
+	} else {
+		return upgrades[0].Upgrade(r, r.req, r.Header())
+	}
 }
 
 func (r *Response) Hijack() (net.Conn, *bufio.ReadWriter, error) {

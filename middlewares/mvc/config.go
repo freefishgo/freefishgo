@@ -3,6 +3,7 @@ package mvc
 import "github.com/freefishgo/freeFish"
 
 type WebConfig struct {
+	IsDevelopment bool
 	TemplateLeft  string
 	TemplateRight string
 	ViewsPath     string
@@ -11,5 +12,5 @@ type WebConfig struct {
 }
 
 func NewWebConfig() *WebConfig {
-	return &WebConfig{ViewsPath: "", TemplateLeft: "{{", TemplateRight: "}}"}
+	return &WebConfig{ViewsPath: "", TemplateLeft: "{{", TemplateRight: "}}", IsDevelopment: false}
 }
