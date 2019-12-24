@@ -1,7 +1,6 @@
 package freeFish
 
 import (
-	"github.com/freeFishGo/httpContext"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type Config struct {
 	NeedGzipLen       int
 	SessionAliveTime  time.Duration
 	RecoverPanic      bool
-	RecoverFunc       func(ctx *httpContext.HttpContext, e error, Stack []byte)
+	RecoverFunc       func(ctx *HttpContext, e error, Stack []byte)
 	SessionCookieName string
 	EnableSession     bool
 	Listen            Listen

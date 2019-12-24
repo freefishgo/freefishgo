@@ -1,20 +1,17 @@
 package freeFish
 
 import (
-	"github.com/freeFishGo/config"
-	"github.com/freeFishGo/fishSession"
-	"github.com/freeFishGo/httpContext"
 	"net/http"
 	"runtime/debug"
 	"strconv"
 )
 
 type ApplicationBuilder struct {
-	Config  *config.Config
+	Config  *Config
 	handler *applicationHandler
 }
 
-func (app *ApplicationBuilder) InjectionSession(session httpContext.ISession) {
+func (app *ApplicationBuilder) InjectionSession(session ISession) {
 	app.handler.session = session
 }
 
@@ -22,7 +19,7 @@ func (app *ApplicationBuilder) InjectionSession(session httpContext.ISession) {
 func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	freeFish := new(ApplicationBuilder)
 	freeFish.handler = newApplicationHandler()
-	freeFish.Config = config.NewConfig()
+	freeFish.Config = NewConfig()
 	return freeFish
 }
 func (app *ApplicationBuilder) Run() {
@@ -31,7 +28,7 @@ func (app *ApplicationBuilder) Run() {
 	errChan := make(chan error)
 	if app.Config.EnableSession {
 		if app.handler.session == nil {
-			app.handler.session = fishSession.NewSessionMgr(app.handler.config.SessionAliveTime)
+			app.handler.session = NewSessionMgr(app.handler.config.SessionAliveTime)
 		}
 		app.handler.session.Init(app.handler.config.SessionAliveTime)
 	}
@@ -75,13 +72,13 @@ func newApplicationHandler() *applicationHandler {
 type applicationHandler struct {
 	middlewareList []IMiddleware
 	middlewareLink *MiddlewareLink
-	config         *config.Config
-	session        httpContext.ISession
+	config         *Config
+	session        ISession
 }
 
 // http服务逻辑处理程序
 func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	ctx := new(httpContext.HttpContext)
+	ctx := new(HttpContext)
 	ctx.SetContext(rw, r)
 	if app.config.EnableSession {
 		ctx.Response.SetISession(app.session)
@@ -121,13 +118,13 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	}
 }
 
-type Next func(*httpContext.HttpContext) *httpContext.HttpContext
+type Next func(*HttpContext) *HttpContext
 
 // 中间件类型接口
 type IMiddleware interface {
-	Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext
+	Middleware(ctx *HttpContext, next Next) *HttpContext
 	//注册框架后 框架会自动调用这个函数
-	LastInit(*config.Config)
+	LastInit(*Config)
 }
 type MiddlewareLink struct {
 	val  IMiddleware
@@ -135,7 +132,7 @@ type MiddlewareLink struct {
 }
 
 // 执行下一个中间件
-func (link *MiddlewareLink) innerNext(ctx *httpContext.HttpContext) *httpContext.HttpContext {
+func (link *MiddlewareLink) innerNext(ctx *HttpContext) *HttpContext {
 	return link.val.Middleware(ctx, link.next.innerNext)
 }
 
@@ -169,9 +166,9 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 type lastFrameMiddleware struct {
 }
 
-func (last *lastFrameMiddleware) Middleware(ctx *httpContext.HttpContext, next Next) *httpContext.HttpContext {
+func (last *lastFrameMiddleware) Middleware(ctx *HttpContext, next Next) *HttpContext {
 	return ctx
 }
-func (last *lastFrameMiddleware) LastInit(config *config.Config) {
+func (last *lastFrameMiddleware) LastInit(config *Config) {
 
 }

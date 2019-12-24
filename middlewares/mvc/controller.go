@@ -194,7 +194,7 @@ func (c *Controller) setSonController(son IController) {
 }
 
 // http请求上下文注册
-func (c *Controller) initController(ctx *httpContext.HttpContext) {
+func (c *Controller) initController(ctx *freeFish.HttpContext) {
 	c.Response = &ctx.Response
 	c.Request = ctx.Request
 	c.Data = map[interface{}]interface{}{}

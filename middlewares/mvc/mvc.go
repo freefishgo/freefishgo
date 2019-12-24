@@ -2,8 +2,6 @@ package mvc
 
 import (
 	"github.com/freefishgo/freeFish"
-	"github.com/freefishgo/freeFish/config"
-	"github.com/freefishgo/freeFish/httpContext"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,12 +14,12 @@ type MvcApp struct {
 }
 
 // http服务逻辑处理程序
-func (mvc *MvcApp) Middleware(ctx *httpContext.HttpContext, next freeFishGo.Next) (c *httpContext.HttpContext) {
+func (mvc *MvcApp) Middleware(ctx *freeFish.HttpContext, next freeFish.Next) (c *freeFish.HttpContext) {
 	c = ctx
 	ctx = mvc.handlers.AnalysisRequest(ctx, mvc.Config)
 	return next(ctx)
 }
-func (mvc *MvcApp) LastInit(cnf *config.Config) {
+func (mvc *MvcApp) LastInit(cnf *freeFish.Config) {
 	mvc.handlers.MainRouterNil()
 	log.Println("MVC注册成功并完成LastInit初始化")
 }

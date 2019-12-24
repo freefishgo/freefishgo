@@ -1,7 +1,7 @@
 package fishgo
 
 import (
-	"github.com/freeFishGo/middlewares/mvc"
+	"github.com/freefishgo/freeFish/middlewares/mvc"
 )
 
 var Mvc *mvc.MvcApp

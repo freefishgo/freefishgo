@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/freeFishGo/examples/conf"
-	_ "github.com/freeFishGo/examples/controllers"
-	"github.com/freeFishGo/examples/fishgo"
-	_ "github.com/freeFishGo/examples/routers"
-	"github.com/freeFishGo/middlewares/printTimeMiddleware"
+	"github.com/freefishgo/freeFish/examples/conf"
+	_ "github.com/freefishgo/freeFish/examples/controllers"
+	"github.com/freefishgo/freeFish/examples/fishgo"
+	_ "github.com/freefishgo/freeFish/examples/routers"
+	"github.com/freefishgo/freeFish/middlewares/printTimeMiddleware"
 )
 
 func main() {
