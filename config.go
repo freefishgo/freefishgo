@@ -1,4 +1,4 @@
-package config
+package freeFish
 
 import (
 	"github.com/freeFishGo/httpContext"

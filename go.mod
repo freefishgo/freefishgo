@@ -1,1 +1,1 @@
-module github.com/freeFishGo
+module github.com/freefishgo/freeFish

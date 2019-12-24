@@ -1,4 +1,4 @@
-package freeFishGo
+package freeFish
 
 import (
 	"github.com/freeFishGo/config"
@@ -11,7 +11,7 @@ import (
 
 type ApplicationBuilder struct {
 	Config  *config.Config
-	handler *ApplicationHandler
+	handler *applicationHandler
 }
 
 func (app *ApplicationBuilder) InjectionSession(session httpContext.ISession) {
@@ -68,11 +68,11 @@ func (app *ApplicationBuilder) Run() {
 
 }
 
-func newApplicationHandler() *ApplicationHandler {
-	return new(ApplicationHandler)
+func newApplicationHandler() *applicationHandler {
+	return new(applicationHandler)
 }
 
-type ApplicationHandler struct {
+type applicationHandler struct {
 	middlewareList []IMiddleware
 	middlewareLink *MiddlewareLink
 	config         *config.Config
@@ -80,7 +80,7 @@ type ApplicationHandler struct {
 }
 
 // http服务逻辑处理程序
-func (app *ApplicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(httpContext.HttpContext)
 	ctx.SetContext(rw, r)
 	if app.config.EnableSession {

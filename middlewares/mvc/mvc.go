@@ -1,9 +1,9 @@
 package mvc
 
 import (
-	"github.com/freeFishGo"
-	"github.com/freeFishGo/config"
-	"github.com/freeFishGo/httpContext"
+	"github.com/freefishgo/freeFish"
+	"github.com/freefishgo/freeFish/config"
+	"github.com/freefishgo/freeFish/httpContext"
 	"log"
 	"os"
 	"path/filepath"

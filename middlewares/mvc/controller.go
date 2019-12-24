@@ -1,7 +1,7 @@
 package mvc
 
 import (
-	"github.com/freeFishGo/httpContext"
+	"github.com/freefishgo/freeFish"
 	"reflect"
 	"regexp"
 	"strings"
@@ -17,8 +17,8 @@ type controllerInfo struct {
 // http请求逻辑控制器
 type Controller struct {
 	//HttpContext    *httpContext.HttpContext
-	Response       *httpContext.Response
-	Request        *httpContext.Request
+	Response       *freeFish.Response
+	Request        *freeFish.Request
 	controllerInfo *controllerInfo
 	sonController  IController
 	// 查询阐述
@@ -64,7 +64,7 @@ type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
 	SetInfo() []*ControllerActionInfo
-	initController(ctx *httpContext.HttpContext)
+	initController(ctx *freeFish.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
 }
@@ -140,10 +140,10 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 
 func replaceActionName(actionName string) string {
 	actionName = strings.ToUpper(actionName)
-	httpMethodList := []httpContext.HttpMethod{httpContext.MethodPost,
-		httpContext.MethodConnect, httpContext.MethodDelete,
-		httpContext.MethodGet, httpContext.MethodHead, httpContext.MethodOptions,
-		httpContext.MethodPatch, httpContext.MethodPut, httpContext.MethodTrace}
+	httpMethodList := []freeFish.HttpMethod{freeFish.MethodPost,
+		freeFish.MethodConnect, freeFish.MethodDelete,
+		freeFish.MethodGet, freeFish.MethodHead, freeFish.MethodOptions,
+		freeFish.MethodPatch, freeFish.MethodPut, freeFish.MethodTrace}
 	for _, v := range httpMethodList {
 		f := regexp.MustCompile(string(v) + "$")
 		if f.MatchString(actionName) {
@@ -156,10 +156,10 @@ func replaceActionName(actionName string) string {
 
 func isHaveHttpMethod(actionName string) bool {
 	actionName = strings.ToUpper(actionName)
-	httpMethodList := []httpContext.HttpMethod{httpContext.MethodPost,
-		httpContext.MethodConnect, httpContext.MethodDelete,
-		httpContext.MethodGet, httpContext.MethodHead, httpContext.MethodOptions,
-		httpContext.MethodPatch, httpContext.MethodPut, httpContext.MethodTrace}
+	httpMethodList := []freeFish.HttpMethod{freeFish.MethodPost,
+		freeFish.MethodConnect, freeFish.MethodDelete,
+		freeFish.MethodGet, freeFish.MethodHead, freeFish.MethodOptions,
+		freeFish.MethodPatch, freeFish.MethodPut, freeFish.MethodTrace}
 	for _, v := range httpMethodList {
 		f := regexp.MustCompile(string(v) + "$")
 		if f.MatchString(actionName) {

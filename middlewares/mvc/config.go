@@ -1,13 +1,13 @@
 package mvc
 
-import "github.com/freeFishGo/httpContext"
+import "github.com/freefishgo/freeFish"
 
 type WebConfig struct {
 	TemplateLeft  string
 	TemplateRight string
 	ViewsPath     string
 	RecoverPanic  bool
-	RecoverFunc   func(ctx *httpContext.HttpContext, e error, Stack []byte)
+	RecoverFunc   func(ctx *freeFish.HttpContext, e error, Stack []byte)
 }
 
 func NewWebConfig() *WebConfig {

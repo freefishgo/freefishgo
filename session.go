@@ -1,4 +1,4 @@
-package fishSession
+package freeFish
 
 import (
 	"crypto/rand"
