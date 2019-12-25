@@ -2,7 +2,6 @@ package mvc
 
 import (
 	"github.com/freefishgo/freeFish"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -21,7 +20,6 @@ func (mvc *MvcApp) Middleware(ctx *freeFish.HttpContext, next freeFish.Next) (c 
 }
 func (mvc *MvcApp) LastInit(cnf *freeFish.Config) {
 	mvc.handlers.MainRouterNil()
-	log.Println("MVC注册成功并完成LastInit初始化")
 }
 
 func NewFreeFishMvcApp() *MvcApp {

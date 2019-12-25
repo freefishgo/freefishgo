@@ -1,6 +1,7 @@
 package freeFish
 
 import (
+	"log"
 	"net/http"
 	"runtime/debug"
 	"strconv"
@@ -35,6 +36,7 @@ func (app *ApplicationBuilder) Run() {
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
 		go func() {
+			log.Println("http on " + addr)
 			errChan <- (&http.Server{
 				Addr:           addr,
 				ReadTimeout:    app.Config.Listen.ServerTimeOut,
@@ -47,6 +49,7 @@ func (app *ApplicationBuilder) Run() {
 	if app.Config.Listen.EnableHTTPS {
 		addr := app.Config.Listen.HTTPSAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPSPort)
 		go func() {
+			log.Println("https on " + addr)
 			errChan <- (&http.Server{
 				Addr:           addr,
 				ReadTimeout:    app.Config.Listen.ServerTimeOut,
