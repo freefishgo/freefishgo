@@ -1,4 +1,4 @@
-package freeFish
+package freeFishGo
 
 type HttpMethod string
 

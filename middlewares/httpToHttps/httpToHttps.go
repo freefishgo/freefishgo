@@ -1,7 +1,7 @@
 package httpToHttps
 
 import (
-	"github.com/freeFishGo/freeFish"
+	"github.com/freefishgo/freeFishGo"
 	"strconv"
 	"strings"
 )
@@ -11,7 +11,7 @@ type HttpToHttps struct {
 	HTTPSPort string
 }
 
-func (h *HttpToHttps) Middleware(ctx *freeFish.HttpContext, next freeFish.Next) *freeFish.HttpContext {
+func (h *HttpToHttps) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) *freeFishGo.HttpContext {
 	_host := strings.Split(ctx.Request.Host, ":")
 	if _host[1] == h.HTTPPort {
 		_host[1] = h.HTTPSPort
@@ -25,7 +25,7 @@ func (h *HttpToHttps) Middleware(ctx *freeFish.HttpContext, next freeFish.Next) 
 	return next(ctx)
 }
 
-func (h *HttpToHttps) LastInit(c *freeFish.Config) {
+func (h *HttpToHttps) LastInit(c *freeFishGo.Config) {
 	h.HTTPPort = strconv.Itoa(c.Listen.HTTPPort)
 	h.HTTPSPort = strconv.Itoa(c.Listen.HTTPSPort)
 }

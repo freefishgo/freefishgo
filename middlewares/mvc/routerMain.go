@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/freefishgo/freeFish"
+	"github.com/freefishgo/freeFishGo"
 	"html/template"
 	"io/ioutil"
 	"net/url"
@@ -47,10 +47,10 @@ func (cr *controllerRegister) MainRouterNil() {
 }
 
 // http服务逻辑处理程序
-//func (c *controllerRegister) Middleware(ctx *freeFish.HttpContext) {
+//func (c *controllerRegister) Middleware(ctx *freeFishGo.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *controllerRegister) AnalysisRequest(ctx *freeFish.HttpContext, cnf *WebConfig) (cont *freeFish.HttpContext) {
+func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext, cnf *WebConfig) (cont *freeFishGo.HttpContext) {
 	c.WebConfig = cnf
 	cont = ctx
 	defer func() {
@@ -67,7 +67,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFish.HttpContext, cnf *Web
 		}
 	}()
 	u, _ := url.Parse(ctx.Request.RequestURI)
-	f := c.analysisUrlToGetAction(u, freeFish.HttpMethod(ctx.Request.Method))
+	f := c.analysisUrlToGetAction(u, freeFishGo.HttpMethod(ctx.Request.Method))
 	if f == nil {
 		ctx.Response.WriteHeader(404)
 		return ctx
@@ -201,7 +201,7 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]
 }
 
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
-func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFish.HttpMethod) *freeFishUrl {
+func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishGo.HttpMethod) *freeFishUrl {
 	path := strings.ToLower(u.Path)
 	for _, v := range c.tree.MainRouterList {
 		sl := v.patternRe.FindStringSubmatch(path)

@@ -1,6 +1,6 @@
 package mvc
 
-import "github.com/freefishgo/freeFish"
+import "github.com/freefishgo/freeFishGo"
 
 type WebConfig struct {
 	IsDevelopment bool
@@ -8,7 +8,7 @@ type WebConfig struct {
 	TemplateRight string
 	ViewsPath     string
 	RecoverPanic  bool
-	RecoverFunc   func(ctx *freeFish.HttpContext, e error, Stack []byte)
+	RecoverFunc   func(ctx *freeFishGo.HttpContext, e error, Stack []byte)
 }
 
 func NewWebConfig() *WebConfig {

@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"github.com/freefishgo/freeFish/examples/fishgo"
-	"github.com/freefishgo/freeFish/middlewares/mvc"
+	"github.com/freefishgo/freeFishGo/examples/fishgo"
+	"github.com/freefishgo/freeFishGo/middlewares/mvc"
 )
 
 func init() {

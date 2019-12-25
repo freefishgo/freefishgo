@@ -1,4 +1,4 @@
-package freeFish
+package freeFishGo
 
 import "net/http"
 

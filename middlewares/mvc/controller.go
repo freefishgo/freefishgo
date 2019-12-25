@@ -1,7 +1,7 @@
 package mvc
 
 import (
-	"github.com/freefishgo/freeFish"
+	"github.com/freefishgo/freeFishGo"
 	"reflect"
 	"regexp"
 	"strings"
@@ -17,8 +17,8 @@ type controllerInfo struct {
 // http请求逻辑控制器
 type Controller struct {
 	//HttpContext    *httpContext.HttpContext
-	Response       *freeFish.Response
-	Request        *freeFish.Request
+	Response       *freeFishGo.Response
+	Request        *freeFishGo.Request
 	controllerInfo *controllerInfo
 	sonController  IController
 	// 查询阐述
@@ -64,7 +64,7 @@ type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
 	SetInfo() []*ControllerActionInfo
-	initController(ctx *freeFish.HttpContext)
+	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
 }
@@ -140,10 +140,10 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 
 func replaceActionName(actionName string) string {
 	actionName = strings.ToUpper(actionName)
-	httpMethodList := []freeFish.HttpMethod{freeFish.MethodPost,
-		freeFish.MethodConnect, freeFish.MethodDelete,
-		freeFish.MethodGet, freeFish.MethodHead, freeFish.MethodOptions,
-		freeFish.MethodPatch, freeFish.MethodPut, freeFish.MethodTrace}
+	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
+		freeFishGo.MethodConnect, freeFishGo.MethodDelete,
+		freeFishGo.MethodGet, freeFishGo.MethodHead, freeFishGo.MethodOptions,
+		freeFishGo.MethodPatch, freeFishGo.MethodPut, freeFishGo.MethodTrace}
 	for _, v := range httpMethodList {
 		f := regexp.MustCompile(string(v) + "$")
 		if f.MatchString(actionName) {
@@ -156,10 +156,10 @@ func replaceActionName(actionName string) string {
 
 func isHaveHttpMethod(actionName string) bool {
 	actionName = strings.ToUpper(actionName)
-	httpMethodList := []freeFish.HttpMethod{freeFish.MethodPost,
-		freeFish.MethodConnect, freeFish.MethodDelete,
-		freeFish.MethodGet, freeFish.MethodHead, freeFish.MethodOptions,
-		freeFish.MethodPatch, freeFish.MethodPut, freeFish.MethodTrace}
+	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
+		freeFishGo.MethodConnect, freeFishGo.MethodDelete,
+		freeFishGo.MethodGet, freeFishGo.MethodHead, freeFishGo.MethodOptions,
+		freeFishGo.MethodPatch, freeFishGo.MethodPut, freeFishGo.MethodTrace}
 	for _, v := range httpMethodList {
 		f := regexp.MustCompile(string(v) + "$")
 		if f.MatchString(actionName) {
@@ -194,7 +194,7 @@ func (c *Controller) setSonController(son IController) {
 }
 
 // http请求上下文注册
-func (c *Controller) initController(ctx *freeFish.HttpContext) {
+func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
 	c.Response = &ctx.Response
 	c.Request = ctx.Request
 	c.Data = map[interface{}]interface{}{}

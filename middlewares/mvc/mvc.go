@@ -1,7 +1,7 @@
 package mvc
 
 import (
-	"github.com/freefishgo/freeFish"
+	"github.com/freefishgo/freeFishGo"
 	"os"
 	"path/filepath"
 )
@@ -13,12 +13,12 @@ type MvcApp struct {
 }
 
 // http服务逻辑处理程序
-func (mvc *MvcApp) Middleware(ctx *freeFish.HttpContext, next freeFish.Next) (c *freeFish.HttpContext) {
+func (mvc *MvcApp) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) (c *freeFishGo.HttpContext) {
 	c = ctx
 	ctx = mvc.handlers.AnalysisRequest(ctx, mvc.Config)
 	return next(ctx)
 }
-func (mvc *MvcApp) LastInit(cnf *freeFish.Config) {
+func (mvc *MvcApp) LastInit(cnf *freeFishGo.Config) {
 	mvc.handlers.MainRouterNil()
 }
 

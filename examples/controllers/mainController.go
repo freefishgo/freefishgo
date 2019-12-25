@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/freefishgo/freeFish/examples/fishgo"
-	"github.com/freefishgo/freeFish/middlewares/mvc"
+	"github.com/freefishgo/freeFishGo/examples/fishgo"
+	"github.com/freefishgo/freeFishGo/middlewares/mvc"
 	"log"
 )
 
@@ -30,15 +30,15 @@ type Test struct {
 	Id string   `json:"id"`
 }
 
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求
+// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Home/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求
 func (c *MainController) MyControllerActionStrut(Test *Test) {
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    即为Main/MyControllerActionStrut， c.UseTplPath()等效于c.UseTplPath("Main/MyControllerActionStrut")
+	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    即为Main/MyControllerActionStrut， c.UseTplPath()等效于c.UseTplPath("Home/MyControllerActionStrut")
 	c.UseTplPath()
 }
 
-// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Main/LayoutTestGet 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
+// MyControllerActionStrut为{Action}的值 该方法的默认路由为/Home/LayoutTestGet 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看
 
 // 由于重写Controller的SetInfo方法
 //
@@ -63,12 +63,12 @@ func (c *MainController) LayoutTestGet(Test *Test) {
 	c.UseTplPath("Other/layoutSon.fish")
 }
 
-// My{Action}的值 该方法的默认路由为/Main/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看 重定向使用方法
+// My{Action}的值 该方法的默认路由为/Home/My 最后的单词为请求方式该例子为Get请求  查询具体字符串值可到httpContext包中查看 重定向使用方法
 func (c *MainController) MyGET(Test *Test) {
 	c.Response.Redirect("/haha/main/LayoutTestGet/fafafd4646er?id=我喜")
 }
 
-// My1为{Action}的值 该方法的默认路由为/Main/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
+// My1为{Action}的值 该方法的默认路由为/Home/My1 get请求可以省略get后缀  查询具体字符串值可到httpContext包中查看
 func (c *MainController) My1() {
 	c.UseTplPath()
 }
