@@ -35,8 +35,17 @@ func (cr *controllerRegister) AddHandlers(ctl IController) {
 }
 
 // 主路由节点注册，必须含有{Controller}和{Action}变量
-func (cr *controllerRegister) AddMainRouter(ctlList ...*ControllerActionInfo) {
-	cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(ctlList...)
+func (cr *controllerRegister) AddMainRouter(ctlList ...*MainRouter) {
+
+	for _, v := range ctlList {
+		if v.HomeController != "" && v.IndexAction != "" {
+			v.IndexAction = replaceActionName(v.IndexAction)
+			v.HomeController = strings.ToLower(v.HomeController)
+			cr.tree.ControllerModelList.AddControllerModelList(&ControllerActionInfo{RouterPattern: "/", controllerName: v.HomeController, actionName: v.IndexAction})
+		}
+		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionInfo{RouterPattern: v.RouterPattern})
+	}
+
 }
 
 // 如果主路由为空注册一个默认主路由

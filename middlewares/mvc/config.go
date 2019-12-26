@@ -7,8 +7,12 @@ type WebConfig struct {
 	TemplateLeft  string
 	TemplateRight string
 	ViewsPath     string
-	RecoverPanic  bool
-	RecoverFunc   func(ctx *freeFishGo.HttpContext, e error, Stack []byte)
+
+	homeController string
+	indexAction    string
+
+	RecoverPanic bool
+	RecoverFunc  func(ctx *freeFishGo.HttpContext, e error, Stack []byte)
 }
 
 func NewWebConfig() *WebConfig {

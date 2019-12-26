@@ -16,8 +16,8 @@ func init() {
 	fishgo.Mvc.AddHandlers(&MainController{})
 }
 
-// SetInfo()特殊定制指定action的路由
-func (c *MainController) SetInfo() []*mvc.ControllerActionInfo {
+// OverwriteRouter()特殊定制指定action的路由
+func (c *MainController) OverwriteRouter() []*mvc.ControllerActionInfo {
 	tmp := make([]*mvc.ControllerActionInfo, 0)
 	tmp = append(tmp, &mvc.ControllerActionInfo{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
 	return tmp

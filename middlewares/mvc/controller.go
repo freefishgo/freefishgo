@@ -63,7 +63,7 @@ func (c *Controller) getController() *Controller {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	SetInfo() []*ControllerActionInfo
+	OverwriteRouter() []*ControllerActionInfo
 	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
@@ -102,7 +102,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	if tree.CloseMainRouter == nil {
 		tree.CloseMainRouter = map[string]map[string]bool{}
 	}
-	controllerActionInfoList := (c.sonController).SetInfo()
+	controllerActionInfoList := (c.sonController).OverwriteRouter()
 	for _, v := range controllerActionInfoList {
 		_, ok := getType.MethodByName(v.ControllerActionFuncName)
 		if !ok {
@@ -184,7 +184,7 @@ type ControllerActionInfo struct {
 }
 
 // 控制器属性设置 路由变量路由中只能出现一次
-func (c *Controller) SetInfo() []*ControllerActionInfo {
+func (c *Controller) OverwriteRouter() []*ControllerActionInfo {
 	return make([]*ControllerActionInfo, 0)
 }
 
@@ -203,7 +203,7 @@ func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
 // 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"SetInfo": true, "SetTplPath": true, "UseTplPath": true}
+		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}
