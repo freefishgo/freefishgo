@@ -3,6 +3,21 @@ golang 通过结构体反射实现的典型的mvc架构 尝试可以看代码文
 
 # 详细文档地址访问 http://freefishgo.com
 
+## Installation
+
+To install `freefishgo` use the `go get` command:
+
+```bash
+go get github.com/freefishgo/freefishgo
+```
+
+> If you already have `freefishgo` installed, updating `freefishgo` is simple:
+
+```bash
+go get -u github.com/freefishgo/freefish
+```
+
+
 ```go
 package main
 
