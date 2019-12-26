@@ -12,7 +12,7 @@ var Build *freeFishGo.ApplicationBuilder
 
 type config struct {
 	*freeFishGo.Config
-	WebConfig *mvc.WebConfig
+	WebConfig *mvc.MvcWebConfig
 }
 
 func init() {

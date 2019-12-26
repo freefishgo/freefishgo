@@ -16,13 +16,13 @@ import (
 
 type controllerRegister struct {
 	tree       *tree
-	WebConfig  *WebConfig
+	WebConfig  *MvcWebConfig
 	staticFile map[string]template.HTML
 }
 
 // 实例化一个mvc注册器
 
-func NewControllerRegister() *controllerRegister {
+func newControllerRegister() *controllerRegister {
 	controllerRegister := new(controllerRegister)
 	controllerRegister.tree = newTree()
 	controllerRegister.staticFile = map[string]template.HTML{}
@@ -59,7 +59,7 @@ func (cr *controllerRegister) MainRouterNil() {
 //func (c *controllerRegister) Middleware(ctx *freeFishGo.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext, cnf *WebConfig) (cont *freeFishGo.HttpContext) {
+func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext, cnf *MvcWebConfig) (cont *freeFishGo.HttpContext) {
 	c.WebConfig = cnf
 	cont = ctx
 	defer func() {

@@ -23,6 +23,8 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	freeFish.Config = NewConfig()
 	return freeFish
 }
+
+// 启动web服务
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	app.handler.config = app.Config

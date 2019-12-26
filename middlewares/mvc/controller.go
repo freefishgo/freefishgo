@@ -16,14 +16,15 @@ type controllerInfo struct {
 
 // http请求逻辑控制器
 type Controller struct {
-	//HttpContext    *httpContext.HttpContext
-	Response       *freeFishGo.Response
+	//响应前端的处理 不建议使用
+	Response *freeFishGo.Response
+	// 和前端一切的数据  都可以通过他获取
 	Request        *freeFishGo.Request
 	controllerInfo *controllerInfo
 	sonController  IController
-	// 查询阐述
+	// 前端传来的数据都可以获取  包括路由格式化的数据  如 /{id:string}  可通过 Query["id"]获取值
 	Query map[string]interface{}
-	// 模板数据
+	// 模板引擎中变量数据
 	Data map[interface{}]interface{}
 	// 如果母版页存在 则该内容会被填充到模板页的 .LayoutContent 变量中
 	tplPath        string
