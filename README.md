@@ -1,5 +1,8 @@
 # freeFishGo
 golang 通过结构体反射实现的典型的mvc架构 尝试可以看代码文件中examples/main.go
+
+# 详细文档地址访问 http://freefishgo.com
+
 ```go
 package main
 
