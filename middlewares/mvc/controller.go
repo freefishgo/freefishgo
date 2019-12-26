@@ -170,6 +170,7 @@ func isHaveHttpMethod(actionName string) bool {
 
 }
 
+// 单一路由设置结构体
 type ControllerActionInfo struct {
 	// 传设置控制器的方法
 	ControllerActionFuncName string
