@@ -1,4 +1,4 @@
-module github.com/freefishgo/freeFish
+module github.com/freefishgo/freeFishGo
 
 go 1.12
 
