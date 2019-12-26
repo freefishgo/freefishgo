@@ -14,7 +14,7 @@ go get github.com/freefishgo/freefishgo
 > If you already have `freefishgo` installed, updating `freefishgo` is simple:
 
 ```bash
-go get -u github.com/freefishgo/freefish
+go get -u github.com/freefishgo/freefishgo
 ```
 ## 使用案例
 
