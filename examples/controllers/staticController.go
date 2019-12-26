@@ -3,7 +3,8 @@ package controllers
 import (
 	"github.com/freefishgo/freeFishGo/examples/fishgo"
 	"github.com/freefishgo/freeFishGo/middlewares/mvc"
-	"io/ioutil"
+	"io"
+	"os"
 	"path/filepath"
 )
 
@@ -22,8 +23,8 @@ type data struct {
 
 // 提供静态资源服务
 func (static *staticController) StaticFile(d *data) {
-	if b, err := ioutil.ReadFile(filepath.Join("static", d.Path)); err == nil {
-		static.Response.Write(b)
+	if f, err := os.Open(filepath.Join("static", d.Path)); err == nil {
+		io.Copy(static.Response, f)
 	} else {
 		static.Response.WriteHeader(404)
 		static.Response.Write([]byte(err.Error()))
