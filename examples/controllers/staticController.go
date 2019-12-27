@@ -31,8 +31,8 @@ func (static *staticController) StaticFile(d *data) {
 	}
 }
 
-func (static *staticController) SetInfo() []*mvc.ControllerActionInfo {
-	tmp := make([]*mvc.ControllerActionInfo, 0)
-	tmp = append(tmp, &mvc.ControllerActionInfo{RouterPattern: "static/{path:allString}", ControllerActionFuncName: "StaticFile"})
+func (static *staticController) SetInfo() []*mvc.ControllerActionRouter {
+	tmp := make([]*mvc.ControllerActionRouter, 0)
+	tmp = append(tmp, &mvc.ControllerActionRouter{RouterPattern: "static/{path:allString}", ControllerActionFuncName: "StaticFile"})
 	return tmp
 }

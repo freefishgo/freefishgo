@@ -17,9 +17,9 @@ func init() {
 }
 
 // OverwriteRouter()特殊定制指定action的路由
-func (c *MainController) OverwriteRouter() []*mvc.ControllerActionInfo {
-	tmp := make([]*mvc.ControllerActionInfo, 0)
-	tmp = append(tmp, &mvc.ControllerActionInfo{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
+func (c *MainController) OverwriteRouter() []*mvc.ControllerActionRouter {
+	tmp := make([]*mvc.ControllerActionRouter, 0)
+	tmp = append(tmp, &mvc.ControllerActionRouter{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
 	return tmp
 }
 
@@ -42,7 +42,7 @@ func (c *MainController) MyControllerActionStrut(Test *Test) {
 
 // 由于重写Controller的SetInfo方法
 //
-//&router.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"}
+//&router.ControllerActionRouter{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"}
 
 //所以实际路由为:/任意字符串/main/layoutTest/任意字符串er
 func (c *MainController) LayoutTestGet(Test *Test) {

@@ -41,9 +41,9 @@ func (cr *controllerRegister) AddMainRouter(ctlList ...*MainRouter) {
 		if v.HomeController != "" && v.IndexAction != "" {
 			v.IndexAction = replaceActionName(v.IndexAction)
 			v.HomeController = strings.ToLower(v.HomeController)
-			cr.tree.ControllerModelList.AddControllerModelList(&ControllerActionInfo{RouterPattern: "/", controllerName: v.HomeController, actionName: v.IndexAction})
+			cr.tree.ControllerModelList.AddControllerModelList(&ControllerActionRouter{RouterPattern: "/", controllerName: v.HomeController, actionName: v.IndexAction})
 		}
-		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionInfo{RouterPattern: v.RouterPattern})
+		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionRouter{RouterPattern: v.RouterPattern})
 	}
 
 }
@@ -51,7 +51,7 @@ func (cr *controllerRegister) AddMainRouter(ctlList ...*MainRouter) {
 // 如果主路由为空注册一个默认主路由
 func (cr *controllerRegister) MainRouterNil() {
 	if cr.tree.MainRouterList == nil || len(cr.tree.MainRouterList) == 0 {
-		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionInfo{RouterPattern: "/{ Controller}/{Action}"})
+		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionRouter{RouterPattern: "/{ Controller}/{Action}"})
 	}
 }
 

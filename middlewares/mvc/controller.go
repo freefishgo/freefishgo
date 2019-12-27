@@ -64,7 +64,7 @@ func (c *Controller) getController() *Controller {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	OverwriteRouter() []*ControllerActionInfo
+	OverwriteRouter() []*ControllerActionRouter
 	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
@@ -175,7 +175,7 @@ func isHaveHttpMethod(actionName string) bool {
 }
 
 // 单一路由设置结构体
-type ControllerActionInfo struct {
+type ControllerActionRouter struct {
 	// 传设置控制器的方法
 	ControllerActionFuncName string
 	//路由设置  如：/{Controller}/{Action}/{id:int}
@@ -189,8 +189,8 @@ type ControllerActionInfo struct {
 }
 
 // 控制器属性设置 路由变量路由中只能出现一次
-func (c *Controller) OverwriteRouter() []*ControllerActionInfo {
-	return make([]*ControllerActionInfo, 0)
+func (c *Controller) OverwriteRouter() []*ControllerActionRouter {
+	return nil
 }
 
 // 控制器注册
