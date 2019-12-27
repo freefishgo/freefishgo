@@ -21,7 +21,7 @@ go get github.com/freefishgo/freefishgo
 ```bash
 go get -u github.com/freefishgo/freefishgo
 ```
-> 如果你想快速构建项目 请查看 https://github.com/freefishgo/freefish
+# 如果你想快速构建项目 请查看 https://github.com/freefishgo/freefish
 
 ## 使用案例
 
