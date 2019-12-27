@@ -104,6 +104,9 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		tree.CloseMainRouter = map[string]map[string]bool{}
 	}
 	controllerActionInfoList := (c.sonController).OverwriteRouter()
+	if controllerActionInfoList == nil {
+		return tree
+	}
 	for _, v := range controllerActionInfoList {
 		_, ok := getType.MethodByName(v.ControllerActionFuncName)
 		if !ok {
