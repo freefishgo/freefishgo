@@ -1,4 +1,4 @@
-package freeFishGo
+package freefishgo
 
 import (
 	"crypto/rand"

@@ -1,4 +1,4 @@
-package freeFishGo
+package freefishgo
 
 import (
 	"log"
@@ -18,6 +18,7 @@ func checkDefaultApplicationBuilderNil() {
 	if DefaultConfig == nil {
 		DefaultConfig = NewConfig()
 	}
+	DefaultApplicationBuilder.Config = DefaultConfig
 }
 
 // ApplicationBuilder管道构造器

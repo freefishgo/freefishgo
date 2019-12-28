@@ -1,9 +1,7 @@
 package mvc
 
 import (
-	"github.com/freefishgo/freefishgo"
-	"os"
-	"path/filepath"
+	freeFishGo "github.com/freefishgo/freefishgo"
 )
 
 // 默认的MvcWebConfig配置
@@ -32,8 +30,6 @@ func (mvc *MvcApp) LastInit(cnf *freeFishGo.Config) {
 
 // 实例化生成一个Mvc对象
 func NewFreeFishMvcApp() *MvcApp {
-	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	os.Chdir(dir)
 	freeFish := new(MvcApp)
 	freeFish.handlers = newControllerRegister()
 	freeFish.Config = freeFish.handlers.WebConfig
@@ -47,6 +43,8 @@ func checkDefaultMvcApp() {
 	if DefaultMvcWebConfig == nil {
 		DefaultMvcWebConfig = NewWebConfig()
 	}
+	DefaultMvcApp.Config = DefaultMvcWebConfig
+	DefaultMvcApp.handlers.WebConfig = DefaultMvcWebConfig
 }
 
 // 将Controller控制器注册到Mvc框架对象中 即使添加路由动作
@@ -59,7 +57,7 @@ func (app *MvcApp) AddHandlers(ic ...IController) {
 // 将Controller控制器注册到默认的Mvc框架对象中 即使添加路由动作
 func AddHandlers(ic ...IController) {
 	checkDefaultMvcApp()
-	DefaultMvcApp.AddHandlers()
+	DefaultMvcApp.AddHandlers(ic...)
 }
 
 // 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}/{allString}`

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/freefishgo/freeFishGo"
+	freeFishGo "github.com/freefishgo/freefishgo"
 	"html/template"
 	"io/ioutil"
 	"net/url"

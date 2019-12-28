@@ -1,7 +1,7 @@
 package printTimeMiddleware
 
 import (
-	"github.com/freefishgo/freefishgo"
+	freeFishGo "github.com/freefishgo/freefishgo"
 	"log"
 	"strconv"
 	"time"

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/freefishgo/freeFishGo/middlewares/mvc"
+	"github.com/freefishgo/freefishgo/middlewares/mvc"
 	"io"
 	"os"
 	"path/filepath"

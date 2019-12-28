@@ -1,6 +1,8 @@
 package mvc
 
-import "github.com/freefishgo/freeFishGo"
+import (
+	freeFishGo "github.com/freefishgo/freefishgo"
+)
 
 type MvcWebConfig struct {
 	// 是否启用开发模式

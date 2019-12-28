@@ -1,7 +1,7 @@
 package mvc
 
 import (
-	"github.com/freefishgo/freeFishGo"
+	freeFishGo "github.com/freefishgo/freefishgo"
 	"reflect"
 	"regexp"
 	"strings"

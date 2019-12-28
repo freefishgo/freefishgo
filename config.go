@@ -1,4 +1,4 @@
-package freeFishGo
+package freefishgo
 
 import (
 	"time"
@@ -68,7 +68,7 @@ func NewConfig() *Config {
 			EnableHTTP:    true,
 			HTTPAddr:      "",
 			HTTPPort:      8080,
-			EnableHTTPS:   true,
+			EnableHTTPS:   false,
 			HTTPSAddr:     "",
 			HTTPSPort:     8081,
 			HTTPSCertFile: "server.pem",
