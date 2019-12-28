@@ -7,13 +7,34 @@ import (
 	"strconv"
 )
 
+// DefaultApplicationBuilder is the default ApplicationBuilder used by Serve.
+var DefaultApplicationBuilder *ApplicationBuilder
+var DefaultConfig *Config
+
+func checkDefaultApplicationBuilderNil() {
+	if DefaultApplicationBuilder == nil {
+		DefaultApplicationBuilder = NewFreeFishApplicationBuilder()
+	}
+	if DefaultConfig == nil {
+		DefaultConfig = NewConfig()
+	}
+}
+
+// ApplicationBuilder管道构造器
 type ApplicationBuilder struct {
 	Config  *Config
 	handler *applicationHandler
 }
 
+// 向管道注入session去数据的接口
 func (app *ApplicationBuilder) InjectionSession(session ISession) {
 	app.handler.session = session
+}
+
+// 向默认管道注入session去数据的接口
+func InjectionSession(session ISession) {
+	checkDefaultApplicationBuilderNil()
+	DefaultApplicationBuilder.InjectionSession(session)
 }
 
 // 创建一个ApplicationBuilder管道
@@ -24,8 +45,14 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	return freeFish
 }
 
+// 启动默认中间件web服务
+func Run() <-chan error {
+	checkDefaultApplicationBuilderNil()
+	return DefaultApplicationBuilder.Run()
+}
+
 // 启动web服务
-func (app *ApplicationBuilder) Run() {
+func (app *ApplicationBuilder) Run() <-chan error {
 	app.middlewareSorting()
 	app.handler.config = app.Config
 	errChan := make(chan error)
@@ -61,13 +88,7 @@ func (app *ApplicationBuilder) Run() {
 			}).ListenAndServeTLS(app.Config.Listen.HTTPSCertFile, app.Config.Listen.HTTPSKeyFile)
 		}()
 	}
-	for {
-		select {
-		case err := <-errChan:
-			panic(err)
-		}
-	}
-
+	return errChan
 }
 
 func newApplicationHandler() *applicationHandler {
@@ -123,6 +144,7 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	}
 }
 
+// 下一个中间件
 type Next func(*HttpContext) *HttpContext
 
 // 中间件类型接口
@@ -131,6 +153,7 @@ type IMiddleware interface {
 	//注册框架后 框架会自动调用这个函数
 	LastInit(*Config)
 }
+
 type MiddlewareLink struct {
 	val  IMiddleware
 	next *MiddlewareLink
@@ -142,12 +165,17 @@ func (link *MiddlewareLink) innerNext(ctx *HttpContext) *HttpContext {
 }
 
 // 中间件注册接口
-func (app *ApplicationBuilder) UseMiddleware(middleware IMiddleware) *ApplicationBuilder {
+func (app *ApplicationBuilder) UseMiddleware(middleware IMiddleware) {
 	if app.handler.middlewareList == nil {
 		app.handler.middlewareList = []IMiddleware{}
 	}
 	app.handler.middlewareList = append(app.handler.middlewareList, middleware)
-	return app
+}
+
+// 向默认中间件注册接口
+func UseMiddleware(middleware IMiddleware) {
+	checkDefaultApplicationBuilderNil()
+	DefaultApplicationBuilder.UseMiddleware(middleware)
 }
 
 // 中间件排序

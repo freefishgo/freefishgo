@@ -1,10 +1,16 @@
 package mvc
 
 import (
-	"github.com/freefishgo/freeFishGo"
+	"github.com/freefishgo/freefishgo"
 	"os"
 	"path/filepath"
 )
+
+// 默认的MvcWebConfig配置
+var DefaultMvcWebConfig *MvcWebConfig
+
+// 默认的MvcApp
+var DefaultMvcApp *MvcApp
 
 type MvcApp struct {
 	handlers *controllerRegister
@@ -34,11 +40,26 @@ func NewFreeFishMvcApp() *MvcApp {
 	return freeFish
 }
 
+func checkDefaultMvcApp() {
+	if DefaultMvcApp == nil {
+		DefaultMvcApp = NewFreeFishMvcApp()
+	}
+	if DefaultMvcWebConfig == nil {
+		DefaultMvcWebConfig = NewWebConfig()
+	}
+}
+
 // 将Controller控制器注册到Mvc框架对象中 即使添加路由动作
 func (app *MvcApp) AddHandlers(ic ...IController) {
 	for i := 0; i < len(ic); i++ {
 		app.handlers.AddHandlers(ic[i])
 	}
+}
+
+// 将Controller控制器注册到默认的Mvc框架对象中 即使添加路由动作
+func AddHandlers(ic ...IController) {
+	checkDefaultMvcApp()
+	DefaultMvcApp.AddHandlers()
 }
 
 // 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}/{allString}`
@@ -56,6 +77,14 @@ func (app *MvcApp) AddMainRouter(list ...*MainRouter) {
 			app.handlers.AddMainRouter(v)
 		}
 	}
+}
+
+// 默认mvc框架 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}/{allString}`
+//
+// 如果不进行路由注册  默认为/{ Controller}/{Action}   router.ControllerActionInfo中 ControllerActionFuncName不用设置  设置了也不会生效
+func AddMainRouter(list ...*MainRouter) {
+	checkDefaultMvcApp()
+	DefaultMvcApp.AddMainRouter(list...)
 }
 
 // 主路由

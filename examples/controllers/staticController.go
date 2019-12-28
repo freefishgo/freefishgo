@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/freefishgo/freeFishGo/examples/fishgo"
 	"github.com/freefishgo/freeFishGo/middlewares/mvc"
 	"io"
 	"os"
@@ -14,7 +13,7 @@ type staticController struct {
 
 // 控制器注册
 func init() {
-	fishgo.Mvc.AddHandlers(&staticController{})
+	mvc.AddHandlers(&staticController{})
 }
 
 type data struct {

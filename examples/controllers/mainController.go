@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/freefishgo/freeFishGo/examples/fishgo"
 	"github.com/freefishgo/freeFishGo/middlewares/mvc"
 	"log"
 )
@@ -13,7 +12,7 @@ type MainController struct {
 
 // 注册控制器
 func init() {
-	fishgo.Mvc.AddHandlers(&MainController{})
+	mvc.AddHandlers(&MainController{})
 }
 
 // OverwriteRouter()特殊定制指定action的路由
