@@ -1,7 +1,7 @@
 package httpToHttps
 
 import (
-	"github.com/freefishgo/freeFishGo"
+	"github.com/freefishgo/freefishgo"
 	"strconv"
 	"strings"
 )
