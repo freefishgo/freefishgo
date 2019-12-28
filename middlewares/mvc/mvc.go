@@ -19,12 +19,13 @@ type MvcApp struct {
 // Web服务逻辑处理程序
 func (mvc *MvcApp) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) (c *freeFishGo.HttpContext) {
 	c = ctx
-	ctx = mvc.handlers.AnalysisRequest(ctx, mvc.Config)
+	ctx = mvc.handlers.AnalysisRequest(ctx)
 	return next(ctx)
 }
 
 // 框架注册完成时  进行最后的配置
 func (mvc *MvcApp) LastInit(cnf *freeFishGo.Config) {
+	mvc.handlers.WebConfig = mvc.Config
 	mvc.handlers.MainRouterNil()
 }
 

@@ -59,14 +59,13 @@ func (cr *controllerRegister) MainRouterNil() {
 //func (c *controllerRegister) Middleware(ctx *freeFishGo.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext, cnf *MvcWebConfig) (cont *freeFishGo.HttpContext) {
-	c.WebConfig = cnf
+func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont *freeFishGo.HttpContext) {
 	cont = ctx
 	defer func() {
 		if err := recover(); err != nil {
 			err, _ := err.(error)
-			if cnf.RecoverPanic {
-				cnf.RecoverFunc(ctx, err, debug.Stack())
+			if c.WebConfig.RecoverPanic {
+				c.WebConfig.RecoverFunc(ctx, err, debug.Stack())
 			} else {
 				if ctx != nil {
 					ctx.Response.WriteHeader(500)
