@@ -163,8 +163,9 @@ type Next func(*HttpContext) *HttpContext
 
 // 中间件类型接口
 type IMiddleware interface {
+	// 中间件的逻辑处理函数 框架会调用
 	Middleware(ctx *HttpContext, next Next) *HttpContext
-	//注册框架后 框架会自动调用这个函数
+	// 注册框架后 框架会自动调用这个函数
 	LastInit(*Config)
 }
 
