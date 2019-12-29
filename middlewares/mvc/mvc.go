@@ -61,14 +61,14 @@ func checkDefaultMvcApp() {
 	DefaultMvcApp.handlers.WebConfig = DefaultMvcWebConfig
 }
 
-// 将Controller控制器注册到Mvc框架对象中 即使添加路由动作
+// 将Controller控制器注册到Mvc框架对象中 即是添加路由动作
 func (app *MvcApp) AddHandlers(ic ...IController) {
 	for i := 0; i < len(ic); i++ {
 		app.handlers.AddHandlers(ic[i])
 	}
 }
 
-// 将Controller控制器注册到默认的Mvc框架对象中 即使添加路由动作
+// 将Controller控制器注册到默认的Mvc框架对象中 即是添加路由动作
 func AddHandlers(ic ...IController) {
 	checkDefaultMvcApp()
 	DefaultMvcApp.AddHandlers(ic...)
