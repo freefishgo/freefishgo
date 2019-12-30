@@ -119,7 +119,8 @@ type applicationHandler struct {
 // http服务逻辑处理程序
 func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(HttpContext)
-	ctx.SetContext(rw, r)
+	ctx.setContext(rw, r)
+	ctx.Response.maxResponseCacheLen = app.config.MaxResponseCacheLen
 	if app.config.EnableSession {
 		ctx.Response.SetISession(app.session)
 		ctx.Response.SessionCookieName = app.config.SessionCookieName
@@ -154,8 +155,10 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.Response.NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 	if !ctx.Response.Started {
-		ctx.Response.ResponseWriter.WriteHeader(ctx.Response.ReadStatusCode())
+		ctx.Response.WriteHeader(ctx.Response.ReadStatusCode())
 	}
+	ctx.Response.IsWriteInCache = false
+	ctx.Response.Write(nil)
 }
 
 // 下一个中间件

@@ -36,10 +36,12 @@ type Response struct {
 	IsOpenGzip  bool
 	NeedGzipLen int
 	isGzip      bool
-	// 使用者自己定义需要在管道中传递的数据
-	MsgData map[interface{}]interface{}
-	//Cookies []*http.Cookie
+	MsgData     map[interface{}]interface{}
 
+	IsWriteInCache      bool
+	writeCache          []byte
+	maxResponseCacheLen int
+	//Cookies []*http.Cookie
 	sessionFunc        ISession
 	session            map[interface{}]interface{}
 	isGetSession       bool
@@ -177,16 +179,12 @@ func (r *Response) RemoveCookie(ck *http.Cookie) {
 	http.SetCookie(r, ck)
 }
 
-type buf struct {
-	r *Response
-}
-
-func (buf *buf) Write(p []byte) (n int, err error) {
-	return buf.r.ResponseWriter.Write(p)
-}
-
 // 写入前端的数据
 func (r *Response) Write(b []byte) (int, error) {
+	if r.IsWriteInCache && len(r.writeCache) < r.maxResponseCacheLen {
+		r.writeCache = append(r.writeCache, b...)
+		return len(b), nil
+	}
 	defer func() {
 		r.Started = true
 	}()
@@ -203,9 +201,10 @@ func (r *Response) Write(b []byte) (int, error) {
 			r.ResponseWriter.WriteHeader(r.status)
 		}
 		if r.Gzip == nil {
-			buf := buf{r: r}
-			r.Gzip = gzip.NewWriter(&buf)
+			r.Gzip = gzip.NewWriter(r.ResponseWriter)
 		}
+		r.Gzip.Write(r.writeCache)
+		r.writeCache = nil
 		return r.Gzip.Write(b)
 	}
 	if !r.Started {
@@ -214,7 +213,19 @@ func (r *Response) Write(b []byte) (int, error) {
 		}
 		r.ResponseWriter.WriteHeader(r.status)
 	}
+	r.ResponseWriter.Write(r.writeCache)
+	r.writeCache = nil
 	return r.ResponseWriter.Write(b)
+}
+
+// 获取写入前端的缓存
+func (r *Response) GetWriteCache() []byte {
+	return r.writeCache
+}
+
+// 清除写入前端的缓存
+func (r *Response) ClearWriteCache() {
+	r.writeCache = nil
 }
 
 // 写入前端的json数据

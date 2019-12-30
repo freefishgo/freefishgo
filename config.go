@@ -29,6 +29,8 @@ type Config struct {
 	EnableSession bool
 	// Session的存在时间
 	SessionAliveTime time.Duration
+	// 响应数据最大缓存长度
+	MaxResponseCacheLen int
 	// Session的客户端Cookie名字
 	SessionCookieName string
 	// 是否在管道最末端捕获Panic，以取代框架的处理Panic函数
@@ -69,13 +71,14 @@ const (
 
 func NewConfig() *Config {
 	return &Config{
-		AppName:           "freeFishGo",
-		ServerName:        "freeFishGoServer:" + VERSION,
-		EnableGzip:        true,
-		NeedGzipLen:       1 << 11,
-		EnableSession:     true,
-		SessionAliveTime:  time.Minute * 20,
-		SessionCookieName: "fishCookie",
+		AppName:             "freeFishGo",
+		ServerName:          "freeFishGoServer:" + VERSION,
+		EnableGzip:          true,
+		NeedGzipLen:         1 << 11,
+		EnableSession:       true,
+		SessionAliveTime:    time.Minute * 20,
+		SessionCookieName:   "fishCookie",
+		MaxResponseCacheLen: 2 << 12,
 		Listen: Listen{
 			ServerTimeOut: 0,
 			EnableHTTP:    true,

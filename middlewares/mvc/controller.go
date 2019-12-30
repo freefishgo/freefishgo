@@ -40,10 +40,11 @@ type Controller struct {
 	// 模板引擎中变量数据
 	Data map[interface{}]interface{}
 	// 如果母版页存在 则该内容会被填充到模板页的 .LayoutContent 变量中
-	tplPath        string
-	isUseTplPath   bool
-	controllerName string
-	actionName     string
+	isStopController bool
+	tplPath          string
+	isUseTplPath     bool
+	controllerName   string
+	actionName       string
 	// 母版页地址
 	LayoutPath string
 	//母版页子页面地址
@@ -81,6 +82,8 @@ type IController interface {
 	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
+	Prepare()
+	Finish()
 }
 
 // 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
@@ -206,6 +209,21 @@ func (c *Controller) OverwriteRouter() []*ControllerActionRouter {
 	return nil
 }
 
+// 控制器执行前调用
+func (c *Controller) Prepare() {
+	//log.Println("父类的Prepare")
+}
+
+// 控制器结束时调用
+func (c *Controller) Finish() {
+	//log.Println("父类的Finish")
+}
+
+// 停止执行控制器
+func (c *Controller) StopRun() {
+	c.isStopController = true
+}
+
 // 控制器注册
 func (c *Controller) setSonController(son IController) {
 	c.sonController = son
@@ -221,7 +239,7 @@ func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
 // 过滤掉本地方法
 func isNotSkin(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true}
+		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true, "Prepare": true, "StopRun": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}

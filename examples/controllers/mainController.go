@@ -15,6 +15,15 @@ func init() {
 	mvc.AddHandlers(&MainController{})
 }
 
+func (c *MainController) Prepare() {
+	log.Println("子类的Prepare")
+}
+
+// 控制器结束时调用
+func (c *MainController) Finish() {
+	log.Println("子类的Finish")
+}
+
 // OverwriteRouter()特殊定制指定action的路由
 func (c *MainController) OverwriteRouter() []*mvc.ControllerActionRouter {
 	tmp := make([]*mvc.ControllerActionRouter, 0)
@@ -45,14 +54,7 @@ func (c *MainController) MyControllerActionStrut(Test *Test) {
 
 //所以实际路由为:/任意字符串/main/layoutTest/任意字符串er
 func (c *MainController) LayoutTestGet(Test *Test) {
-	session := c.Response.GetSession("SetSession")
-	if session == nil {
-		c.Response.SetSession("SetSession", "成功了")
-		log.Println("session为空")
-	} else {
-		log.Println("session不为空 值为:" + session.(string))
-		c.Response.SetSession("SetSession", "重置成功了")
-	}
+	log.Println("控制器执行成功")
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
 	c.LayoutSections = map[string]string{}

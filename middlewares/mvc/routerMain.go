@@ -97,29 +97,35 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 	action := reflect.New(ctl.ControllerFunc)
 	var ic IController = action.Interface().(IController)
 	ic.initController(ctx)
-	ctx.Request.ParseForm()
-	data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
-	ic.setQuery(data)
-	if ctl.ControllerActionParameterStruct != nil {
-		var param interface{}
-		param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-		dataString, err := json.Marshal(data)
-		if err != nil {
-			panic(err.Error())
-		}
-		json.Unmarshal(dataString, param)
-		action.MethodByName(ctl.ControllerAction).Call(getValues(param))
+	ic.Prepare()
+	con := ic.getController()
+	if con.isStopController {
+		return ctx
 	} else {
-		action.MethodByName(ctl.ControllerAction).Call(nil)
-	}
-	if !ctx.Response.Started {
-		con := ic.getController()
-		con.controllerName = ctl.ControllerName
-		con.actionName = ctl.ControllerAction
-		err := c.tmpHtml(con)
-		if err != nil {
-			panic(err)
+		ctx.Request.ParseForm()
+		data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
+		ic.setQuery(data)
+		if ctl.ControllerActionParameterStruct != nil {
+			var param interface{}
+			param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
+			dataString, err := json.Marshal(data)
+			if err != nil {
+				panic(err.Error())
+			}
+			json.Unmarshal(dataString, param)
+			action.MethodByName(ctl.ControllerAction).Call(getValues(param))
+		} else {
+			action.MethodByName(ctl.ControllerAction).Call(nil)
 		}
+		if !ctx.Response.Started {
+			con.controllerName = ctl.ControllerName
+			con.actionName = ctl.ControllerAction
+			err := c.tmpHtml(con)
+			if err != nil {
+				panic(err)
+			}
+		}
+		ic.Finish()
 	}
 	return ctx
 }

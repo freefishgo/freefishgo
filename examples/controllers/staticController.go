@@ -30,7 +30,7 @@ func (static *staticController) StaticFile(d *data) {
 	}
 }
 
-func (static *staticController) SetInfo() []*mvc.ControllerActionRouter {
+func (static *staticController) OverwriteRouter() []*mvc.ControllerActionRouter {
 	tmp := make([]*mvc.ControllerActionRouter, 0)
 	tmp = append(tmp, &mvc.ControllerActionRouter{RouterPattern: "static/{path:allString}", ControllerActionFuncName: "StaticFile"})
 	return tmp
