@@ -36,7 +36,8 @@ type Response struct {
 	IsOpenGzip  bool
 	NeedGzipLen int
 	isGzip      bool
-	MsgData     map[interface{}]interface{}
+	// 使用者自己定义需要在管道中传递的数据
+	MsgData map[interface{}]interface{}
 	//Cookies []*http.Cookie
 
 	sessionFunc        ISession
