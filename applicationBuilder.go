@@ -154,9 +154,6 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.Response.IsOpenGzip = app.config.EnableGzip
 	ctx.Response.NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	if !ctx.Response.Started {
-		ctx.Response.WriteHeader(ctx.Response.ReadStatusCode())
-	}
 	ctx.Response.IsWriteInCache = false
 	ctx.Response.Write(nil)
 }
