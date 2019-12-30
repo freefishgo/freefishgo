@@ -239,7 +239,7 @@ func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
 // 过滤掉本地方法
 func isNotSkip(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true, "Prepare": true, "SkipController": true}
+		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true, "Prepare": true, "SkipController": true, "Finish": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}
