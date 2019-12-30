@@ -120,19 +120,19 @@ type applicationHandler struct {
 func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(HttpContext)
 	ctx.setContext(rw, r)
-	ctx.Response.maxResponseCacheLen = app.config.MaxResponseCacheLen
+	ctx.Response.getYourself().maxResponseCacheLen = app.config.MaxResponseCacheLen
 	if app.config.EnableSession {
 		ctx.Response.SetISession(app.session)
-		ctx.Response.SessionCookieName = app.config.SessionCookieName
-		ctx.Response.SessionAliveTime = app.config.SessionAliveTime
+		ctx.Response.getYourself().SessionCookieName = app.config.SessionCookieName
+		ctx.Response.getYourself().SessionAliveTime = app.config.SessionAliveTime
 		cookie, err := ctx.Request.Cookie(app.config.SessionCookieName)
 		if err == nil {
-			ctx.Response.SessionId = cookie.Value
+			ctx.Response.getYourself().SessionId = cookie.Value
 		}
 	}
 	defer func() {
-		if ctx != nil && ctx.Response.Gzip != nil {
-			ctx.Response.Gzip.Close()
+		if ctx != nil && ctx.Response.getYourself().Gzip != nil {
+			ctx.Response.getYourself().Gzip.Close()
 		}
 	}()
 	defer func() {
@@ -151,10 +151,10 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 			}
 		}
 	}()
-	ctx.Response.IsOpenGzip = app.config.EnableGzip
-	ctx.Response.NeedGzipLen = app.config.NeedGzipLen
+	ctx.Response.getYourself().IsOpenGzip = app.config.EnableGzip
+	ctx.Response.getYourself().NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	ctx.Response.IsWriteInCache = false
+	ctx.Response.getYourself().isWriteInCache = false
 	ctx.Response.Write(nil)
 }
 

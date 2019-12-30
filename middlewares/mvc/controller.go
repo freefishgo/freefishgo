@@ -30,7 +30,7 @@ type controllerInfo struct {
 // http请求逻辑控制器
 type Controller struct {
 	//响应前端的处理 不建议使用
-	Response *freeFishGo.Response
+	Response freeFishGo.IResponse
 	// 和前端一切的数据  都可以通过他获取
 	Request        *freeFishGo.Request
 	controllerInfo *controllerInfo
@@ -231,7 +231,7 @@ func (c *Controller) setSonController(son IController) {
 
 // http请求上下文注册
 func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
-	c.Response = &ctx.Response
+	c.Response = ctx.Response
 	c.Request = ctx.Request
 	c.Data = map[interface{}]interface{}{}
 }

@@ -117,7 +117,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 		} else {
 			action.MethodByName(ctl.ControllerAction).Call(nil)
 		}
-		if !ctx.Response.Started {
+		if !ctx.Response.GetStarted() {
 			con.controllerName = ctl.ControllerName
 			con.actionName = ctl.ControllerAction
 			err := c.tmpHtml(con)

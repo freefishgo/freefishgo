@@ -25,6 +25,42 @@ import (
 	"time"
 )
 
+type IResponse interface {
+	// 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
+	WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.Conn, err error)
+	Hijack() (net.Conn, *bufio.ReadWriter, error)
+	SetISession(i ISession)
+	getSessionKeyValue() (string, error)
+	RemoveSession()
+	GetSession(key string) interface{}
+	getSession() error
+	UpdateSession() error
+	SetSession(key string, val interface{})
+	// 设置Cookie
+	SetCookie(c *http.Cookie)
+	// 设置Cookie
+	SetCookieUseKeyValue(key string, val string)
+	// 通过cookie名字移除Cookie
+	RemoveCookieByName(name string)
+	WriteHeader(statusCode int)
+	ReadStatusCode() int
+	// 通过cookie移除Cookie
+	RemoveCookie(ck *http.Cookie)
+	// 写入前端的数据
+	Write(b []byte) (int, error)
+	// 获取写入前端的缓存
+	GetWriteCache() []byte
+	// 清除写入前端的缓存
+	ClearWriteCache()
+	// 写入前端的json数据
+	WriteJson(i interface{}) error
+	Redirect(redirectPath string)
+	getYourself() *Response
+	GetStarted() bool
+	GetIsWriteInCache() bool
+	SetIsWriteInCache(bool)
+}
+
 type Response struct {
 	http.ResponseWriter
 	req *http.Request
@@ -38,7 +74,7 @@ type Response struct {
 	isGzip      bool
 	MsgData     map[interface{}]interface{}
 
-	IsWriteInCache      bool
+	isWriteInCache      bool
 	writeCache          []byte
 	maxResponseCacheLen int
 	//Cookies []*http.Cookie
@@ -50,6 +86,22 @@ type Response struct {
 	SessionAliveTime   time.Duration
 	isUpdateSessionKey bool
 	sessionIsUpdate    bool
+}
+
+func (r *Response) SetIsWriteInCache(b bool) {
+	r.isWriteInCache = b
+}
+
+func (r *Response) GetIsWriteInCache() bool {
+	return r.isWriteInCache
+}
+
+func (r *Response) GetStarted() bool {
+	return r.Started
+}
+
+func (r *Response) getYourself() *Response {
+	return r
 }
 
 var upgrade = websocket.Upgrader{
@@ -181,23 +233,27 @@ func (r *Response) RemoveCookie(ck *http.Cookie) {
 
 // 写入前端的数据
 func (r *Response) Write(b []byte) (int, error) {
-	if r.IsWriteInCache && len(r.writeCache) < r.maxResponseCacheLen {
+	if r.isWriteInCache && len(r.writeCache) < r.maxResponseCacheLen {
 		r.writeCache = append(r.writeCache, b...)
 		return len(b), nil
 	}
 	defer func() {
 		r.Started = true
 	}()
-	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b) && !r.Started) {
+	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b)+len(r.writeCache) && !r.Started) {
 		if !r.Started {
 			if r.SessionId != "" && r.isUpdateSessionKey {
 				r.SetCookieUseKeyValue(r.SessionCookieName, r.SessionId)
 			}
 			r.isGzip = true
-			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
 			if r.ResponseWriter.Header().Get("Content-Type") == "" {
-				r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(b))
+				if r.writeCache == nil {
+					r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(b))
+				} else {
+					r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(r.writeCache))
+				}
 			}
+			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
 			r.ResponseWriter.WriteHeader(r.status)
 		}
 		if r.Gzip == nil {

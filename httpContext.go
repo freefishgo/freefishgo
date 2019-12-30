@@ -16,12 +16,12 @@ package freefishgo
 import "net/http"
 
 type HttpContext struct {
-	Response Response
+	Response IResponse
 	Request  *Request
 }
 
 func (h *HttpContext) setContext(rw http.ResponseWriter, r *http.Request) {
-	h.Response = Response{ResponseWriter: rw, req: r, Started: false}
+	h.Response = &Response{ResponseWriter: rw, req: r, Started: false}
 	h.Response.WriteHeader(200)
 	h.Request = &Request{Request: r}
 }
