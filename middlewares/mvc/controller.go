@@ -94,7 +94,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	for i := 0; i < getType.NumMethod(); i++ {
 		me := getType.Method(i)
 		actionName := me.Name
-		if !isNotSkin(actionName) {
+		if !isNotSkip(actionName) {
 			continue
 		}
 		var controllerActionParameterStruct reflect.Type = nil
@@ -220,7 +220,7 @@ func (c *Controller) Finish() {
 }
 
 // 停止执行控制器
-func (c *Controller) StopRun() {
+func (c *Controller) SkipController() {
 	c.isStopController = true
 }
 
@@ -237,9 +237,9 @@ func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
 }
 
 // 过滤掉本地方法
-func isNotSkin(methodName string) bool {
+func isNotSkip(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true, "Prepare": true, "StopRun": true}
+		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true, "Prepare": true, "SkipController": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}
