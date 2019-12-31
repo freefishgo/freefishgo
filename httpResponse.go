@@ -29,7 +29,7 @@ type IResponse interface {
 	// 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
 	WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.Conn, err error)
 	Hijack() (net.Conn, *bufio.ReadWriter, error)
-	SetISession(i ISession)
+	setISession(i ISession)
 	getSessionKeyValue() (string, error)
 	RemoveSession()
 	GetSession(key string) interface{}
@@ -126,7 +126,7 @@ func (r *Response) WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.C
 func (r *Response) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return r.ResponseWriter.(http.Hijacker).Hijack()
 }
-func (r *Response) SetISession(i ISession) {
+func (r *Response) setISession(i ISession) {
 	r.sessionFunc = i
 }
 

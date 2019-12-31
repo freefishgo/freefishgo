@@ -65,6 +65,15 @@ func Run() <-chan error {
 	return DefaultApplicationBuilder.Run()
 }
 
+func SetISession(I ISession) {
+	checkDefaultApplicationBuilderNil()
+	DefaultApplicationBuilder.SetISession(I)
+}
+
+func (app *ApplicationBuilder) SetISession(I ISession) {
+	app.handler.session = I
+}
+
 // 启动web服务
 func (app *ApplicationBuilder) Run() <-chan error {
 	app.middlewareSorting()
@@ -122,7 +131,7 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.setContext(rw, r)
 	ctx.Response.getYourself().maxResponseCacheLen = app.config.MaxResponseCacheLen
 	if app.config.EnableSession {
-		ctx.Response.SetISession(app.session)
+		ctx.Response.setISession(app.session)
 		ctx.Response.getYourself().SessionCookieName = app.config.SessionCookieName
 		ctx.Response.getYourself().SessionAliveTime = app.config.SessionAliveTime
 		cookie, err := ctx.Request.Cookie(app.config.SessionCookieName)
