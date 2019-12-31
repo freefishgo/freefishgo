@@ -153,6 +153,10 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 
 				if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 					if err := t.Execute(&buf, section); err == nil {
+						if c.Data == nil {
+							c.Response.Write(buf.Bytes())
+							return nil
+						}
 						if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(buf.String()); err == nil {
 							return t.Execute(c.Response, c.Data)
 						} else {
@@ -172,6 +176,10 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 			c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
 		}
 		if b, err := ctr.htmlTpl(c.tplPath); err == nil {
+			if c.Data == nil {
+				c.Response.Write([]byte(b))
+				return nil
+			}
 			// 创建一个新的模板，并且载入内容
 			if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
 				return t.Execute(c.Response, c.Data)
