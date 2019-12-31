@@ -59,6 +59,7 @@ type IResponse interface {
 	GetStarted() bool
 	GetIsWriteInCache() bool
 	SetIsWriteInCache(bool)
+	Header() http.Header
 }
 
 type Response struct {
