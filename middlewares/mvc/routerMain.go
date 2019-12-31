@@ -230,6 +230,9 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]
 		}
 	}
 	for k, val := range addKeyVal {
+		if k == "Action" || k == "Controller" {
+			continue
+		}
 		dic[k] = val
 	}
 	return dic
