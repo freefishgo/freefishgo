@@ -208,7 +208,7 @@ func (r *Response) SetCookie(c *http.Cookie) {
 
 // 设置Cookie
 func (r *Response) SetCookieUseKeyValue(key string, val string) {
-	http.SetCookie(r.ResponseWriter, &http.Cookie{Name: key, Value: val})
+	http.SetCookie(r.ResponseWriter, &http.Cookie{Name: key, Value: val, Path: "/"})
 }
 
 // 通过cookie名字移除Cookie
