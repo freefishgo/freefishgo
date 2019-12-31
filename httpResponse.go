@@ -21,7 +21,6 @@ import (
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
-	"regexp"
 	"time"
 )
 
@@ -288,14 +287,7 @@ func (r *Response) ClearWriteCache() {
 // 写入前端的json数据
 func (r *Response) WriteJson(i interface{}) error {
 	if b, err := json.Marshal(i); err == nil {
-		contentType := http.DetectContentType(b)
-		f := regexp.MustCompile(`(;[\ ]?charset=.*)`)
-		t := f.FindAllStringSubmatch(contentType, 1)
-		contentType = "application/json"
-		if len(t) > 0 && len(t[0]) > 0 {
-			contentType = contentType + t[0][0]
-		}
-		r.ResponseWriter.Header().Set("Content-Type", contentType)
+		r.ResponseWriter.Header().Set("Content-Type", "application/json")
 		_, err = r.Write(b)
 		return err
 	} else {
