@@ -24,10 +24,10 @@ func (c *MainController) Finish() {
 	log.Println("子类的Finish")
 }
 
-// OverwriteRouter()特殊定制指定action的路由
-func (c *MainController) OverwriteRouter() []*mvc.ControllerActionRouter {
-	tmp := make([]*mvc.ControllerActionRouter, 0)
-	tmp = append(tmp, &mvc.ControllerActionRouter{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
+// OverwriteActionRouter()特殊定制指定Action的路由
+func (c *MainController) OverwriteActionRouter() []*mvc.ActionRouter {
+	tmp := make([]*mvc.ActionRouter, 0)
+	tmp = append(tmp, &mvc.ActionRouter{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
 	return tmp
 }
 

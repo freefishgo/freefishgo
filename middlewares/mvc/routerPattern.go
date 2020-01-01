@@ -21,7 +21,7 @@ type freeFishUrl struct {
 }
 
 // 获取控制器名称
-func (f *freeFishUrl) GetControllerName(c *ControllerActionRouter) string {
+func (f *freeFishUrl) GetControllerName(c *ActionRouter) string {
 	if v, ok := f.OtherKeyMap["Controller"]; ok {
 		return v.(string)
 	} else {
@@ -30,7 +30,7 @@ func (f *freeFishUrl) GetControllerName(c *ControllerActionRouter) string {
 }
 
 // 获取动作名称
-func (f *freeFishUrl) GetControllerAction(c *ControllerActionRouter) string {
+func (f *freeFishUrl) GetControllerAction(c *ActionRouter) string {
 	if v, ok := f.OtherKeyMap["Action"]; ok {
 		return v.(string)
 	} else {

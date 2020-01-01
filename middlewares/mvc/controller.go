@@ -31,6 +31,9 @@ type controllerInfo struct {
 type Controller struct {
 	//响应前端的处理 不建议使用
 	Response freeFishGo.IResponse
+	// 重置控制器路由  必须包含{Action}变量
+	ControllerRouter *ControllerRouter
+	ActionRouterList []*ActionRouter
 	// 和前端一切的数据  都可以通过他获取
 	Request        *freeFishGo.Request
 	controllerInfo *controllerInfo
@@ -78,7 +81,6 @@ func (c *Controller) getController() *Controller {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	OverwriteRouter() []*ControllerActionRouter
 	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
@@ -119,7 +121,26 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	if tree.CloseMainRouter == nil {
 		tree.CloseMainRouter = map[string]map[string]bool{}
 	}
-	controllerActionInfoList := (c.sonController).OverwriteRouter()
+	if tree.CloseControllerRouter == nil {
+		tree.CloseControllerRouter = map[string]bool{}
+	}
+	controllerRouter := c.ControllerRouter
+	if controllerRouter != nil {
+		v := &ActionRouter{}
+		v.RouterPattern = controllerRouter.RouterPattern
+		v.controllerName = strings.ToLower(controllerName)
+		tree.CloseControllerRouter[v.controllerName] = true
+		//tree.CloseControllerRouter[actionRouter.controllerName]=actionRouter
+		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
+		if !f.MatchString(v.RouterPattern) {
+			panic("控制器路由注册时发现：控制器 " + getType.String() + "错误:错误原因为Controller注册时路由规则中必须含有 {Action}变量")
+		}
+		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
+		tree.ControllerRouterList = tree.ControllerRouterList.AddControllerModelList(v)
+
+	}
+	controllerActionInfoList := c.ActionRouterList
 	if controllerActionInfoList == nil {
 		return tree
 	}
@@ -153,7 +174,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
-		tree.ControllerModelList = tree.ControllerModelList.AddControllerModelList(v)
+		tree.ActionRouterList = tree.ActionRouterList.AddControllerModelList(v)
 	}
 	return tree
 }
@@ -190,8 +211,8 @@ func isHaveHttpMethod(actionName string) bool {
 
 }
 
-// 单一路由设置结构体
-type ControllerActionRouter struct {
+// 单一动作器路由设置结构体
+type ActionRouter struct {
 	// 传设置控制器的方法
 	ControllerActionFuncName string
 	//路由设置  如：/{Controller}/{Action}/{id:int}
@@ -204,9 +225,15 @@ type ControllerActionRouter struct {
 	patternMap map[string]int
 }
 
-// 控制器属性设置 路由变量路由中只能出现一次
-func (c *Controller) OverwriteRouter() []*ControllerActionRouter {
-	return nil
+// 单一控制器路由设置结构体，路由规则中必须包含`{Action}`变量
+type ControllerRouter struct {
+	//路由设置  如：/{Controller}/{Action}/{id:int}
+	// /home/index/123可以匹配成功
+	RouterPattern  string
+	controllerName string
+	patternRe      *regexp.Regexp
+	//正则匹配出来的变量地址映射变量映射
+	patternMap map[string]int
 }
 
 // 控制器执行前调用
@@ -239,7 +266,9 @@ func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
 // 过滤掉本地方法
 func isNotSkip(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
-		"OverwriteRouter": true, "SetTplPath": true, "UseTplPath": true, "Prepare": true, "SkipController": true, "Finish": true}
+		"OverwriteActionRouter": true, "SetTplPath": true,
+		"UseTplPath": true, "Prepare": true,
+		"SkipController": true, "Finish": true}
 	if _, ok := skinList[methodName]; ok {
 		return false
 	}

@@ -54,9 +54,9 @@ func (cr *controllerRegister) AddMainRouter(ctlList ...*MainRouter) {
 		if v.HomeController != "" && v.IndexAction != "" {
 			v.IndexAction = replaceActionName(v.IndexAction)
 			v.HomeController = strings.ToLower(v.HomeController)
-			cr.tree.ControllerModelList.AddControllerModelList(&ControllerActionRouter{RouterPattern: "/", controllerName: v.HomeController, actionName: v.IndexAction})
+			cr.tree.ActionRouterList = cr.tree.ActionRouterList.AddControllerModelList(&ActionRouter{RouterPattern: "/", controllerName: v.HomeController, actionName: v.IndexAction})
 		}
-		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionRouter{RouterPattern: v.RouterPattern})
+		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ActionRouter{RouterPattern: v.RouterPattern})
 	}
 
 }
@@ -64,7 +64,7 @@ func (cr *controllerRegister) AddMainRouter(ctlList ...*MainRouter) {
 // 如果主路由为空注册一个默认主路由
 func (cr *controllerRegister) MainRouterNil() {
 	if cr.tree.MainRouterList == nil || len(cr.tree.MainRouterList) == 0 {
-		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ControllerActionRouter{RouterPattern: "/{ Controller}/{Action}"})
+		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ActionRouter{RouterPattern: "/{ Controller}/{Action}"})
 	}
 }
 
@@ -252,8 +252,11 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
 			ff.controllerName = ff.GetControllerName(v)
 			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+				if c.tree.CloseControllerRouter[ff.controllerName] {
+					continue
+				}
 				if c.tree.CloseMainRouter[ff.controllerName][ff.controllerAction] {
-					break
+					continue
 				}
 				ff.ControllerInfo = v
 				return ff
@@ -261,7 +264,27 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		}
 	}
 
-	for _, v := range c.tree.ControllerModelList {
+	for _, v := range c.tree.ControllerRouterList {
+		sl := v.patternRe.FindStringSubmatch(path)
+		if len(sl) != 0 {
+			ff := new(freeFishUrl)
+			ff.OtherKeyMap = map[string]interface{}{}
+			for k, m := range v.patternMap {
+				ff.OtherKeyMap[k] = sl[m]
+			}
+			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
+			ff.controllerName = ff.GetControllerName(v)
+			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+				if c.tree.CloseMainRouter[ff.controllerName][ff.controllerAction] {
+					continue
+				}
+				ff.ControllerInfo = v
+				return ff
+			}
+		}
+	}
+
+	for _, v := range c.tree.ActionRouterList {
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)

@@ -34,18 +34,21 @@ import (
 //	controllerAction string           //控制器处理方法
 //}
 // 路由映射模型
-type controllerModelList map[string]*ControllerActionRouter
+type controllerModelList map[string]*ActionRouter
 
 type tree struct {
 	ControllerList map[string]map[string]*controllerInfo //静态路径
 	//主要路由节点
 	MainRouterList controllerModelList
-	// 路由映射模型
-	ControllerModelList controllerModelList
-	CloseMainRouter     map[string]map[string]bool
+	// 动作路由映射模型
+	ActionRouterList controllerModelList
+	// 控制器路由映射模型
+	ControllerRouterList  controllerModelList
+	CloseMainRouter       map[string]map[string]bool
+	CloseControllerRouter map[string]bool
 }
 
-func (c controllerModelList) AddControllerModelList(list ...*ControllerActionRouter) controllerModelList {
+func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) controllerModelList {
 	if c == nil {
 		c = controllerModelList{}
 	}
@@ -64,7 +67,7 @@ func (c controllerModelList) AddControllerModelList(list ...*ControllerActionRou
 }
 
 // 计算路由信息
-func (c *ControllerActionRouter) makePattern() {
+func (c *ActionRouter) makePattern() {
 	pathPattern := c.RouterPattern
 	if len(pathPattern) == 0 {
 		panic("设置的路由匹配模式不能为空")
