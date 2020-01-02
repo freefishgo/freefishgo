@@ -1,12 +1,10 @@
 package main
 
 import (
+	"github.com/freefishgo/freefishgo"
 	_ "github.com/freefishgo/freefishgo/examples/conf"
-	_ "github.com/freefishgo/freefishgo/examples/controllers"
 	_ "github.com/freefishgo/freefishgo/examples/routers"
 	"github.com/freefishgo/freefishgo/middlewares/mvc"
-
-	"github.com/freefishgo/freefishgo"
 	"github.com/freefishgo/freefishgo/middlewares/printTimeMiddleware"
 )
 
