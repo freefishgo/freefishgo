@@ -60,9 +60,9 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 }
 
 // 启动默认中间件web服务
-func Run() <-chan error {
+func Run() {
 	checkDefaultApplicationBuilderNil()
-	return DefaultApplicationBuilder.Run()
+	DefaultApplicationBuilder.Run()
 }
 
 func SetISession(I ISession) {
@@ -75,7 +75,7 @@ func (app *ApplicationBuilder) SetISession(I ISession) {
 }
 
 // 启动web服务
-func (app *ApplicationBuilder) Run() <-chan error {
+func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	app.handler.config = app.Config
 	errChan := make(chan error)
@@ -111,7 +111,13 @@ func (app *ApplicationBuilder) Run() <-chan error {
 			}).ListenAndServeTLS(app.Config.Listen.HTTPSCertFile, app.Config.Listen.HTTPSKeyFile)
 		}()
 	}
-	return errChan
+	for {
+		select {
+		case e := <-errChan:
+			panic(e)
+
+		}
+	}
 }
 
 func newApplicationHandler() *applicationHandler {
