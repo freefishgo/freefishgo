@@ -24,6 +24,10 @@ type MvcWebConfig struct {
 	TemplateLeft string
 	// html模板引擎变量右标记符号
 	TemplateRight string
+	// html Layout模板引擎变量左标记符号
+	LayoutTemplateLeft string
+	// html Layout模板引擎变量右标记符号
+	LayoutTemplateRight string
 	// html模板的父目录
 	ViewsPath string
 
@@ -37,5 +41,5 @@ type MvcWebConfig struct {
 
 // 实例化一个 MvcWebConfig
 func NewWebConfig() *MvcWebConfig {
-	return &MvcWebConfig{ViewsPath: "", TemplateLeft: "{{", TemplateRight: "}}", IsDevelopment: false}
+	return &MvcWebConfig{ViewsPath: "", TemplateLeft: "{{", TemplateRight: "}}", IsDevelopment: false, LayoutTemplateLeft: "{{{", LayoutTemplateRight: "}}}"}
 }

@@ -151,7 +151,7 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 				}
 				var buf bytes.Buffer
 
-				if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.TemplateLeft, ctr.WebConfig.TemplateRight).Parse(string(b)); err == nil {
+				if t, err := template.New(c.tplPath).Delims(ctr.WebConfig.LayoutTemplateLeft, ctr.WebConfig.LayoutTemplateRight).Parse(string(b)); err == nil {
 					if err := t.Execute(&buf, section); err == nil {
 						if c.Data == nil {
 							c.Response.Write(buf.Bytes())
