@@ -20,6 +20,7 @@ import (
 	freeFishGo "github.com/freefishgo/freefishgo"
 	"html/template"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"path/filepath"
 	"reflect"
@@ -28,9 +29,10 @@ import (
 )
 
 type controllerRegister struct {
-	tree       *tree
-	WebConfig  *MvcWebConfig
-	staticFile map[string]template.HTML
+	tree              *tree
+	WebConfig         *MvcWebConfig
+	staticViewsFile   map[string]template.HTML
+	staticFileHandler http.Handler
 }
 
 // 实例化一个mvc注册器
@@ -38,7 +40,7 @@ type controllerRegister struct {
 func newControllerRegister() *controllerRegister {
 	controllerRegister := new(controllerRegister)
 	controllerRegister.tree = newTree()
-	controllerRegister.staticFile = map[string]template.HTML{}
+	controllerRegister.staticViewsFile = map[string]template.HTML{}
 	return controllerRegister
 }
 
@@ -90,7 +92,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, freeFishGo.HttpMethod(ctx.Request.Method))
 	if f == nil {
-		ctx.Response.WriteHeader(404)
+		c.staticFileHandler.ServeHTTP(ctx.Response, ctx.Request.Request)
 		return ctx
 	}
 	ctl := f.ControllerInfo
@@ -169,7 +171,7 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 					return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
 				}
 			} else {
-				return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.tplPath + "时出错:" + err.Error())
+				return errors.New("Controller:" + c.controllerName + "Action:" + c.actionName + "读取模板地址:" + c.LayoutPath + "时出错:" + err.Error())
 			}
 		}
 		if c.tplPath == "" {
@@ -194,7 +196,7 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 }
 
 func (ctr *controllerRegister) htmlTpl(path string) (template.HTML, error) {
-	if v, ok := ctr.staticFile[path]; ok {
+	if v, ok := ctr.staticViewsFile[path]; ok {
 		return v, nil
 	} else {
 		temPath := filepath.Join(ctr.WebConfig.ViewsPath, path)
@@ -203,7 +205,7 @@ func (ctr *controllerRegister) htmlTpl(path string) (template.HTML, error) {
 			if ctr.WebConfig.IsDevelopment {
 				return html, nil
 			}
-			ctr.staticFile[path] = html
+			ctr.staticViewsFile[path] = html
 			return html, nil
 		} else {
 			return "", err

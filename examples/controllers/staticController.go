@@ -14,9 +14,9 @@ type staticController struct {
 // 控制器注册
 func init() {
 	static := staticController{}
-	static.ActionRouterList = append(static.ActionRouterList,
-		&mvc.ActionRouter{RouterPattern: "static/{path:allString}",
-			ControllerActionFuncName: "StaticFile"})
+	//static.ActionRouterList = append(static.ActionRouterList,
+	//	&mvc.ActionRouter{RouterPattern: "static/{path:allString}",
+	//		ControllerActionFuncName: "StaticFile"})
 	//static.ControllerRouter=&mvc.ControllerRouter{
 	//	RouterPattern: "{Controller}/{Action}/{path:allString}",
 	//}

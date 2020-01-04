@@ -15,6 +15,7 @@ package mvc
 
 import (
 	freeFishGo "github.com/freefishgo/freefishgo"
+	"net/http"
 )
 
 // 默认的MvcWebConfig配置
@@ -39,6 +40,8 @@ func (mvc *MvcApp) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next)
 // 框架注册完成时  进行最后的配置
 func (mvc *MvcApp) LastInit(cnf *freeFishGo.Config) {
 	mvc.handlers.WebConfig = mvc.Config
+	handle := http.FileServer(http.Dir(mvc.handlers.WebConfig.StaticDir))
+	mvc.handlers.staticFileHandler = handle
 	mvc.handlers.MainRouterNil()
 }
 

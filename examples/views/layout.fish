@@ -3,7 +3,7 @@
 <head>
     <title>FreeFishGo</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="shortcut icon" href="/static/img/fish.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/img/fish.ico" type="image/x-icon" />
     {{.HtmlHead}}
 </head>
 <body>

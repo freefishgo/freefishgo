@@ -14,10 +14,11 @@
 package mvc
 
 import (
-	freeFishGo "github.com/freefishgo/freefishgo"
 	"reflect"
 	"regexp"
 	"strings"
+
+	freeFishGo "github.com/freefishgo/freefishgo"
 )
 
 type controllerInfo struct {
@@ -29,7 +30,7 @@ type controllerInfo struct {
 
 // http请求逻辑控制器
 type Controller struct {
-	//响应前端的处理 不建议使用
+	// 响应前端的处理 不建议使用
 	Response freeFishGo.IResponse
 	// 重置控制器路由  必须包含{Action}变量
 	ControllerRouter *ControllerRouter

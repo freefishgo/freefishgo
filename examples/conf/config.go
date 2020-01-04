@@ -21,7 +21,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	json.NewDecoder(f).Decode(conf)
+	err = json.NewDecoder(f).Decode(conf)
+	if err != nil {
+		panic(err)
+	}
 	freefishgo.DefaultConfig = conf.Config
 	mvc.DefaultMvcWebConfig = conf.WebConfig
 

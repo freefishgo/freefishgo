@@ -30,6 +30,8 @@ type MvcWebConfig struct {
 	LayoutTemplateRight string
 	// html模板的父目录
 	ViewsPath string
+	// 静态文件地址
+	StaticDir string
 
 	homeController string
 	indexAction    string

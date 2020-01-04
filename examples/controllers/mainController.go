@@ -24,13 +24,6 @@ func (c *MainController) Finish() {
 	log.Println("子类的Finish")
 }
 
-// OverwriteActionRouter()特殊定制指定Action的路由
-func (c *MainController) OverwriteActionRouter() []*mvc.ActionRouter {
-	tmp := make([]*mvc.ActionRouter, 0)
-	tmp = append(tmp, &mvc.ActionRouter{RouterPattern: "{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"})
-	return tmp
-}
-
 // 作为 Action的请求参数的映射值
 type Test struct {
 	T  []string `json:"tt"`
