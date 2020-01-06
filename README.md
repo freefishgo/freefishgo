@@ -85,7 +85,7 @@ func main() {
 	app := mvc.NewFreeFishMvcApp()
 	// 注册控制器
 	app.AddHandlers(&MainController{})
-	// 注册主路由ControllerActionFuncName字段不用设置        设置了也不会生效
+	// 注册主路由
 	app.AddMainRouter(&mvc.MainRouter{RouterPattern: "/{ Controller}/{Action}", HomeController: "Main", IndexAction: "My"})
 	build:= freeFishGo.NewFreeFishApplicationBuilder()
 	// 通过注册中间件来实现注册服务
