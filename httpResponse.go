@@ -18,10 +18,11 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type IResponse interface {
@@ -55,10 +56,13 @@ type IResponse interface {
 	WriteJson(i interface{}) error
 	Redirect(redirectPath string)
 	getYourself() *Response
+	// 是否已经向前端写入数据了
 	GetStarted() bool
 	GetIsWriteInCache() bool
 	SetIsWriteInCache(bool)
 	Header() http.Header
+	GetMaxResponseCacheLen() int
+	SetMaxResponseCacheLen(int)
 }
 
 type Response struct {
@@ -86,6 +90,14 @@ type Response struct {
 	SessionAliveTime   time.Duration
 	isUpdateSessionKey bool
 	sessionIsUpdate    bool
+}
+
+func (r *Response) SetMaxResponseCacheLen(b int) {
+	r.maxResponseCacheLen = b
+}
+
+func (r *Response) GetMaxResponseCacheLen() int {
+	return r.maxResponseCacheLen
 }
 
 func (r *Response) SetIsWriteInCache(b bool) {

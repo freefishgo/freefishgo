@@ -14,8 +14,10 @@
 package mvc
 
 import (
-	freeFishGo "github.com/freefishgo/freefishgo"
 	"net/http"
+	"reflect"
+
+	freeFishGo "github.com/freefishgo/freefishgo"
 )
 
 // 默认的MvcWebConfig配置
@@ -43,6 +45,7 @@ func (mvc *MvcApp) LastInit(cnf *freeFishGo.Config) {
 	handle := http.FileServer(http.Dir(mvc.handlers.WebConfig.StaticDir))
 	mvc.handlers.staticFileHandler = handle
 	mvc.handlers.MainRouterNil()
+	mvc.handlers.StateCodeNil()
 }
 
 // 实例化生成一个Mvc对象
@@ -64,32 +67,47 @@ func checkDefaultMvcApp() {
 	DefaultMvcApp.handlers.WebConfig = DefaultMvcWebConfig
 }
 
-// 将Controller控制器注册到Mvc框架对象中 即是添加路由动作
-func (app *MvcApp) AddHandlers(ic ...IController) {
+// AddHandlers 将Controller控制器注册到Mvc框架对象中 即是添加路由动作
+func (mvc *MvcApp) AddHandlers(ic ...IController) {
 	for i := 0; i < len(ic); i++ {
-		app.handlers.AddHandlers(ic[i])
+		mvc.handlers.AddHandlers(ic[i])
 	}
 }
 
-// 将Controller控制器注册到默认的Mvc框架对象中 即是添加路由动作
+// AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
+func (mvc *MvcApp) AddStateCodeHandlers(s StateCodeController) {
+	if mvc.handlers.stateCodeController == nil {
+		mvc.handlers.stateCodeController = reflect.TypeOf(s)
+	} else {
+		panic("StateCode注册处理重复，请检查,重复为：" + reflect.TypeOf(s).Name())
+	}
+}
+
+// AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
+func AddStateCodeHandlers(s StateCodeController) {
+	checkDefaultMvcApp()
+	DefaultMvcApp.AddStateCodeHandlers(s)
+}
+
+// AddHandlers 将Controller控制器注册到默认的Mvc框架对象中 即是添加路由动作
 func AddHandlers(ic ...IController) {
 	checkDefaultMvcApp()
 	DefaultMvcApp.AddHandlers(ic...)
 }
 
-// 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}/{allString}`
+// AddMainRouter 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}/{allString}`
 //
 // 如果不进行路由注册  默认为/{ Controller}/{Action}   router.ControllerActionInfo中 ControllerActionFuncName不用设置  设置了也不会生效
-func (app *MvcApp) AddMainRouter(list ...*MainRouter) {
+func (mvc *MvcApp) AddMainRouter(list ...*MainRouter) {
 	for _, v := range list {
-		if app.Config.homeController == "" || app.Config.indexAction == "" && (v.HomeController != "" && v.IndexAction != "") {
-			app.Config.homeController = v.HomeController
-			app.Config.indexAction = v.IndexAction
-			app.handlers.AddMainRouter(v)
+		if mvc.Config.homeController == "" || mvc.Config.indexAction == "" && (v.HomeController != "" && v.IndexAction != "") {
+			mvc.Config.homeController = v.HomeController
+			mvc.Config.indexAction = v.IndexAction
+			mvc.handlers.AddMainRouter(v)
 		} else {
 			v.IndexAction = ""
 			v.HomeController = ""
-			app.handlers.AddMainRouter(v)
+			mvc.handlers.AddMainRouter(v)
 		}
 	}
 }

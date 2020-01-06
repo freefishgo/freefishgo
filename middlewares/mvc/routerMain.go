@@ -17,7 +17,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	freeFishGo "github.com/freefishgo/freefishgo"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -26,13 +25,52 @@ import (
 	"reflect"
 	"runtime/debug"
 	"strings"
+
+	freeFishGo "github.com/freefishgo/freefishgo"
 )
 
 type controllerRegister struct {
-	tree              *tree
-	WebConfig         *MvcWebConfig
-	staticViewsFile   map[string]template.HTML
-	staticFileHandler http.Handler
+	tree                *tree
+	WebConfig           *MvcWebConfig
+	staticViewsFile     map[string]template.HTML
+	staticFileHandler   http.Handler
+	stateCodeController reflect.Type
+}
+
+func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack string, err error) *freeFishGo.HttpContext {
+	switch ctx.Response.ReadStatusCode() {
+	case 404:
+		if !ctx.Response.GetStarted() {
+			stateCodeC := reflect.New(cr.stateCodeController)
+			Is := stateCodeC.Interface().(IStateCodeController)
+			Is.initController(ctx)
+			Is.setError(err)
+			Is.setStack(stack)
+			Is.NotFind404()
+		}
+		break
+	case 403:
+		if !ctx.Response.GetStarted() {
+			stateCodeC := reflect.New(cr.stateCodeController)
+			Is := stateCodeC.Interface().(IStateCodeController)
+			Is.initController(ctx)
+			Is.setError(err)
+			Is.setStack(stack)
+			Is.Forbidden403()
+		}
+		break
+	case 500:
+		if !ctx.Response.GetStarted() {
+			stateCodeC := reflect.New(cr.stateCodeController)
+			Is := stateCodeC.Interface().(IStateCodeController)
+			Is.initController(ctx)
+			Is.setError(err)
+			Is.setStack(stack)
+			Is.Error500()
+		}
+		break
+	}
+	return ctx
 }
 
 // 实例化一个mvc注册器
@@ -66,7 +104,14 @@ func (cr *controllerRegister) AddMainRouter(ctlList ...*MainRouter) {
 // 如果主路由为空注册一个默认主路由
 func (cr *controllerRegister) MainRouterNil() {
 	if cr.tree.MainRouterList == nil || len(cr.tree.MainRouterList) == 0 {
-		cr.tree.MainRouterList = cr.tree.MainRouterList.AddControllerModelList(&ActionRouter{RouterPattern: "/{ Controller}/{Action}"})
+		cr.AddMainRouter(&MainRouter{RouterPattern: "/{ Controller}/{Action}"})
+	}
+}
+
+// 如果StateCode处理为空，则采用默认的错误处理
+func (cr *controllerRegister) StateCodeNil() {
+	if cr.stateCodeController == nil {
+		cr.stateCodeController = reflect.TypeOf(&StateCodeController{})
 	}
 }
 
@@ -77,22 +122,27 @@ func (cr *controllerRegister) MainRouterNil() {
 func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont *freeFishGo.HttpContext) {
 	cont = ctx
 	defer func() {
-		if err := recover(); err != nil {
-			err, _ := err.(error)
-			if c.WebConfig.RecoverPanic {
-				c.WebConfig.RecoverFunc(ctx, err, debug.Stack())
-			} else {
-				if ctx != nil {
-					ctx.Response.WriteHeader(500)
-					ctx.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>` + "服务器内部错误 500:" + err.Error() + "\r\n\r\n\r\n</div><pre>" + string(debug.Stack()) + `</pre></div></body></html>`))
-				}
+		var err error
+		stack := ""
+		if ierr := recover(); err != nil {
+			err, _ = ierr.(error)
+			if ctx != nil {
+				ctx.Response.WriteHeader(500)
 			}
+			stack = string(debug.Stack())
 		}
+		c.doStateCode(ctx, stack, err)
 	}()
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, freeFishGo.HttpMethod(ctx.Request.Method))
 	if f == nil {
-		c.staticFileHandler.ServeHTTP(ctx.Response, ctx.Request.Request)
+		if ctx.Response.GetIsWriteInCache() {
+			c.staticFileHandler.ServeHTTP(ctx.Response, ctx.Request.Request)
+		} else {
+			ctx.Response.SetIsWriteInCache(true)
+			ctx.Response.SetMaxResponseCacheLen(1 << 9)
+			c.staticFileHandler.ServeHTTP(ctx.Response, ctx.Request.Request)
+		}
 		return ctx
 	}
 	ctl := f.ControllerInfo

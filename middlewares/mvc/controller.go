@@ -89,6 +89,65 @@ type IController interface {
 	Finish()
 }
 
+// 响应状态处理接口
+type IStateCodeController interface {
+	IController
+	// 500 错误的堆栈信息,其他状态为空
+	Stack()
+	// 500 错误的信息,其他状态为空
+	Error()
+	setStack(string)
+	setError(error)
+	Error500()
+	NotFind404()
+	Forbidden403()
+}
+
+// 响应状态处理
+type StateCodeController struct {
+	// 错误的堆栈信息
+	stack string
+	// 错误的信息
+	err error
+	Controller
+}
+
+// 设置错误的堆栈信息
+func (s *StateCodeController) setStack(str string) {
+	s.stack = str
+}
+
+// 设置错误的信息
+func (s *StateCodeController) setError(err error) {
+	s.err = err
+}
+
+// 错误的堆栈信息
+func (s *StateCodeController) Stack() string {
+	return s.stack
+}
+
+// 错误的信息
+func (s *StateCodeController) Error() error {
+	return s.err
+}
+
+// http 500错误处理
+func (s *StateCodeController) Error500() {
+	s.Response.WriteHeader(500)
+	s.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>` + "服务器内部错误 500:" + s.err.Error() + "\r\n\r\n\r\n</div><pre>" + s.stack + `</pre></div></body></html>`))
+}
+
+// http 404处理
+func (s *StateCodeController) NotFind404() {
+
+}
+
+// http 403处理
+func (s *StateCodeController) Forbidden403() {
+
+}
+
 // 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
 func (c *Controller) getControllerInfo(tree *tree) *tree {
 	getType := reflect.TypeOf(c.sonController)
