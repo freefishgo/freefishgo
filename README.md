@@ -39,13 +39,7 @@ import (
 type MainController struct {
 	mvc.Controller
 }
-// OverwriteRouter()特殊定制指定action的路由
-func (c *MainController) OverwriteRouter() []*mvc.ControllerActionInfo {
-	log.Println("不是默认GetControllerInfo")
-	tmp := make([]*mvc.ControllerActionInfo, 0)
-	tmp = append(tmp, &mvc.ControllerActionInfo{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "MyControllerActionStrutPost"})
-	return tmp
-}
+
 // 作为 Action的请求参数的映射值
 type Test struct {
 	T  []string `json:"tt"`
@@ -84,7 +78,7 @@ func (*mid) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) *freeF
 }
 // 中间件注册是调用函数进行该中间件最后的设置
 func (*mid) LastInit(*freeFishGo.Config) {
-	panic("implement me")
+	//panic("implement me")
 }
 func main() {
 	// 实例化一个mvc服务
