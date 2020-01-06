@@ -155,6 +155,7 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 			ctx.Response.UpdateSession()
 		}
 		if err := recover(); err != nil {
+			ctx.Response.getYourself().SetIsWriteInCache(false)
 			err, _ := err.(error)
 			if app.config.RecoverPanic {
 				//app.config.RecoverFunc(ctx, err, debug.Stack())
@@ -169,7 +170,7 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.Response.getYourself().IsOpenGzip = app.config.EnableGzip
 	ctx.Response.getYourself().NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	ctx.Response.getYourself().isWriteInCache = false
+	ctx.Response.getYourself().SetIsWriteInCache(false)
 	ctx.Response.Write(nil)
 }
 

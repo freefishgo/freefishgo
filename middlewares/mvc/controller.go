@@ -33,8 +33,8 @@ type Controller struct {
 	// 响应前端的处理 不建议使用
 	Response freeFishGo.IResponse
 	// 重置控制器路由  必须包含{Action}变量
-	ControllerRouter *ControllerRouter
-	ActionRouterList []*ActionRouter
+	controllerRouter *ControllerRouter
+	actionRouterList []*ActionRouter
 	// 和前端一切的数据  都可以通过他获取
 	Request        *freeFishGo.Request
 	controllerInfo *controllerInfo
@@ -91,11 +91,12 @@ type IController interface {
 
 // 响应状态处理接口
 type IStateCodeController interface {
-	IController
+	getController() *Controller
+	initController(ctx *freeFishGo.HttpContext)
 	// 500 错误的堆栈信息,其他状态为空
-	Stack()
+	Stack() string
 	// 500 错误的信息,其他状态为空
-	Error()
+	Error() error
 	setStack(string)
 	setError(error)
 	Error500()
@@ -135,17 +136,17 @@ func (s *StateCodeController) Error() error {
 // http 500错误处理
 func (s *StateCodeController) Error500() {
 	s.Response.WriteHeader(500)
-	s.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>` + "服务器内部错误 500:" + s.err.Error() + "\r\n\r\n\r\n</div><pre>" + s.stack + `</pre></div></body></html>`))
+	s.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>500 Internal Server Error:  ` + s.err.Error() + "\r\n\r\n\r\n</div><pre>" + s.stack + `</pre></div></body></html>`))
 }
 
 // http 404处理
 func (s *StateCodeController) NotFind404() {
-
+	s.Response.Write([]byte("404 page not found"))
 }
 
 // http 403处理
 func (s *StateCodeController) Forbidden403() {
-
+	s.Response.Write([]byte("403 Forbidden"))
 }
 
 // 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
@@ -184,7 +185,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	if tree.CloseControllerRouter == nil {
 		tree.CloseControllerRouter = map[string]bool{}
 	}
-	controllerRouter := c.ControllerRouter
+	controllerRouter := c.controllerRouter
 	if controllerRouter != nil {
 		v := &ActionRouter{}
 		v.RouterPattern = controllerRouter.RouterPattern
@@ -200,7 +201,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		tree.ControllerRouterList = tree.ControllerRouterList.AddControllerModelList(v)
 
 	}
-	controllerActionInfoList := c.ActionRouterList
+	controllerActionInfoList := c.actionRouterList
 	if controllerActionInfoList == nil {
 		return tree
 	}

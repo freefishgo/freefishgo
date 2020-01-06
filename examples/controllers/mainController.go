@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"github.com/freefishgo/freefishgo/middlewares/mvc"
 	"log"
+
+	"github.com/freefishgo/freefishgo/middlewares/mvc"
 )
 
 // 实现mvc控制器的处理Main为控制器 {Controller}的值
@@ -50,7 +51,7 @@ func (c *MainController) LayoutTestGet(Test *Test) {
 	log.Println("控制器执行成功")
 	c.Data["Website"] = Test.Id
 	c.Data["Email"] = Test.T1
-	c.LayoutSections = map[string]string{}
+	//c.LayoutSections = map[string]string{}
 	c.LayoutSections["Scripts"] = "Other/Script.fish"
 	c.LayoutSections["HtmlHead"] = "Other/HtmlHead.fish"
 	c.LayoutPath = "layout.fish"

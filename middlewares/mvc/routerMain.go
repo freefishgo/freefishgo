@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime/debug"
 	"strings"
 
@@ -30,47 +31,67 @@ import (
 )
 
 type controllerRegister struct {
-	tree                *tree
-	WebConfig           *MvcWebConfig
-	staticViewsFile     map[string]template.HTML
-	staticFileHandler   http.Handler
-	stateCodeController reflect.Type
+	tree                    *tree
+	WebConfig               *MvcWebConfig
+	staticViewsFile         map[string]template.HTML
+	staticFileHandler       http.Handler
+	stateCodeControllerInfo *stateCodeControllerInfo
 }
 
-func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack string, err error) *freeFishGo.HttpContext {
+type stateCodeControllerInfo struct {
+	stateCodeController reflect.Type
+	name                string
+}
+
+func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack string, err error) (ctxTmp *freeFishGo.HttpContext) {
+	ctxTmp = ctx
 	switch ctx.Response.ReadStatusCode() {
 	case 404:
 		if !ctx.Response.GetStarted() {
-			stateCodeC := reflect.New(cr.stateCodeController)
-			Is := stateCodeC.Interface().(IStateCodeController)
-			Is.initController(ctx)
-			Is.setError(err)
-			Is.setStack(stack)
-			Is.NotFind404()
+			ic := cr.initStateCodeFunc(ctx, stack, err)
+			ic.NotFind404()
+			cr.templateHtml(ic, "NotFind404")
 		}
 		break
 	case 403:
 		if !ctx.Response.GetStarted() {
-			stateCodeC := reflect.New(cr.stateCodeController)
-			Is := stateCodeC.Interface().(IStateCodeController)
-			Is.initController(ctx)
-			Is.setError(err)
-			Is.setStack(stack)
-			Is.Forbidden403()
+			ic := cr.initStateCodeFunc(ctx, stack, err)
+			ic.Forbidden403()
+			cr.templateHtml(ic, "Forbidden403")
 		}
 		break
 	case 500:
 		if !ctx.Response.GetStarted() {
-			stateCodeC := reflect.New(cr.stateCodeController)
-			Is := stateCodeC.Interface().(IStateCodeController)
-			Is.initController(ctx)
-			Is.setError(err)
-			Is.setStack(stack)
-			Is.Error500()
+			ic := cr.initStateCodeFunc(ctx, stack, err)
+			ic.Error500()
+			cr.templateHtml(ic, "Error500")
 		}
 		break
 	}
 	return ctx
+}
+func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext, stack string, err error) IStateCodeController {
+
+	if !ctx.Response.GetStarted() {
+		ctx.Response.ClearWriteCache()
+		stateCodeC := reflect.New(cr.stateCodeControllerInfo.stateCodeController)
+		Is := stateCodeC.Interface().(IStateCodeController)
+		Is.initController(ctx)
+		Is.setError(err)
+		Is.setStack(stack)
+		return Is
+	}
+	return nil
+}
+
+func (cr *controllerRegister) templateHtml(ic IStateCodeController, MethodByName string) {
+	con := ic.getController()
+	con.controllerName = cr.stateCodeControllerInfo.name
+	con.actionName = MethodByName
+	err := cr.tmpHtml(con)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // 实例化一个mvc注册器
@@ -110,8 +131,24 @@ func (cr *controllerRegister) MainRouterNil() {
 
 // 如果StateCode处理为空，则采用默认的错误处理
 func (cr *controllerRegister) StateCodeNil() {
-	if cr.stateCodeController == nil {
-		cr.stateCodeController = reflect.TypeOf(&StateCodeController{})
+	if cr.stateCodeControllerInfo == nil {
+		cr.SetStateCodeHandlers(&StateCodeController{})
+	}
+}
+
+// AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
+func (handlers *controllerRegister) SetStateCodeHandlers(s IStateCodeController) {
+	if handlers.stateCodeControllerInfo == nil {
+		sInfo := new(stateCodeControllerInfo)
+		sInfo.stateCodeController = reflect.TypeOf(s).Elem()
+		controllerNameList := strings.Split(sInfo.stateCodeController.String(), ".")
+		controllerName := controllerNameList[len(controllerNameList)-1]
+		f := regexp.MustCompile(`Controller$`)
+		controllerName = f.ReplaceAllString(controllerName, "")
+		sInfo.name = controllerName
+		handlers.stateCodeControllerInfo = sInfo
+	} else {
+		panic("StateCode注册处理重复，请检查,重复为：" + reflect.TypeOf(s).Name())
 	}
 }
 
@@ -124,7 +161,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 	defer func() {
 		var err error
 		stack := ""
-		if ierr := recover(); err != nil {
+		if ierr := recover(); ierr != nil {
 			err, _ = ierr.(error)
 			if ctx != nil {
 				ctx.Response.WriteHeader(500)

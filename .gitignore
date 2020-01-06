@@ -3,3 +3,13 @@
 .idea/modules.xml
 .idea/vcs.xml
 .idea/workspace.xml
+examples/.idea/vcs.xml
+examples/.idea/modules.xml
+examples/.idea/misc.xml
+examples/.idea/examples.iml
+examples/.idea/.gitignore
+.vscode/launch.json
+.idea/.gitignore
+.gitignore
+.gitignore
+.vscode/launch.json

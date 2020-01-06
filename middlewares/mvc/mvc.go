@@ -15,7 +15,6 @@ package mvc
 
 import (
 	"net/http"
-	"reflect"
 
 	freeFishGo "github.com/freefishgo/freefishgo"
 )
@@ -75,18 +74,14 @@ func (mvc *MvcApp) AddHandlers(ic ...IController) {
 }
 
 // AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
-func (mvc *MvcApp) AddStateCodeHandlers(s StateCodeController) {
-	if mvc.handlers.stateCodeController == nil {
-		mvc.handlers.stateCodeController = reflect.TypeOf(s)
-	} else {
-		panic("StateCode注册处理重复，请检查,重复为：" + reflect.TypeOf(s).Name())
-	}
+func (mvc *MvcApp) SetStateCodeHandlers(s IStateCodeController) {
+	mvc.handlers.SetStateCodeHandlers(s)
 }
 
 // AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
-func AddStateCodeHandlers(s StateCodeController) {
+func SetStateCodeHandlers(s IStateCodeController) {
 	checkDefaultMvcApp()
-	DefaultMvcApp.AddStateCodeHandlers(s)
+	DefaultMvcApp.SetStateCodeHandlers(s)
 }
 
 // AddHandlers 将Controller控制器注册到默认的Mvc框架对象中 即是添加路由动作
