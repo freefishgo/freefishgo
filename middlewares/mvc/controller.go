@@ -33,8 +33,8 @@ type Controller struct {
 	// 响应前端的处理 不建议使用
 	Response freeFishGo.IResponse
 	// 重置控制器路由  必须包含{Action}变量
-	controllerRouter *ControllerRouter
-	actionRouterList []*ActionRouter
+	ControllerRouter *ControllerRouter
+	ActionRouterList []*ActionRouter
 	// 和前端一切的数据  都可以通过他获取
 	Request        *freeFishGo.Request
 	controllerInfo *controllerInfo
@@ -185,7 +185,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	if tree.CloseControllerRouter == nil {
 		tree.CloseControllerRouter = map[string]bool{}
 	}
-	controllerRouter := c.controllerRouter
+	controllerRouter := c.ControllerRouter
 	if controllerRouter != nil {
 		v := &ActionRouter{}
 		v.RouterPattern = controllerRouter.RouterPattern
@@ -201,7 +201,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		tree.ControllerRouterList = tree.ControllerRouterList.AddControllerModelList(v)
 
 	}
-	controllerActionInfoList := c.actionRouterList
+	controllerActionInfoList := c.ActionRouterList
 	if controllerActionInfoList == nil {
 		return tree
 	}
