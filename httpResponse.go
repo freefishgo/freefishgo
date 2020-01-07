@@ -63,6 +63,13 @@ type IResponse interface {
 	Header() http.Header
 	GetMaxResponseCacheLen() int
 	SetMaxResponseCacheLen(int)
+
+	// 500 错误的堆栈信息,其他状态为空
+	Stack() string
+	// 500 错误的信息,其他状态为空
+	Error() interface{}
+	SetStack(string)
+	SetError(interface{})
 }
 
 type Response struct {
@@ -90,6 +97,29 @@ type Response struct {
 	SessionAliveTime   time.Duration
 	isUpdateSessionKey bool
 	sessionIsUpdate    bool
+
+	err   interface{}
+	stack string
+}
+
+// 设置错误的堆栈信息
+func (s *Response) SetStack(str string) {
+	s.stack = str
+}
+
+// 设置错误的信息
+func (s *Response) SetError(err interface{}) {
+	s.err = err
+}
+
+// 错误的堆栈信息
+func (s *Response) Stack() string {
+	return s.stack
+}
+
+// 错误的信息
+func (s *Response) Error() interface{} {
+	return s.err
 }
 
 func (r *Response) SetMaxResponseCacheLen(b int) {

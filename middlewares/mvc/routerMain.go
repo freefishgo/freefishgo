@@ -43,12 +43,12 @@ type stateCodeControllerInfo struct {
 	name                string
 }
 
-func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack string, err error) (ctxTmp *freeFishGo.HttpContext) {
+func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext) (ctxTmp *freeFishGo.HttpContext) {
 	ctxTmp = ctx
 	switch ctx.Response.ReadStatusCode() {
 	case 404:
 		if !ctx.Response.GetStarted() {
-			ic := cr.initStateCodeFunc(ctx, stack, err)
+			ic := cr.initStateCodeFunc(ctx)
 			if ic.getController().isStopController {
 				return ctx
 			}
@@ -59,7 +59,7 @@ func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack str
 		break
 	case 403:
 		if !ctx.Response.GetStarted() {
-			ic := cr.initStateCodeFunc(ctx, stack, err)
+			ic := cr.initStateCodeFunc(ctx)
 			if ic.getController().isStopController {
 				return ctx
 			}
@@ -70,7 +70,7 @@ func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack str
 		break
 	case 500:
 		if !ctx.Response.GetStarted() {
-			ic := cr.initStateCodeFunc(ctx, stack, err)
+			ic := cr.initStateCodeFunc(ctx)
 			if ic.getController().isStopController {
 				return ctx
 			}
@@ -82,15 +82,13 @@ func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack str
 	}
 	return ctx
 }
-func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext, stack string, err error) IStateCodeController {
+func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext) IStateCodeController {
 
 	if !ctx.Response.GetStarted() {
 		ctx.Response.ClearWriteCache()
 		stateCodeC := reflect.New(cr.stateCodeControllerInfo.stateCodeController)
 		Is := stateCodeC.Interface().(IStateCodeController)
 		Is.initController(ctx)
-		Is.setError(err)
-		Is.setStack(stack)
 		Is.Prepare()
 		return Is
 	}
@@ -172,16 +170,14 @@ func (handlers *controllerRegister) SetStateCodeHandlers(s IStateCodeController)
 func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont *freeFishGo.HttpContext) {
 	cont = ctx
 	defer func() {
-		var err error
-		stack := ""
-		if ierr := recover(); ierr != nil {
-			err, _ = ierr.(error)
+		if err := recover(); err != nil {
+			ctx.Response.SetError(err)
 			if ctx != nil {
 				ctx.Response.WriteHeader(500)
 			}
-			stack = string(debug.Stack())
+			ctx.Response.SetStack(string(debug.Stack()))
 		}
-		c.doStateCode(ctx, stack, err)
+		c.doStateCode(ctx)
 	}()
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, freeFishGo.HttpMethod(ctx.Request.Method))

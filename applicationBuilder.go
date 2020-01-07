@@ -14,6 +14,7 @@
 package freefishgo
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"runtime/debug"
@@ -156,13 +157,14 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 		}
 		if err := recover(); err != nil {
 			ctx.Response.getYourself().SetIsWriteInCache(false)
-			err, _ := err.(error)
+			ctx.Response.SetError(err)
+			ctx.Response.SetStack(string(debug.Stack()))
 			if app.config.RecoverPanic {
-				//app.config.RecoverFunc(ctx, err, debug.Stack())
+				app.config.RecoverFunc(ctx)
 			} else {
 				if ctx != nil {
 					ctx.Response.WriteHeader(500)
-					ctx.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>` + "服务器内部错误 500:" + err.Error() + "\r\n\r\n\r\n</div><pre>" + string(debug.Stack()) + `</pre></div></body></html>`))
+					fmt.Fprintf(ctx.Response, `<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>500 Internal Server Error:  %s </div><pre>%s</pre></div></body></html>`, ctx.Response.Error(), ctx.Response.Stack())
 				}
 			}
 		}
@@ -191,7 +193,17 @@ type MiddlewareLink struct {
 }
 
 // 执行下一个中间件
-func (link *MiddlewareLink) innerNext(ctx *HttpContext) *HttpContext {
+func (link *MiddlewareLink) innerNext(ctx *HttpContext) (cont *HttpContext) {
+	cont = ctx
+	defer func() {
+		if err := recover(); err != nil {
+			ctx.Response.SetError(err)
+			if ctx != nil {
+				ctx.Response.WriteHeader(500)
+			}
+			ctx.Response.SetStack(string(debug.Stack()))
+		}
+	}()
 	return link.val.Middleware(ctx, link.next.innerNext)
 }
 

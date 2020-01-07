@@ -36,7 +36,7 @@ type Config struct {
 	// 是否在管道最末端捕获Panic，以取代框架的处理Panic函数
 	RecoverPanic bool
 	// 捕获Panic的处理函数
-	RecoverFunc func(ctx *HttpContext, e error, Stack []byte)
+	RecoverFunc func(ctx *HttpContext)
 	Listen      Listen
 }
 

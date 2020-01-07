@@ -14,6 +14,7 @@
 package mvc
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -92,12 +93,6 @@ type IController interface {
 // 响应状态处理接口
 type IStateCodeController interface {
 	IController
-	// 500 错误的堆栈信息,其他状态为空
-	Stack() string
-	// 500 错误的信息,其他状态为空
-	Error() error
-	setStack(string)
-	setError(error)
 	Error500()
 	NotFind404()
 	Forbidden403()
@@ -105,37 +100,13 @@ type IStateCodeController interface {
 
 // 响应状态处理
 type StateCodeController struct {
-	// 错误的堆栈信息
-	stack string
-	// 错误的信息
-	err error
 	Controller
-}
-
-// 设置错误的堆栈信息
-func (s *StateCodeController) setStack(str string) {
-	s.stack = str
-}
-
-// 设置错误的信息
-func (s *StateCodeController) setError(err error) {
-	s.err = err
-}
-
-// 错误的堆栈信息
-func (s *StateCodeController) Stack() string {
-	return s.stack
-}
-
-// 错误的信息
-func (s *StateCodeController) Error() error {
-	return s.err
 }
 
 // http 500错误处理
 func (s *StateCodeController) Error500() {
 	s.Response.WriteHeader(500)
-	s.Response.Write([]byte(`<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>500 Internal Server Error:  ` + s.err.Error() + "\r\n\r\n\r\n</div><pre>" + s.stack + `</pre></div></body></html>`))
+	fmt.Fprintf(s.Response, `<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>500 Internal Server Error:  %s </div><pre>%s</pre></div></body></html>`, s.Response.Error(), s.Response.Stack())
 }
 
 // http 404处理
