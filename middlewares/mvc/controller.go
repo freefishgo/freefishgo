@@ -91,7 +91,7 @@ type IController interface {
 }
 
 // 响应状态处理接口
-type IStateCodeController interface {
+type IStatusCodeController interface {
 	IController
 	Error500()
 	NotFind404()
@@ -99,23 +99,23 @@ type IStateCodeController interface {
 }
 
 // 响应状态处理
-type StateCodeController struct {
+type StatusCodeController struct {
 	Controller
 }
 
 // http 500错误处理
-func (s *StateCodeController) Error500() {
+func (s *StatusCodeController) Error500() {
 	s.Response.WriteHeader(500)
 	fmt.Fprintf(s.Response, `<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>500 Internal Server Error:  %s </div><pre>%s</pre></div></body></html>`, s.Response.Error(), s.Response.Stack())
 }
 
 // http 404处理
-func (s *StateCodeController) NotFind404() {
+func (s *StatusCodeController) NotFind404() {
 	s.Response.Write([]byte("404 page not found"))
 }
 
 // http 403处理
-func (s *StateCodeController) Forbidden403() {
+func (s *StatusCodeController) Forbidden403() {
 	s.Response.Write([]byte("403 Forbidden"))
 }
 

@@ -35,15 +35,15 @@ type controllerRegister struct {
 	WebConfig               *MvcWebConfig
 	staticViewsFile         map[string]template.HTML
 	staticFileHandler       http.Handler
-	stateCodeControllerInfo *stateCodeControllerInfo
+	stateCodeControllerInfo *statusCodeControllerInfo
 }
 
-type stateCodeControllerInfo struct {
-	stateCodeController reflect.Type
-	name                string
+type statusCodeControllerInfo struct {
+	statusCodeController reflect.Type
+	name                 string
 }
 
-func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext) (ctxTmp *freeFishGo.HttpContext) {
+func (cr *controllerRegister) doStatusCode(ctx *freeFishGo.HttpContext) (ctxTmp *freeFishGo.HttpContext) {
 	ctxTmp = ctx
 	switch ctx.Response.ReadStatusCode() {
 	case 404:
@@ -82,12 +82,12 @@ func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext) (ctxTmp *
 	}
 	return ctx
 }
-func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext) IStateCodeController {
+func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext) IStatusCodeController {
 
 	if !ctx.Response.GetStarted() {
 		ctx.Response.ClearWriteCache()
-		stateCodeC := reflect.New(cr.stateCodeControllerInfo.stateCodeController)
-		Is := stateCodeC.Interface().(IStateCodeController)
+		stateCodeC := reflect.New(cr.stateCodeControllerInfo.statusCodeController)
+		Is := stateCodeC.Interface().(IStatusCodeController)
 		Is.initController(ctx)
 		Is.Prepare()
 		return Is
@@ -95,7 +95,7 @@ func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext) ISt
 	return nil
 }
 
-func (cr *controllerRegister) templateHtml(ic IStateCodeController, MethodByName string) {
+func (cr *controllerRegister) templateHtml(ic IStatusCodeController, MethodByName string) {
 	con := ic.getController()
 	con.controllerName = cr.stateCodeControllerInfo.name
 	con.actionName = MethodByName
@@ -143,16 +143,16 @@ func (cr *controllerRegister) MainRouterNil() {
 // 如果StateCode处理为空，则采用默认的错误处理
 func (cr *controllerRegister) StateCodeNil() {
 	if cr.stateCodeControllerInfo == nil {
-		cr.SetStateCodeHandlers(&StateCodeController{})
+		cr.SetStatusCodeHandlers(&StatusCodeController{})
 	}
 }
 
 // AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
-func (handlers *controllerRegister) SetStateCodeHandlers(s IStateCodeController) {
+func (handlers *controllerRegister) SetStatusCodeHandlers(s IStatusCodeController) {
 	if handlers.stateCodeControllerInfo == nil {
-		sInfo := new(stateCodeControllerInfo)
-		sInfo.stateCodeController = reflect.TypeOf(s).Elem()
-		controllerNameList := strings.Split(sInfo.stateCodeController.String(), ".")
+		sInfo := new(statusCodeControllerInfo)
+		sInfo.statusCodeController = reflect.TypeOf(s).Elem()
+		controllerNameList := strings.Split(sInfo.statusCodeController.String(), ".")
 		controllerName := controllerNameList[len(controllerNameList)-1]
 		f := regexp.MustCompile(`Controller$`)
 		controllerName = f.ReplaceAllString(controllerName, "")
@@ -177,7 +177,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 			}
 			ctx.Response.SetStack(string(debug.Stack()))
 		}
-		c.doStateCode(ctx)
+		c.doStatusCode(ctx)
 	}()
 	u, _ := url.Parse(ctx.Request.RequestURI)
 	f := c.analysisUrlToGetAction(u, freeFishGo.HttpMethod(ctx.Request.Method))

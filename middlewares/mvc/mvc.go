@@ -73,15 +73,15 @@ func (mvc *MvcApp) AddHandlers(ic ...IController) {
 	}
 }
 
-// AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
-func (mvc *MvcApp) SetStateCodeHandlers(s IStateCodeController) {
-	mvc.handlers.SetStateCodeHandlers(s)
+// AddStatusHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
+func (mvc *MvcApp) SetStatusCodeHandlers(s IStatusCodeController) {
+	mvc.handlers.SetStatusCodeHandlers(s)
 }
 
 // AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
-func SetStateCodeHandlers(s IStateCodeController) {
+func SetStatusCodeHandlers(s IStatusCodeController) {
 	checkDefaultMvcApp()
-	DefaultMvcApp.SetStateCodeHandlers(s)
+	DefaultMvcApp.SetStatusCodeHandlers(s)
 }
 
 // AddHandlers 将Controller控制器注册到默认的Mvc框架对象中 即是添加路由动作
