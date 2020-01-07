@@ -91,8 +91,7 @@ type IController interface {
 
 // 响应状态处理接口
 type IStateCodeController interface {
-	getController() *Controller
-	initController(ctx *freeFishGo.HttpContext)
+	IController
 	// 500 错误的堆栈信息,其他状态为空
 	Stack() string
 	// 500 错误的信息,其他状态为空

@@ -49,22 +49,34 @@ func (cr *controllerRegister) doStateCode(ctx *freeFishGo.HttpContext, stack str
 	case 404:
 		if !ctx.Response.GetStarted() {
 			ic := cr.initStateCodeFunc(ctx, stack, err)
+			if ic.getController().isStopController {
+				return ctx
+			}
 			ic.NotFind404()
 			cr.templateHtml(ic, "NotFind404")
+			ic.Finish()
 		}
 		break
 	case 403:
 		if !ctx.Response.GetStarted() {
 			ic := cr.initStateCodeFunc(ctx, stack, err)
+			if ic.getController().isStopController {
+				return ctx
+			}
 			ic.Forbidden403()
 			cr.templateHtml(ic, "Forbidden403")
+			ic.Finish()
 		}
 		break
 	case 500:
 		if !ctx.Response.GetStarted() {
 			ic := cr.initStateCodeFunc(ctx, stack, err)
+			if ic.getController().isStopController {
+				return ctx
+			}
 			ic.Error500()
 			cr.templateHtml(ic, "Error500")
+			ic.Finish()
 		}
 		break
 	}
@@ -79,6 +91,7 @@ func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext, sta
 		Is.initController(ctx)
 		Is.setError(err)
 		Is.setStack(stack)
+		Is.Prepare()
 		return Is
 	}
 	return nil
