@@ -15,7 +15,6 @@ package mvc
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"html/template"
 	"io/ioutil"
@@ -111,6 +110,9 @@ func doStruct(i interface{}, data map[string]interface{}) {
 	v := reflect.ValueOf(i)
 	t := reflect.TypeOf(i)
 	if t.Kind() == reflect.Ptr {
+		if !v.Elem().CanSet() {
+			v.Set(reflect.New(t.Elem()))
+		}
 		v = v.Elem()
 		t = t.Elem()
 	}
@@ -141,6 +143,9 @@ func doStruct(i interface{}, data map[string]interface{}) {
 			}
 			continue
 		case reflect.Ptr:
+			if !v1.Elem().CanSet() {
+				v1.Set(reflect.New(f.Type.Elem()))
+			}
 			doBasic(v1.Elem(), f.Type.Elem(), val)
 			continue
 		default:
@@ -293,11 +298,11 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 		if ctl.ControllerActionParameterStruct != nil {
 			var param interface{}
 			param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-			dataString, err := json.Marshal(data)
-			if err != nil {
-				panic(err.Error())
-			}
-			json.Unmarshal(dataString, param)
+			// dataString, err := json.Marshal(data)
+			// if err != nil {
+			// 	panic(err.Error())
+			// }
+			//json.Unmarshal(dataString, param)
 			doStruct(param, data)
 			action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 		} else {
