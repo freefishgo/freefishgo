@@ -28,7 +28,7 @@ func (c *MainController) Finish() {
 // 作为 Action的请求参数的映射值
 type Test struct {
 	T  []*string `json:"tt"`
-	T1 *string   `json:"tstst1"`
+	T1 string    `json:"tstst1"`
 	Id bool      `json:"id"`
 }
 

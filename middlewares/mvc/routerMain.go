@@ -15,9 +15,11 @@ package mvc
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -298,11 +300,12 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 		if ctl.ControllerActionParameterStruct != nil {
 			var param interface{}
 			param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-			// dataString, err := json.Marshal(data)
-			// if err != nil {
-			// 	panic(err.Error())
-			// }
-			//json.Unmarshal(dataString, param)
+			dataString, err := json.Marshal(data)
+			log.Println(string(dataString))
+			if err != nil {
+				panic(err.Error())
+			}
+			json.Unmarshal(dataString, param)
 			doStruct(param, data)
 			action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 		} else {
