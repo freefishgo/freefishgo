@@ -17,7 +17,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -129,12 +128,10 @@ func doStruct(i interface{}, data map[string]interface{}) {
 		switch v1.Kind() {
 		case reflect.Slice:
 			if val, ok := val.([]string); ok {
-				typ := f.Type
-				fmt.Println(typ.Kind())
 				sl := reflect.MakeSlice(v1.Type(), len(val), len(val))
 				b := false
 				for i := 0; i < len(val); i++ {
-					if doBasic(sl.Index(i), val[i]) {
+					if doBasic(sl.Index(i), f.Type.Elem(), val[i]) {
 						b = true
 					}
 				}
@@ -144,17 +141,17 @@ func doStruct(i interface{}, data map[string]interface{}) {
 			}
 			continue
 		case reflect.Ptr:
-			doBasic(v1.Elem(), val)
+			doBasic(v1.Elem(), f.Type.Elem(), val)
 			continue
 		default:
-			doBasic(v1, val)
+			doBasic(v1, f.Type, val)
 			continue
 		}
 	}
 }
 
-func doBasic(v1 reflect.Value, val interface{}) bool {
-	switch v1.Kind() {
+func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
+	switch t1.Kind() {
 	case reflect.String:
 		if val, ok := val.(string); ok {
 			v1.SetString(val)
@@ -182,8 +179,12 @@ func doBasic(v1 reflect.Value, val interface{}) bool {
 		}
 		break
 	case reflect.Ptr:
+		t1 = t1.Elem()
+		if !v1.Elem().CanSet() {
+			v1.Set(reflect.New(t1))
+		}
 		v1 = v1.Elem()
-		doBasic(v1, val)
+		doBasic(v1, t1, val)
 		break
 	default:
 		return false
