@@ -29,7 +29,7 @@ func (c *MainController) Finish() {
 type Test struct {
 	T  []string `json:"tt"`
 	T1 string   `json:"tstst1"`
-	Id string   `json:"id"`
+	Id bool     `json:"id"`
 }
 
 // MyControllerActionStrut为{Action}的值 该方法的默认路由为/Home/MyControllerActionStrut 最后的单词为请求方式  该例子为Post请求

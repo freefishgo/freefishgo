@@ -17,6 +17,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -25,6 +26,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime/debug"
+	"strconv"
 	"strings"
 
 	freeFishGo "github.com/freefishgo/freefishgo"
@@ -103,6 +105,90 @@ func (cr *controllerRegister) templateHtml(ic IStatusCodeController, MethodByNam
 	if err != nil {
 		panic(err)
 	}
+}
+
+// 字符转类型
+func doStruct(i interface{}, data map[string]interface{}) {
+	v := reflect.ValueOf(i)
+	t := reflect.TypeOf(i)
+	if t.Kind() == reflect.Ptr {
+		v = v.Elem()
+		t = t.Elem()
+	}
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		name := f.Tag.Get("json")
+		if name == "" {
+			name = f.Name
+		}
+		val, ok := data[name]
+		if !ok {
+			continue
+		}
+		v1 := v.Field(i)
+		switch v1.Kind() {
+		case reflect.Slice:
+			if val, ok := val.([]string); ok {
+				typ := f.Type
+				fmt.Println(typ.Kind())
+				sl := reflect.MakeSlice(v1.Type(), len(val), len(val))
+				b := false
+				for i := 0; i < len(val); i++ {
+					if doBasic(sl.Index(i), val[i]) {
+						b = true
+					}
+				}
+				if b {
+					v1.Set(sl)
+				}
+			}
+			continue
+		case reflect.Ptr:
+			doBasic(v1.Elem(), val)
+			continue
+		default:
+			doBasic(v1, val)
+			continue
+		}
+	}
+}
+
+func doBasic(v1 reflect.Value, val interface{}) bool {
+	switch v1.Kind() {
+	case reflect.String:
+		if val, ok := val.(string); ok {
+			v1.SetString(val)
+		}
+		break
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if val, ok := val.(string); ok {
+			if val, err := strconv.ParseInt(val, 10, 64); err == nil {
+				v1.SetInt(val)
+			}
+		}
+		break
+	case reflect.Bool:
+		if val, ok := val.(string); ok {
+			if val, err := strconv.ParseBool(val); err == nil {
+				v1.SetBool(val)
+			}
+		}
+		break
+	case reflect.Float32, reflect.Float64:
+		if val, ok := val.(string); ok {
+			if val, err := strconv.ParseFloat(val, 64); err == nil {
+				v1.SetFloat(val)
+			}
+		}
+		break
+	case reflect.Ptr:
+		v1 = v1.Elem()
+		doBasic(v1, val)
+		break
+	default:
+		return false
+	}
+	return true
 }
 
 // 实例化一个mvc注册器
@@ -211,6 +297,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 				panic(err.Error())
 			}
 			json.Unmarshal(dataString, param)
+			doStruct(param, data)
 			action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 		} else {
 			action.MethodByName(ctl.ControllerAction).Call(nil)
