@@ -318,7 +318,7 @@ func getValues(param ...interface{}) []reflect.Value {
 	return vals
 }
 
-func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]interface{} {
+func fromToSimpleMap(v url.Values, addKeyVal map[string]string) map[string]interface{} {
 	dic := map[string]interface{}{}
 	for k, val := range v {
 		if len(val) == 1 {
@@ -343,7 +343,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
-			ff.OtherKeyMap = map[string]interface{}{}
+			ff.OtherKeyMap = map[string]string{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
@@ -366,7 +366,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
-			ff.OtherKeyMap = map[string]interface{}{}
+			ff.OtherKeyMap = map[string]string{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
@@ -386,7 +386,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
-			ff.OtherKeyMap = map[string]interface{}{}
+			ff.OtherKeyMap = map[string]string{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
