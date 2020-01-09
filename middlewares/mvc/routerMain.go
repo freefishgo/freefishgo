@@ -15,18 +15,15 @@ package mvc
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"path/filepath"
 	"reflect"
 	"regexp"
 	"runtime/debug"
-	"strconv"
 	"strings"
 
 	freeFishGo "github.com/freefishgo/freefishgo"
@@ -105,98 +102,6 @@ func (cr *controllerRegister) templateHtml(ic IStatusCodeController, MethodByNam
 	if err != nil {
 		panic(err)
 	}
-}
-
-// 字符转类型
-func doStruct(i interface{}, data map[string]interface{}) {
-	v := reflect.ValueOf(i)
-	t := reflect.TypeOf(i)
-	if t.Kind() == reflect.Ptr {
-		if !v.Elem().CanSet() {
-			v.Set(reflect.New(t.Elem()))
-		}
-		v = v.Elem()
-		t = t.Elem()
-	}
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		name := f.Tag.Get("json")
-		if name == "" {
-			name = f.Name
-		}
-		val, ok := data[name]
-		if !ok {
-			continue
-		}
-		v1 := v.Field(i)
-		switch v1.Kind() {
-		case reflect.Slice:
-			if val, ok := val.([]string); ok {
-				sl := reflect.MakeSlice(v1.Type(), len(val), len(val))
-				b := false
-				for i := 0; i < len(val); i++ {
-					if doBasic(sl.Index(i), f.Type.Elem(), val[i]) {
-						b = true
-					}
-				}
-				if b {
-					v1.Set(sl)
-				}
-			}
-			continue
-		case reflect.Ptr:
-			if !v1.Elem().CanSet() {
-				v1.Set(reflect.New(f.Type.Elem()))
-			}
-			doBasic(v1.Elem(), f.Type.Elem(), val)
-			continue
-		default:
-			doBasic(v1, f.Type, val)
-			continue
-		}
-	}
-}
-
-func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
-	switch t1.Kind() {
-	case reflect.String:
-		if val, ok := val.(string); ok {
-			v1.SetString(val)
-		}
-		break
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		if val, ok := val.(string); ok {
-			if val, err := strconv.ParseInt(val, 10, 64); err == nil {
-				v1.SetInt(val)
-			}
-		}
-		break
-	case reflect.Bool:
-		if val, ok := val.(string); ok {
-			if val, err := strconv.ParseBool(val); err == nil {
-				v1.SetBool(val)
-			}
-		}
-		break
-	case reflect.Float32, reflect.Float64:
-		if val, ok := val.(string); ok {
-			if val, err := strconv.ParseFloat(val, 64); err == nil {
-				v1.SetFloat(val)
-			}
-		}
-		break
-	case reflect.Ptr:
-		t1 = t1.Elem()
-		if !v1.Elem().CanSet() {
-			v1.Set(reflect.New(t1))
-		}
-		v1 = v1.Elem()
-		doBasic(v1, t1, val)
-		break
-	default:
-		return false
-	}
-	return true
 }
 
 // 实例化一个mvc注册器
@@ -300,13 +205,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 		if ctl.ControllerActionParameterStruct != nil {
 			var param interface{}
 			param = reflect.New(ctl.ControllerActionParameterStruct).Interface()
-			dataString, err := json.Marshal(data)
-			log.Println(string(dataString))
-			if err != nil {
-				panic(err.Error())
-			}
-			json.Unmarshal(dataString, param)
-			doStruct(param, data)
+			MapStringToStruct(param, data)
 			action.MethodByName(ctl.ControllerAction).Call(getValues(param))
 		} else {
 			action.MethodByName(ctl.ControllerAction).Call(nil)
@@ -414,7 +313,7 @@ func getValues(param ...interface{}) []reflect.Value {
 	return vals
 }
 
-func fromToSimpleMap(v url.Values, addKeyVal map[string]string) map[string]interface{} {
+func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]interface{} {
 	dic := map[string]interface{}{}
 	for k, val := range v {
 		if len(val) == 1 {
@@ -439,7 +338,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
-			ff.OtherKeyMap = map[string]string{}
+			ff.OtherKeyMap = map[string]interface{}{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
@@ -462,7 +361,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
-			ff.OtherKeyMap = map[string]string{}
+			ff.OtherKeyMap = map[string]interface{}{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
@@ -482,7 +381,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 		sl := v.patternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
-			ff.OtherKeyMap = map[string]string{}
+			ff.OtherKeyMap = map[string]interface{}{}
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}

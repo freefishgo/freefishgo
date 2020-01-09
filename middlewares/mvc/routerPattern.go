@@ -16,14 +16,14 @@ package mvc
 type freeFishUrl struct {
 	controllerName   string
 	controllerAction string
-	OtherKeyMap      map[string]string
+	OtherKeyMap      map[string]interface{}
 	ControllerInfo   *controllerInfo
 }
 
 // 获取控制器名称
 func (f *freeFishUrl) GetControllerName(c *ActionRouter) string {
 	if v, ok := f.OtherKeyMap["Controller"]; ok {
-		return v
+		return v.(string)
 	} else {
 		return c.controllerName
 	}
@@ -32,7 +32,7 @@ func (f *freeFishUrl) GetControllerName(c *ActionRouter) string {
 // 获取动作名称
 func (f *freeFishUrl) GetControllerAction(c *ActionRouter) string {
 	if v, ok := f.OtherKeyMap["Action"]; ok {
-		return v
+		return v.(string)
 	} else {
 		return c.actionName
 	}
