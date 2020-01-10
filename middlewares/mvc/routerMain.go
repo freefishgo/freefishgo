@@ -228,7 +228,7 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 			if b, err := ctr.htmlTpl(c.LayoutPath); err == nil {
 				section := map[string]interface{}{}
 				if c.tplPath == "" {
-					c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
+					c.tplPath = filepath.Join(c.controllerName, replaceActionNameIgone(c.actionName)+".fish")
 				}
 				if b, err := ctr.htmlTpl(c.tplPath); err == nil {
 					section["LayoutContent"] = b
@@ -266,7 +266,7 @@ func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 			}
 		}
 		if c.tplPath == "" {
-			c.tplPath = filepath.Join(c.controllerName, replaceActionName(c.actionName)+".fish")
+			c.tplPath = filepath.Join(c.controllerName, replaceActionNameIgone(c.actionName)+".fish")
 		}
 		if b, err := ctr.htmlTpl(c.tplPath); err == nil {
 			if c.Data == nil {

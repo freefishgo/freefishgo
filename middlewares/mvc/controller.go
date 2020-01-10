@@ -226,6 +226,21 @@ func replaceActionName(actionName string) string {
 
 }
 
+func replaceActionNameIgone(actionName string) string {
+	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
+		freeFishGo.MethodConnect, freeFishGo.MethodDelete,
+		freeFishGo.MethodGet, freeFishGo.MethodHead, freeFishGo.MethodOptions,
+		freeFishGo.MethodPatch, freeFishGo.MethodPut, freeFishGo.MethodTrace}
+	for _, v := range httpMethodList {
+		f, _ := regexp.Compile("(?i:" + strings.ToLower(string(v)) + ")$")
+		if f.MatchString(actionName) {
+			return f.ReplaceAllString(actionName, "")
+		}
+	}
+	return actionName
+
+}
+
 func isHaveHttpMethod(actionName string) bool {
 	actionName = strings.ToUpper(actionName)
 	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
