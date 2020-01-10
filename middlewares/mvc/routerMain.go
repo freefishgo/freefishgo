@@ -18,6 +18,7 @@ import (
 	"errors"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -291,6 +292,9 @@ func (ctr *controllerRegister) htmlTpl(path string) (template.HTML, error) {
 		return v, nil
 	} else {
 		temPath := filepath.Join(ctr.WebConfig.ViewsPath, path)
+		log.Println(ctr.WebConfig.ViewsPath)
+		t, _ := filepath.Abs(temPath)
+		log.Println(t)
 		if b, err := ioutil.ReadFile(temPath); err == nil {
 			html := template.HTML(b)
 			if ctr.WebConfig.IsDevelopment {

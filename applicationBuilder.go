@@ -22,17 +22,25 @@ import (
 )
 
 // DefaultApplicationBuilder is the default ApplicationBuilder used by Serve.
-var DefaultApplicationBuilder *ApplicationBuilder
-var DefaultConfig *Config
+var defaultApplicationBuilder *ApplicationBuilder
+
+func GetDefaultApplicationBuilder() *ApplicationBuilder {
+	checkDefaultApplicationBuilderNil()
+	return defaultApplicationBuilder
+}
+
+func SetDefaultApplicationBuilderConfig(config *Config) {
+	checkDefaultApplicationBuilderNil()
+	defaultApplicationBuilder.Config = config
+}
 
 func checkDefaultApplicationBuilderNil() {
-	if DefaultApplicationBuilder == nil {
-		DefaultApplicationBuilder = NewFreeFishApplicationBuilder()
+	if defaultApplicationBuilder == nil {
+		defaultApplicationBuilder = NewFreeFishApplicationBuilder()
 	}
-	if DefaultConfig == nil {
-		DefaultConfig = NewConfig()
+	if defaultApplicationBuilder.Config == nil {
+		defaultApplicationBuilder.Config = NewConfig()
 	}
-	DefaultApplicationBuilder.Config = DefaultConfig
 }
 
 // ApplicationBuilder管道构造器
@@ -49,7 +57,7 @@ func (app *ApplicationBuilder) InjectionSession(session ISession) {
 // 向默认管道注入session去数据的接口
 func InjectionSession(session ISession) {
 	checkDefaultApplicationBuilderNil()
-	DefaultApplicationBuilder.InjectionSession(session)
+	defaultApplicationBuilder.InjectionSession(session)
 }
 
 // 创建一个ApplicationBuilder管道
@@ -63,12 +71,12 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 // 启动默认中间件web服务
 func Run() {
 	checkDefaultApplicationBuilderNil()
-	DefaultApplicationBuilder.Run()
+	defaultApplicationBuilder.Run()
 }
 
 func SetISession(I ISession) {
 	checkDefaultApplicationBuilderNil()
-	DefaultApplicationBuilder.SetISession(I)
+	defaultApplicationBuilder.SetISession(I)
 }
 
 func (app *ApplicationBuilder) SetISession(I ISession) {
@@ -218,7 +226,7 @@ func (app *ApplicationBuilder) UseMiddleware(middleware IMiddleware) {
 // 向默认中间件注册接口
 func UseMiddleware(middleware IMiddleware) {
 	checkDefaultApplicationBuilderNil()
-	DefaultApplicationBuilder.UseMiddleware(middleware)
+	defaultApplicationBuilder.UseMiddleware(middleware)
 }
 
 // 中间件排序

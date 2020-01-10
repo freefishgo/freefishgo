@@ -19,16 +19,23 @@ import (
 	freeFishGo "github.com/freefishgo/freefishgo"
 )
 
-// 默认的MvcWebConfig配置
-var DefaultMvcWebConfig *MvcWebConfig
-
 // 默认的MvcApp
-var DefaultMvcApp *MvcApp
+var defaultMvcApp *MvcApp
 
 type MvcApp struct {
 	handlers *controllerRegister
 	//Server   *http.Server
 	Config *MvcWebConfig
+}
+
+func SetDefaultMvcWebConfig(webConfig *MvcWebConfig) {
+	checkDefaultMvcApp()
+	defaultMvcApp.Config = webConfig
+	defaultMvcApp.handlers.WebConfig = webConfig
+}
+func GetDefaultMvcApp() *MvcApp {
+	checkDefaultMvcApp()
+	return defaultMvcApp
 }
 
 // Web服务逻辑处理程序
@@ -56,14 +63,13 @@ func NewFreeFishMvcApp() *MvcApp {
 }
 
 func checkDefaultMvcApp() {
-	if DefaultMvcApp == nil {
-		DefaultMvcApp = NewFreeFishMvcApp()
+	if defaultMvcApp == nil {
+		defaultMvcApp = NewFreeFishMvcApp()
 	}
-	if DefaultMvcWebConfig == nil {
-		DefaultMvcWebConfig = NewWebConfig()
+	if defaultMvcApp.Config == nil {
+		defaultMvcApp.Config = NewWebConfig()
 	}
-	DefaultMvcApp.Config = DefaultMvcWebConfig
-	DefaultMvcApp.handlers.WebConfig = DefaultMvcWebConfig
+	defaultMvcApp.handlers.WebConfig = defaultMvcApp.Config
 }
 
 // AddHandlers 将Controller控制器注册到Mvc框架对象中 即是添加路由动作
@@ -81,13 +87,13 @@ func (mvc *MvcApp) SetStatusCodeHandlers(s IStatusCodeController) {
 // AddStateHandlers 将Controller控制器注册到Mvc框架的定制状态处理程序中 如：404状态自定义  不传使用默认的
 func SetStatusCodeHandlers(s IStatusCodeController) {
 	checkDefaultMvcApp()
-	DefaultMvcApp.SetStatusCodeHandlers(s)
+	defaultMvcApp.SetStatusCodeHandlers(s)
 }
 
 // AddHandlers 将Controller控制器注册到默认的Mvc框架对象中 即是添加路由动作
 func AddHandlers(ic ...IController) {
 	checkDefaultMvcApp()
-	DefaultMvcApp.AddHandlers(ic...)
+	defaultMvcApp.AddHandlers(ic...)
 }
 
 // AddMainRouter 主节点路由匹配原则注册     目前系统变量支持格式为 `/{ Controller}/{Action}/{id:int}/{who:string}/{allString}`
@@ -112,7 +118,7 @@ func (mvc *MvcApp) AddMainRouter(list ...*MainRouter) {
 // 如果不进行路由注册  默认为/{ Controller}/{Action}   router.ControllerActionInfo中 ControllerActionFuncName不用设置  设置了也不会生效
 func AddMainRouter(list ...*MainRouter) {
 	checkDefaultMvcApp()
-	DefaultMvcApp.AddMainRouter(list...)
+	defaultMvcApp.AddMainRouter(list...)
 }
 
 // 主路由
