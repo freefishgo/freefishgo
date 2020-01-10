@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"github.com/freefishgo/freefishgo"
-	_ "github.com/freefishgo/freefishgo/examples/conf"
 	_ "github.com/freefishgo/freefishgo/examples/routers"
 	"github.com/freefishgo/freefishgo/middlewares/mvc"
 	"github.com/freefishgo/freefishgo/middlewares/printTimeMiddleware"
 	"os"
 )
+
 type config struct {
 	*freefishgo.Config
 	WebConfig *mvc.MvcWebConfig
