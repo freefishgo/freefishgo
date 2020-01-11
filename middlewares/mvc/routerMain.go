@@ -194,12 +194,12 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 	action := reflect.New(ctl.ControllerFunc)
 	var ic IController = action.Interface().(IController)
 	ic.initController(ctx)
+	ctx.Request.ParseForm()
 	ic.Prepare()
 	con := ic.getController()
 	if con.isStopController {
 		return ctx
 	} else {
-		ctx.Request.ParseForm()
 		data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)
 		ic.setQuery(data)
 		if ctl.ControllerActionParameterStruct != nil {
