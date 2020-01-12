@@ -155,6 +155,10 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 	if tree.CloseControllerRouter == nil {
 		tree.CloseControllerRouter = map[string]bool{}
 	}
+	if tree.StaticRouterList == nil {
+		tree.StaticRouterList = map[string]*ActionRouter{}
+
+	}
 	controllerRouter := c.ControllerRouter
 	if controllerRouter != nil {
 		v := &ActionRouter{}
