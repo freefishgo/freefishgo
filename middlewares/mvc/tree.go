@@ -37,15 +37,31 @@ import (
 type controllerModelList map[string]*ActionRouter
 
 type tree struct {
-	ControllerList map[string]map[string]*controllerInfo //静态路径
+	ControllerList map[string]map[string]*controllerInfo //所有处理器的信息
 	//主要路由节点
 	MainRouterList controllerModelList
 	// 动作路由映射模型
 	ActionRouterList controllerModelList
 	// 控制器路由映射模型
 	ControllerRouterList  controllerModelList
+	StaticRouterList      controllerModelList //静态路径
 	CloseMainRouter       map[string]map[string]bool
 	CloseControllerRouter map[string]bool
+}
+
+// 添加静态路由
+func addStaticAction(c controllerModelList, list ...*ActionRouter) controllerModelList {
+	if c == nil {
+		c = controllerModelList{}
+	}
+	for _, v := range list {
+		if _, ok := c["/"+strings.ToLower(v.RouterPattern)]; ok {
+			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
+		} else {
+			c["/"+strings.ToLower(v.RouterPattern)] = v
+		}
+	}
+	return c
 }
 
 func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) controllerModelList {
@@ -54,13 +70,13 @@ func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) contr
 	}
 	for _, v := range list {
 		v.makePattern()
-		if strings.Contains(v.patternRe.String(), "{") {
+		if strings.Contains(v.PatternRe.String(), "{") {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern + ". 错误的变量")
 		}
-		if _, ok := c[v.patternRe.String()]; ok {
+		if _, ok := c[v.PatternRe.String()]; ok {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
 		} else {
-			c[v.patternRe.String()] = v
+			c[v.PatternRe.String()] = v
 		}
 	}
 	return c
@@ -68,6 +84,9 @@ func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) contr
 
 // 计算路由信息
 func (c *ActionRouter) makePattern() {
+	if c.PatternRe != nil {
+		return
+	}
 	pathPattern := filterRegexpString(c.RouterPattern)
 	if len(pathPattern) == 0 {
 		panic("设置的路由匹配模式不能为空")
@@ -96,7 +115,7 @@ func (c *ActionRouter) makePattern() {
 		waitSortMap[strconv.Itoa(t[0][0])] = "Action"
 		waitSortArr = append(waitSortArr, t[0][0])
 	}
-	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*(int|string|allString)+[\ ]*}`)
+	f = regexp.MustCompile(`{[\ ]*[a-z][\w+$]+[\ ]*:[\ ]*(int|string|allString)+[\ ]*}`)
 	t = f.FindAllStringIndex(pathPattern, -1)
 	for _, v := range t {
 		sl := strings.Trim(strings.Split(pathPattern[v[0]+1:v[1]], ":")[0], " ")
@@ -116,12 +135,12 @@ func (c *ActionRouter) makePattern() {
 	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
 	f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
-	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*int[\ ]*}`)
+	f = regexp.MustCompile(`{[\ ]*[a-z][\w+$]+[\ ]*:[\ ]*int[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `(-?[1-9]\d+)`)
-	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*string[\ ]*}`)
+	f = regexp.MustCompile(`{[\ ]*[a-z][\w+$]+[\ ]*:[\ ]*string[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `([\w+$]+)`)
 
-	f = regexp.MustCompile(`{[\ ]*[a-zA-Z][\w+$]+[\ ]*:[\ ]*allString[\ ]*}`)
+	f = regexp.MustCompile(`{[\ ]*[a-z][\w+$]+[\ ]*:[\ ]*allString[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `(.*?)`)
 
 	f = regexp.MustCompile(`{[\ ]*int[\ ]*}`)
@@ -132,7 +151,7 @@ func (c *ActionRouter) makePattern() {
 	f = regexp.MustCompile(`{[\ ]*allString[\ ]*}`)
 	pathPattern = f.ReplaceAllString(pathPattern, `.*?`)
 
-	c.patternRe = regexp.MustCompile("^" + pathPattern + "$")
+	c.PatternRe = regexp.MustCompile("^" + strings.ToLower(pathPattern) + "$")
 	c.patternMap = sortMap
 }
 

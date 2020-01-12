@@ -162,8 +162,7 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		v.controllerName = strings.ToLower(controllerName)
 		tree.CloseControllerRouter[v.controllerName] = true
 		//tree.CloseControllerRouter[actionRouter.controllerName]=actionRouter
-		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
-		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
+		f := regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		if !f.MatchString(v.RouterPattern) {
 			panic("控制器路由注册时发现：控制器 " + getType.String() + "错误:错误原因为Controller注册时路由规则中必须含有 {Action}变量")
 		}
@@ -205,6 +204,10 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, v.actionName)
+		if !regexp.MustCompile("{.*?}").MatchString(v.RouterPattern) {
+			tree.StaticRouterList = addStaticAction(tree.StaticRouterList, v)
+			continue
+		}
 		tree.ActionRouterList = tree.ActionRouterList.AddControllerModelList(v)
 	}
 	return tree
@@ -266,7 +269,8 @@ type ActionRouter struct {
 	RouterPattern  string
 	controllerName string
 	actionName     string
-	patternRe      *regexp.Regexp
+	// 正则表达式匹配
+	PatternRe *regexp.Regexp
 	//正则匹配出来的变量地址映射变量映射
 	patternMap map[string]int
 }

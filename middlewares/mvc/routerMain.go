@@ -334,8 +334,17 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
 func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishGo.HttpMethod) *freeFishUrl {
 	path := strings.ToLower(u.Path)
+	if v, ok := c.tree.StaticRouterList[path]; ok {
+		ff := new(freeFishUrl)
+		ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
+		ff.controllerName = ff.GetControllerName(v)
+		if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+			ff.ControllerInfo = v
+			return ff
+		}
+	}
 	for _, v := range c.tree.MainRouterList {
-		sl := v.patternRe.FindStringSubmatch(path)
+		sl := v.PatternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
 			ff.OtherKeyMap = map[string]interface{}{}
@@ -358,7 +367,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 	}
 
 	for _, v := range c.tree.ControllerRouterList {
-		sl := v.patternRe.FindStringSubmatch(path)
+		sl := v.PatternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
 			ff.OtherKeyMap = map[string]interface{}{}
@@ -378,7 +387,7 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 	}
 
 	for _, v := range c.tree.ActionRouterList {
-		sl := v.patternRe.FindStringSubmatch(path)
+		sl := v.PatternRe.FindStringSubmatch(path)
 		if len(sl) != 0 {
 			ff := new(freeFishUrl)
 			ff.OtherKeyMap = map[string]interface{}{}

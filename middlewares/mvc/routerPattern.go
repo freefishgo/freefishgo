@@ -51,7 +51,7 @@ func (f *freeFishUrl) GetControllerAction(c *ActionRouter) string {
 func filterRegexpString(input string) string {
 	input = strings.Replace(input, "\\", "\\\\", -1) //先替换“\”，不然后面会因为替换出现其他的“\”
 	//r := regexp.MustCompile("[\\*\\.\\?\\+\\$\\^\\[\\]\\(\\)\\{\\}\\|\\/]")
-	r := regexp.MustCompile("[\\*\\.\\?\\+\\$\\^\\[\\]\\(\\)\\|\\/]")
+	r := regexp.MustCompile("[\\*\\.\\?\\+\\$\\^\\[\\]\\(\\)\\|]")
 	arrList := r.FindAllStringSubmatch(input, -1)
 	list := map[string]bool{}
 	for _, v := range arrList {
