@@ -13,6 +13,11 @@
 // limitations under the License.
 package mvc
 
+import (
+	"regexp"
+	"strings"
+)
+
 type freeFishUrl struct {
 	controllerName   string
 	controllerAction string
@@ -36,4 +41,25 @@ func (f *freeFishUrl) GetControllerAction(c *ActionRouter) string {
 	} else {
 		return c.actionName
 	}
+}
+
+/// <summary>
+/// 转义字符串中所有正则特殊字符
+/// </summary>
+/// <param name="input">传入字符串</param>
+/// <returns></returns>
+func filterRegexpString(input string) string {
+	input = strings.Replace(input, "\\", "\\\\", -1) //先替换“\”，不然后面会因为替换出现其他的“\”
+	//r := regexp.MustCompile("[\\*\\.\\?\\+\\$\\^\\[\\]\\(\\)\\{\\}\\|\\/]")
+	r := regexp.MustCompile("[\\*\\.\\?\\+\\$\\^\\[\\]\\(\\)\\|\\/]")
+	arrList := r.FindAllStringSubmatch(input, -1)
+	list := map[string]bool{}
+	for _, v := range arrList {
+		if _, ok := list[v[0]]; ok {
+			continue
+		}
+		input = strings.Replace(input, v[0], "\\"+v[0], -1)
+		list[v[0]] = true
+	}
+	return input
 }

@@ -68,7 +68,7 @@ func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) contr
 
 // 计算路由信息
 func (c *ActionRouter) makePattern() {
-	pathPattern := c.RouterPattern
+	pathPattern := filterRegexpString(c.RouterPattern)
 	if len(pathPattern) == 0 {
 		panic("设置的路由匹配模式不能为空")
 	}
