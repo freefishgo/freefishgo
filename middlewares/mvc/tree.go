@@ -55,10 +55,13 @@ func addStaticAction(c controllerModelList, list ...*ActionRouter) controllerMod
 		c = controllerModelList{}
 	}
 	for _, v := range list {
-		if _, ok := c["/"+strings.ToLower(v.RouterPattern)]; ok {
+		if v.RouterPattern[0] != '/' {
+			v.RouterPattern = "/" + v.RouterPattern
+		}
+		if _, ok := c[strings.ToLower(v.RouterPattern)]; ok {
 			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
 		} else {
-			c["/"+strings.ToLower(v.RouterPattern)] = v
+			c[strings.ToLower(v.RouterPattern)] = v
 		}
 	}
 	return c
