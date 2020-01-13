@@ -183,25 +183,25 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		if !ok {
 			panic(getType.String() + "方法" + v.ControllerActionFuncName + "不存在")
 		}
-		if isHaveHttpMethod(v.ControllerActionFuncName) {
-			v.actionName = replaceActionName(v.ControllerActionFuncName)
-			v.controllerName = strings.ToLower(controllerName)
-			if tree.CloseMainRouter[v.controllerName] == nil {
-				tree.CloseMainRouter[v.controllerName] = map[string]bool{}
-				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)] = true
-			} else {
-				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)] = true
-			}
+		// if isHaveHttpMethod(v.ControllerActionFuncName) {
+		// 	v.actionName = replaceActionName(v.ControllerActionFuncName)
+		// 	v.controllerName = strings.ToLower(controllerName)
+		// 	if tree.CloseMainRouter[v.controllerName] == nil {
+		// 		tree.CloseMainRouter[v.controllerName] = map[string]bool{}
+		// 		tree.CloseMainRouter[v.controllerName][v.actionName] = true
+		// 	} else {
+		// 		tree.CloseMainRouter[v.controllerName][v.actionName] = true
+		// 	}
+		// } else {
+		v.actionName = replaceActionName(v.ControllerActionFuncName)
+		v.controllerName = strings.ToLower(controllerName)
+		if tree.CloseMainRouter[v.controllerName] == nil {
+			tree.CloseMainRouter[v.controllerName] = map[string]bool{}
+			tree.CloseMainRouter[v.controllerName][v.actionName] = true
 		} else {
-			v.actionName = replaceActionName(v.ControllerActionFuncName)
-			v.controllerName = strings.ToLower(controllerName)
-			if tree.CloseMainRouter[v.controllerName] == nil {
-				tree.CloseMainRouter[v.controllerName] = map[string]bool{}
-				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)+"get"] = true
-			} else {
-				tree.CloseMainRouter[v.controllerName][strings.ToLower(v.ControllerActionFuncName)+"get"] = true
-			}
+			tree.CloseMainRouter[v.controllerName][v.actionName] = true
 		}
+		//}
 		//f := regexp.MustCompile(`Controller$`)
 		//controllerName = f.ReplaceAllString(controllerName, "")
 		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)

@@ -58,8 +58,8 @@ func addStaticAction(c controllerModelList, list ...*ActionRouter) controllerMod
 		if v.RouterPattern[0] != '/' {
 			v.RouterPattern = "/" + v.RouterPattern
 		}
-		if _, ok := c[strings.ToLower(v.RouterPattern)]; ok {
-			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
+		if v1, ok := c[strings.ToLower(v.RouterPattern)]; ok {
+			panic("添加的路由存在冲突，该路由为" + v.RouterPattern + "冲突路由为:控制器：" + v1.controllerName + " 动作器:" + v1.actionName + "与 控制器:" + v.controllerName + "动作器:" + v.actionName + "冲突")
 		} else {
 			c[strings.ToLower(v.RouterPattern)] = v
 		}
@@ -74,10 +74,10 @@ func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) contr
 	for _, v := range list {
 		v.makePattern()
 		if strings.Contains(v.PatternRe.String(), "{") {
-			panic("添加的路由存在冲突，该路由为" + v.RouterPattern + ". 错误的变量")
+			panic("添加的路由存在错误，该路由为" + v.RouterPattern + ". 错误的变量")
 		}
-		if _, ok := c[v.PatternRe.String()]; ok {
-			panic("添加的路由存在冲突，该路由为" + v.RouterPattern)
+		if v1, ok := c[v.PatternRe.String()]; ok {
+			panic("添加的路由存在冲突，该路由为" + v.RouterPattern + "冲突路由为:控制器：" + v1.controllerName + " 动作器:" + v1.actionName + "与 控制器:" + v.controllerName + "动作器:" + v.actionName + "冲突")
 		} else {
 			c[v.PatternRe.String()] = v
 		}

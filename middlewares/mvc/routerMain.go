@@ -351,9 +351,9 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
-			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
+			ff.controllerAction = ff.GetControllerAction(v)
 			ff.controllerName = ff.GetControllerName(v)
-			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction+strings.ToLower(string(method))); ok {
 				if c.tree.CloseControllerRouter[ff.controllerName] {
 					continue
 				}
@@ -374,9 +374,9 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
-			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
+			ff.controllerAction = ff.GetControllerAction(v)
 			ff.controllerName = ff.GetControllerName(v)
-			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction+strings.ToLower(string(method))); ok {
 				if c.tree.CloseMainRouter[ff.controllerName][ff.controllerAction] {
 					continue
 				}
@@ -394,9 +394,9 @@ func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishG
 			for k, m := range v.patternMap {
 				ff.OtherKeyMap[k] = sl[m]
 			}
-			ff.controllerAction = ff.GetControllerAction(v) + strings.ToLower(string(method))
+			ff.controllerAction = ff.GetControllerAction(v)
 			ff.controllerName = ff.GetControllerName(v)
-			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction); ok {
+			if v, ok := c.tree.getControllerInfoByControllerNameControllerAction(ff.controllerName, ff.controllerAction+strings.ToLower(string(method))); ok {
 				ff.ControllerInfo = v
 				return ff
 			}
