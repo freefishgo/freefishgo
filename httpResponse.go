@@ -275,7 +275,7 @@ func (r *Response) RemoveCookie(ck *http.Cookie) {
 
 // 写入前端的数据
 func (r *Response) Write(b []byte) (int, error) {
-	if r.isWriteInCache && len(r.writeCache) < r.maxResponseCacheLen {
+	if !r.Started && r.isWriteInCache && len(r.writeCache) < r.maxResponseCacheLen {
 		r.writeCache = append(r.writeCache, b...)
 		return len(b), nil
 	}
