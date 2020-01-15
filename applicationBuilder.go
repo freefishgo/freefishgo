@@ -180,7 +180,7 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.Response.getYourself().IsOpenGzip = app.config.EnableGzip
 	ctx.Response.getYourself().NeedGzipLen = app.config.NeedGzipLen
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
-	ctx.Response.getYourself().SetIsWriteInCache(false)
+	ctx.Response.SetIsWriteInCache(false)
 	ctx.Response.Write(nil)
 }
 

@@ -187,6 +187,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 			ctx.Response.SetIsWriteInCache(true)
 			ctx.Response.SetMaxResponseCacheLen(1 << 9)
 			c.staticFileHandler.ServeHTTP(ctx.Response, ctx.Request.Request)
+			ctx.Response.SetIsWriteInCache(false)
 		}
 		return ctx
 	}
