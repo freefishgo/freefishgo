@@ -35,5 +35,5 @@ type MvcWebConfig struct {
 
 // 实例化一个 MvcWebConfig
 func NewWebConfig() *MvcWebConfig {
-	return &MvcWebConfig{ViewsPath: "", TemplateLeft: "{{", TemplateRight: "}}", IsDevelopment: false, LayoutTemplateLeft: "{{{", LayoutTemplateRight: "}}}"}
+	return &MvcWebConfig{ViewsPath: "static", TemplateLeft: "{{", TemplateRight: "}}", IsDevelopment: false, LayoutTemplateLeft: "{{{", LayoutTemplateRight: "}}}"}
 }
