@@ -30,12 +30,12 @@ type IResponse interface {
 	WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.Conn, err error)
 	Hijack() (net.Conn, *bufio.ReadWriter, error)
 	setISession(i ISession)
-	getSessionKeyValue() (string, error)
+	getSessionKeyValue() (err error)
 	RemoveSession()
-	GetSession(key string) interface{}
+	GetSession(key string) (interface{}, error)
 	getSession() error
 	UpdateSession() error
-	SetSession(key string, val interface{})
+	SetSession(key string, val interface{}) error
 	// 设置Cookie
 	SetCookie(c *http.Cookie)
 	// 设置Cookie
@@ -171,9 +171,12 @@ func (r *Response) setISession(i ISession) {
 	r.sessionFunc = i
 }
 
-func (r *Response) getSessionKeyValue() (string, error) {
-	r.isUpdateSessionKey = true
-	return r.sessionFunc.GetSessionKeyValue()
+func (r *Response) getSessionKeyValue() (err error) {
+	if r.SessionId == "" {
+		r.isUpdateSessionKey = true
+		r.SessionId, err = r.sessionFunc.GetSessionKeyValue()
+	}
+	return
 }
 
 func (r *Response) RemoveSession() {
@@ -181,24 +184,25 @@ func (r *Response) RemoveSession() {
 	r.isGetSession = false
 	r.sessionIsUpdate = false
 	r.sessionFunc.RemoveBySessionID(r.SessionId)
-	r.SessionId = ""
 }
 
-func (r *Response) GetSession(key string) interface{} {
+func (r *Response) GetSession(key string) (interface{}, error) {
 	if r.SessionId == "" {
-		return nil
+		return nil, nil
 	}
 	if !r.isGetSession {
 		var err error
 		if err = r.getSession(); err == nil {
 			r.isGetSession = true
 			if r.session == nil {
-				return nil
+				return nil, err
 			}
+		} else {
+			return nil, err
 		}
 	}
 	v, _ := r.session[key]
-	return v
+	return v, nil
 }
 
 func (r *Response) getSession() error {
@@ -208,10 +212,9 @@ func (r *Response) getSession() error {
 	var err error
 	if !r.isGetSession {
 		if r.session, err = r.sessionFunc.GetSession(r.SessionId); err == nil {
-			if r.session == nil {
-				r.SessionId = ""
+			if r.session != nil {
+				r.isGetSession = true
 			}
-			r.isGetSession = true
 		}
 	}
 	return err
@@ -222,24 +225,23 @@ func (r *Response) UpdateSession() error {
 		return nil
 	}
 	if r.sessionIsUpdate {
+		r.sessionIsUpdate = false
 		return r.sessionFunc.SetSession(r.SessionId, r.session)
 	}
 	return nil
 }
 
-func (r *Response) SetSession(key string, val interface{}) {
+func (r *Response) SetSession(key string, val interface{}) error {
 	r.sessionIsUpdate = true
 	r.getSession()
-	if r.SessionId == "" {
-		r.isUpdateSessionKey = true
-		if SessionName, err := r.sessionFunc.GetSessionKeyValue(); err == nil {
-			r.SessionId = SessionName
-		}
+	if err := r.getSessionKeyValue(); err != nil {
+		return err
 	}
 	if r.session == nil {
 		r.session = map[interface{}]interface{}{}
 	}
 	r.session[key] = val
+	return r.UpdateSession()
 }
 
 // 设置Cookie
