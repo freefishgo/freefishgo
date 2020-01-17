@@ -225,6 +225,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 }
 func (ctr *controllerRegister) tmpHtml(c *Controller) error {
 	if c.isUseTplPath || c.LayoutPath != "" {
+		c.Response.Header().Set("Content-Type", "text/html")
 		if c.LayoutPath != "" {
 			if b, err := ctr.htmlTpl(c.LayoutPath); err == nil {
 				section := map[string]interface{}{}
