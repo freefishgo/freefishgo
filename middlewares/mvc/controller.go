@@ -35,6 +35,7 @@ type Controller struct {
 	Response freeFishGo.IResponse
 	// 重置控制器路由  必须包含{Action}变量
 	ControllerRouter *ControllerRouter
+	// 控制器单一方法设置路由
 	ActionRouterList []*ActionRouter
 	// 和前端一切的数据  都可以通过他获取
 	Request        *freeFishGo.Request
@@ -86,19 +87,24 @@ type IController interface {
 	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
+	// http控制器处理前调用方法
 	Prepare()
+	// http控制器执行后调用方法
 	Finish()
 }
 
 // 响应状态处理接口
 type IStatusCodeController interface {
 	IController
+	// http500处理方法
 	Error500()
+	// http404处理方法
 	NotFind404()
+	// http403处理方法
 	Forbidden403()
 }
 
-// 响应状态处理
+// http响应状态处理
 type StatusCodeController struct {
 	Controller
 }
@@ -183,16 +189,6 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		if !ok {
 			panic(getType.String() + "方法" + v.ControllerActionFuncName + "不存在")
 		}
-		// if isHaveHttpMethod(v.ControllerActionFuncName) {
-		// 	v.actionName = replaceActionName(v.ControllerActionFuncName)
-		// 	v.controllerName = strings.ToLower(controllerName)
-		// 	if tree.CloseMainRouter[v.controllerName] == nil {
-		// 		tree.CloseMainRouter[v.controllerName] = map[string]bool{}
-		// 		tree.CloseMainRouter[v.controllerName][v.actionName] = true
-		// 	} else {
-		// 		tree.CloseMainRouter[v.controllerName][v.actionName] = true
-		// 	}
-		// } else {
 		v.actionName = replaceActionName(v.ControllerActionFuncName)
 		v.controllerName = strings.ToLower(controllerName)
 		if tree.CloseMainRouter[v.controllerName] == nil {
@@ -201,9 +197,6 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		} else {
 			tree.CloseMainRouter[v.controllerName][v.actionName] = true
 		}
-		//}
-		//f := regexp.MustCompile(`Controller$`)
-		//controllerName = f.ReplaceAllString(controllerName, "")
 		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
 		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
 		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
