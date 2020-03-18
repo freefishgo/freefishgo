@@ -31,10 +31,14 @@ type IResponse interface {
 	Hijack() (net.Conn, *bufio.ReadWriter, error)
 	setISession(i ISession)
 	getSessionKeyValue() (err error)
+	// 移除Session
 	RemoveSession()
+	// 获取指定key的session值
 	GetSession(key string) (interface{}, error)
 	getSession() error
+	// 更新session值
 	UpdateSession() error
+	// 设置session值
 	SetSession(key string, val interface{}) error
 	// 设置Cookie
 	SetCookie(c *http.Cookie)
@@ -42,7 +46,9 @@ type IResponse interface {
 	SetCookieUseKeyValue(key string, val string)
 	// 通过cookie名字移除Cookie
 	RemoveCookieByName(name string)
+	// 设置响应状态值
 	WriteHeader(statusCode int)
+	// 读取响应状态值
 	ReadStatusCode() int
 	// 通过cookie移除Cookie
 	RemoveCookie(ck *http.Cookie)
@@ -54,14 +60,21 @@ type IResponse interface {
 	ClearWriteCache()
 	// 写入前端的json数据
 	WriteJson(i interface{}) error
+	// 重定向路径
 	Redirect(redirectPath string)
 	getYourself() *Response
-	// 是否已经向前端写入数据了
+	// 是否已经向前端写入数据了，默认是开启的，且GetMaxResponseCacheLen()设置很小
 	GetStarted() bool
+	// 获取当前请求是否临时缓存数据进入缓存中
 	GetIsWriteInCache() bool
+	// 设置是否延迟把写入前端的数据写入前端，即使设置了延迟写入前端，
+	// 但当数据长度超过了配置文件设置的 MaxResponseCacheLen是依然会写入前端，
+	// 判断是否已经写入前端 调用 GetStarted()进行判断
 	SetIsWriteInCache(bool)
 	Header() http.Header
+	// 查看延迟写入前端的数据的最大值
 	GetMaxResponseCacheLen() int
+	// 设置延迟写入前端的数据的最大值，GetIsWriteInCache()为True时生效
 	SetMaxResponseCacheLen(int)
 
 	// 500 错误的堆栈信息,其他状态为空
