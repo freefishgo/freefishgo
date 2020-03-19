@@ -24,10 +24,15 @@ import (
 
 // Session接口
 type ISession interface {
+	// 初始化接口
 	Init(SessionAliveTime time.Duration) error
+	// 获取指定sessionID的值
 	GetSession(sessionID string) (map[interface{}]interface{}, error)
+	// 创建一个sessionID
 	GetSessionKeyValue() (string, error)
+	// 设置sessionID的值
 	SetSession(sessionID string, m map[interface{}]interface{}) error
+	//移除sessionID及其值
 	RemoveBySessionID(sessionID string) error
 }
 
