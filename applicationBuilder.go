@@ -74,15 +74,6 @@ func Run() {
 	defaultApplicationBuilder.Run()
 }
 
-func SetISession(I ISession) {
-	checkDefaultApplicationBuilderNil()
-	defaultApplicationBuilder.SetISession(I)
-}
-
-func (app *ApplicationBuilder) SetISession(I ISession) {
-	app.handler.session = I
-}
-
 // 启动web服务
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
