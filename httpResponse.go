@@ -76,7 +76,10 @@ type IResponse interface {
 	GetMaxResponseCacheLen() int
 	// 设置延迟写入前端的数据的最大值，GetIsWriteInCache()为True时生效
 	SetMaxResponseCacheLen(int)
-
+	// 获取传送数据
+	GetMsgData() map[string]interface{}
+	// 设置传送数据
+	SetMsgData(map[string]interface{})
 	// 500 错误的堆栈信息,其他状态为空
 	Stack() string
 	// 500 错误的信息,其他状态为空
@@ -96,7 +99,7 @@ type Response struct {
 	IsOpenGzip  bool
 	NeedGzipLen int
 	isGzip      bool
-	MsgData     map[interface{}]interface{}
+	msgData     map[string]interface{}
 
 	isWriteInCache      bool
 	writeCache          []byte
@@ -113,6 +116,16 @@ type Response struct {
 
 	err   interface{}
 	stack string
+}
+
+// 获取传递的信息
+func (s *Response) GetMsgData() map[string]interface{} {
+	return s.msgData
+}
+
+// 设置传递的信心
+func (s *Response) SetMsgData(data map[string]interface{}) {
+	s.msgData = data
 }
 
 // 设置错误的堆栈信息
