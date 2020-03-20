@@ -29,7 +29,7 @@ type PrintTimeMiddleware struct {
 func (m *PrintTimeMiddleware) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) *freeFishGo.HttpContext {
 	dt := time.Now()
 	ctxtmp := next(ctx)
-	log.Println("路径:" + ctx.Request.URL.Path + "  处理时间为:" + (time.Now().Sub(dt)).String() + "请求类型：" + ctx.Request.Method + "  响应状态：" + strconv.Itoa(ctx.Response.ReadStatusCode()))
+	log.Println("路径:" + ctx.Request.URL.Path + "  处理时间为:" + (time.Now().Sub(dt)).String() + "	请求类型：" + ctx.Request.Method + "	响应状态：" + strconv.Itoa(ctx.Response.ReadStatusCode()))
 	return ctxtmp
 }
 
