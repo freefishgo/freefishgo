@@ -87,6 +87,10 @@ type IController interface {
 	initController(ctx *freeFishGo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
+	// 使用模板
+	UseTplPath(tplPath ...string)
+	// 跳过控制器
+	SkipController()
 	// http控制器处理前调用方法
 	Prepare()
 	// http控制器执行后调用方法
