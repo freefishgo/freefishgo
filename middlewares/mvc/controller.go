@@ -176,11 +176,12 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 		v.controllerName = strings.ToLower(controllerName)
 		tree.CloseControllerRouter[v.controllerName] = true
 		//tree.CloseControllerRouter[actionRouter.controllerName]=actionRouter
-		f := regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
+		f := regexp.MustCompile(`{[\ ]*Controller[\ ]*}`)
+		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
+		f = regexp.MustCompile(`{[\ ]*Action[\ ]*}`)
 		if !f.MatchString(v.RouterPattern) {
 			panic("控制器路由注册时发现：控制器 " + getType.String() + "错误:错误原因为Controller注册时路由规则中必须含有 {Action}变量")
 		}
-		v.RouterPattern = f.ReplaceAllString(v.RouterPattern, strings.ToLower(controllerName))
 		tree.ControllerRouterList = tree.ControllerRouterList.AddControllerModelList(v)
 
 	}
