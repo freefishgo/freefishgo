@@ -30,8 +30,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/freefishgo/freeFishGo"
-	"github.com/freefishgo/freeFishGo/middlewares/mvc"
+	"github.com/freefishgo/freefishgo"
+	"github.com/freefishgo/freefishgo/middlewares/mvc"
 	"log"
 	"time"
 )
@@ -46,39 +46,27 @@ type Test struct {
 	T1 string   `json:"tstst1"`
 	Id string   `json:"id"`
 }
+// 路由地址为 /main/MyControllerActionStrut 请求方式为post
 func (c *MainController) MyControllerActionStrutPost(t *Test) {
 	c.Data["Website"] = t.Id
 	c.Data["Email"] = t.T1
 	// 调用模板引擎   默认模板地址为{ Controller}/{Action}.fish    不含请求方式
 	c.UseTplPath()
 }
+// 路由地址为 /main/MyControllerActionStrut 请求方式为get
 func (c *MainController) MyControllerActionStrutGet(t *Test) {
 	c.Data["Website"] = t.Id
 	c.Data["Email"] = t.T1
 	//c.HttpContext.Response.Write([]byte("hahaha"))
 	c.UseTplPath()
 }
+// 路由地址为 /main/My 请求方式为get
 func (c *MainController) MyGET(t *Test) {
 	c.Response.Write([]byte(fmt.Sprintf("数据为：%+v", t)))
 }
+// 路由地址为 /main/My1 请求方式为get
 func (c *MainController) My1(t *Test) {
 	c.Response.Write([]byte(fmt.Sprintf("数据为：%+v", t)))
-}
-// 例子： 组装一个Middleware服务，实现打印mvc框架处理请求的时间
-type mid struct {
-	
-}
-// 中间件打印mvc框架处理请求的时间
-func (*mid) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) *freeFishGo.HttpContext {
-		dt := time.Now()
-    	log.Println(ctx.Request.URL)
-    	ctxtmp := next(ctx)
-    	log.Println("处理时间为:" + (time.Now().Sub(dt)).String())
-    	return ctxtmp
-}
-// 中间件注册是调用函数进行该中间件最后的设置
-func (*mid) LastInit(*freeFishGo.Config) {
-	//panic("implement me")
 }
 func main() {
 	// 实例化一个mvc服务
@@ -87,9 +75,7 @@ func main() {
 	app.AddHandlers(&MainController{})
 	// 注册主路由
 	app.AddMainRouter(&mvc.MainRouter{RouterPattern: "/{ Controller}/{Action}", HomeController: "Main", IndexAction: "My"})
-	build:= freeFishGo.NewFreeFishApplicationBuilder()
-	// 通过注册中间件来实现注册服务
-	build.UseMiddleware(&mid{})
+	build:= freefishgo.NewFreeFishApplicationBuilder()
 	// 把mvc实例注册到管道中
 	build.UseMiddleware(app)
 	build.Run()
