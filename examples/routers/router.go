@@ -6,6 +6,6 @@ import (
 )
 
 func init() {
-	// 注册主路由ControllerActionFuncName字段不用设置        设置了也不会生效
+	// 设置主路由格式
 	mvc.AddMainRouter(&mvc.MainRouter{RouterPattern: "/{ Controller}/{Action}", HomeController: "Main", IndexAction: "LayoutTest"})
 }
