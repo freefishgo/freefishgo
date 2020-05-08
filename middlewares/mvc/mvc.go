@@ -16,7 +16,7 @@ package mvc
 import (
 	"net/http"
 
-	freeFishGo "github.com/freefishgo/freefishgo"
+	"github.com/freefishgo/freefishgo"
 )
 
 // 默认的MvcApp
@@ -39,14 +39,14 @@ func GetDefaultMvcApp() *MvcApp {
 }
 
 // Web服务逻辑处理程序
-func (mvc *MvcApp) Middleware(ctx *freeFishGo.HttpContext, next freeFishGo.Next) (c *freeFishGo.HttpContext) {
+func (mvc *MvcApp) Middleware(ctx *freefishgo.HttpContext, next freefishgo.Next) (c *freefishgo.HttpContext) {
 	c = ctx
 	ctx = mvc.handlers.AnalysisRequest(ctx)
 	return next(ctx)
 }
 
 // 框架注册完成时  进行最后的配置
-func (mvc *MvcApp) LastInit(cnf *freeFishGo.Config) {
+func (mvc *MvcApp) LastInit(cnf *freefishgo.Config) {
 	mvc.handlers.WebConfig = mvc.Config
 	handle := http.FileServer(http.Dir(mvc.handlers.WebConfig.StaticDir))
 	mvc.handlers.staticFileHandler = handle

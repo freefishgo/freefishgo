@@ -19,7 +19,7 @@ import (
 	"regexp"
 	"strings"
 
-	freeFishGo "github.com/freefishgo/freefishgo"
+	"github.com/freefishgo/freefishgo"
 )
 
 type controllerInfo struct {
@@ -32,13 +32,13 @@ type controllerInfo struct {
 // http请求逻辑控制器
 type Controller struct {
 	// 响应前端的处理 不建议使用
-	Response freeFishGo.IResponse
+	Response freefishgo.IResponse
 	// 重置控制器路由  必须包含{Action}变量
 	ControllerRouter *ControllerRouter
 	// 控制器单一方法设置路由
 	ActionRouterList []*ActionRouter
 	// 和前端一切的数据  都可以通过他获取
-	Request        *freeFishGo.Request
+	Request        *freefishgo.Request
 	controllerInfo *controllerInfo
 	sonController  IController
 	// 前端传来的数据都可以获取  包括路由格式化的数据  如 /{id:string}  可通过 Query["id"]获取值
@@ -84,7 +84,7 @@ func (c *Controller) getController() *Controller {
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
-	initController(ctx *freeFishGo.HttpContext)
+	initController(ctx *freefishgo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
 	// 使用模板
@@ -217,10 +217,10 @@ func (c *Controller) getControllerInfo(tree *tree) *tree {
 
 func replaceActionName(actionName string) string {
 	actionName = strings.ToUpper(actionName)
-	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
-		freeFishGo.MethodConnect, freeFishGo.MethodDelete,
-		freeFishGo.MethodGet, freeFishGo.MethodHead, freeFishGo.MethodOptions,
-		freeFishGo.MethodPatch, freeFishGo.MethodPut, freeFishGo.MethodTrace}
+	httpMethodList := []freefishgo.HttpMethod{freefishgo.MethodPost,
+		freefishgo.MethodConnect, freefishgo.MethodDelete,
+		freefishgo.MethodGet, freefishgo.MethodHead, freefishgo.MethodOptions,
+		freefishgo.MethodPatch, freefishgo.MethodPut, freefishgo.MethodTrace}
 	for _, v := range httpMethodList {
 		f := regexp.MustCompile(string(v) + "$")
 		if f.MatchString(actionName) {
@@ -232,10 +232,10 @@ func replaceActionName(actionName string) string {
 }
 
 func replaceActionNameIgone(actionName string) string {
-	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
-		freeFishGo.MethodConnect, freeFishGo.MethodDelete,
-		freeFishGo.MethodGet, freeFishGo.MethodHead, freeFishGo.MethodOptions,
-		freeFishGo.MethodPatch, freeFishGo.MethodPut, freeFishGo.MethodTrace}
+	httpMethodList := []freefishgo.HttpMethod{freefishgo.MethodPost,
+		freefishgo.MethodConnect, freefishgo.MethodDelete,
+		freefishgo.MethodGet, freefishgo.MethodHead, freefishgo.MethodOptions,
+		freefishgo.MethodPatch, freefishgo.MethodPut, freefishgo.MethodTrace}
 	for _, v := range httpMethodList {
 		f, _ := regexp.Compile("(?i:" + strings.ToLower(string(v)) + ")$")
 		if f.MatchString(actionName) {
@@ -248,10 +248,10 @@ func replaceActionNameIgone(actionName string) string {
 
 func isHaveHttpMethod(actionName string) bool {
 	actionName = strings.ToUpper(actionName)
-	httpMethodList := []freeFishGo.HttpMethod{freeFishGo.MethodPost,
-		freeFishGo.MethodConnect, freeFishGo.MethodDelete,
-		freeFishGo.MethodGet, freeFishGo.MethodHead, freeFishGo.MethodOptions,
-		freeFishGo.MethodPatch, freeFishGo.MethodPut, freeFishGo.MethodTrace}
+	httpMethodList := []freefishgo.HttpMethod{freefishgo.MethodPost,
+		freefishgo.MethodConnect, freefishgo.MethodDelete,
+		freefishgo.MethodGet, freefishgo.MethodHead, freefishgo.MethodOptions,
+		freefishgo.MethodPatch, freefishgo.MethodPut, freefishgo.MethodTrace}
 	for _, v := range httpMethodList {
 		f := regexp.MustCompile(string(v) + "$")
 		if f.MatchString(actionName) {
@@ -309,7 +309,7 @@ func (c *Controller) setSonController(son IController) {
 }
 
 // http请求上下文注册
-func (c *Controller) initController(ctx *freeFishGo.HttpContext) {
+func (c *Controller) initController(ctx *freefishgo.HttpContext) {
 	c.Response = ctx.Response
 	c.Request = ctx.Request
 	c.Data = map[interface{}]interface{}{}

@@ -26,7 +26,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	freeFishGo "github.com/freefishgo/freefishgo"
+	"github.com/freefishgo/freefishgo"
 )
 
 type controllerRegister struct {
@@ -42,7 +42,7 @@ type statusCodeControllerInfo struct {
 	name                 string
 }
 
-func (cr *controllerRegister) doStatusCode(ctx *freeFishGo.HttpContext) (ctxTmp *freeFishGo.HttpContext) {
+func (cr *controllerRegister) doStatusCode(ctx *freefishgo.HttpContext) (ctxTmp *freefishgo.HttpContext) {
 	ctxTmp = ctx
 	switch ctx.Response.ReadStatusCode() {
 	case 404:
@@ -81,7 +81,7 @@ func (cr *controllerRegister) doStatusCode(ctx *freeFishGo.HttpContext) (ctxTmp 
 	}
 	return ctx
 }
-func (cr *controllerRegister) initStateCodeFunc(ctx *freeFishGo.HttpContext) IStatusCodeController {
+func (cr *controllerRegister) initStateCodeFunc(ctx *freefishgo.HttpContext) IStatusCodeController {
 
 	if !ctx.Response.GetStarted() {
 		ctx.Response.ClearWriteCache()
@@ -163,10 +163,10 @@ func (handlers *controllerRegister) SetStatusCodeHandlers(s IStatusCodeControlle
 }
 
 // http服务逻辑处理程序
-//func (c *controllerRegister) Middleware(ctx *freeFishGo.HttpContext) {
+//func (c *controllerRegister) Middleware(ctx *freefishgo.HttpContext) {
 //	c.AnalysisRequest(ctx)
 //}
-func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont *freeFishGo.HttpContext) {
+func (c *controllerRegister) AnalysisRequest(ctx *freefishgo.HttpContext) (cont *freefishgo.HttpContext) {
 	cont = ctx
 	defer func() {
 		if err := recover(); err != nil {
@@ -179,7 +179,7 @@ func (c *controllerRegister) AnalysisRequest(ctx *freeFishGo.HttpContext) (cont 
 		c.doStatusCode(ctx)
 	}()
 	u, _ := url.Parse(ctx.Request.RequestURI)
-	f := c.analysisUrlToGetAction(u, freeFishGo.HttpMethod(ctx.Request.Method))
+	f := c.analysisUrlToGetAction(u, freefishgo.HttpMethod(ctx.Request.Method))
 	if f == nil {
 		if ctx.Response.GetIsWriteInCache() {
 			c.staticFileHandler.ServeHTTP(ctx.Response, ctx.Request.Request)
@@ -334,7 +334,7 @@ func fromToSimpleMap(v url.Values, addKeyVal map[string]interface{}) map[string]
 }
 
 // 根据url对象分析出控制处理器名称，并把其他规则数据提取出来
-func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freeFishGo.HttpMethod) *freeFishUrl {
+func (c *controllerRegister) analysisUrlToGetAction(u *url.URL, method freefishgo.HttpMethod) *freeFishUrl {
 	path := strings.ToLower(u.Path)
 	if v, ok := c.tree.StaticRouterList[path]; ok {
 		ff := new(freeFishUrl)
