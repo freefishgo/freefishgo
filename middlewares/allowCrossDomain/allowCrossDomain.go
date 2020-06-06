@@ -28,9 +28,9 @@ type AllowCrossDomain struct {
 
 // 中间件实现允许跨域请求
 func (allow *AllowCrossDomain) Middleware(ctx *freefishgo.HttpContext, next freefishgo.Next) *freefishgo.HttpContext {
+	ctx.Response.Header().Set("Access-Control-Allow-Origin", allow.AllowOrigin)
+	ctx.Response.Header().Set("Access-Control-Allow-Methods", allow.AllowMethods)
 	if http.MethodOptions == ctx.Request.Method {
-		ctx.Response.Header().Set("Access-Control-Allow-Origin", allow.AllowOrigin)
-		ctx.Response.Header().Set("Access-Control-Allow-Methods", allow.AllowMethods)
 		return ctx
 	}
 	return next(ctx)
