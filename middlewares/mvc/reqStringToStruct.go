@@ -37,16 +37,22 @@ func MapStringToStruct(i interface{}, data map[string]interface{}) interface{} {
 		}
 		switch v1.Kind() {
 		case reflect.Slice:
-			if val, ok := val.([]string); ok {
-				sl := reflect.MakeSlice(v1.Type(), len(val), len(val))
+			if val1, ok := val.([]string); ok {
+				sl := reflect.MakeSlice(v1.Type(), len(val1), len(val1))
 				b := false
-				for i := 0; i < len(val); i++ {
-					if doBasic(sl.Index(i), f.Type.Elem(), val[i]) {
+				for i := 0; i < len(val1); i++ {
+					if doBasic(sl.Index(i), f.Type.Elem(), val1[i]) {
 						b = true
 					}
 				}
 				if b {
 					v1.Set(sl)
+				}
+			} else if val2, ok := val.(string); ok {
+				vTemp := reflect.New(v1.Type()).Interface()
+				err := json.Unmarshal([]byte(val2), vTemp)
+				if err == nil {
+					v1.Set(reflect.ValueOf(vTemp).Elem())
 				}
 			}
 			continue
@@ -93,16 +99,22 @@ func MapStringToStructInReflect(v reflect.Value, data map[string]interface{}) in
 		}
 		switch v1.Kind() {
 		case reflect.Slice:
-			if val, ok := val.([]string); ok {
-				sl := reflect.MakeSlice(v1.Type(), len(val), len(val))
+			if val1, ok := val.([]string); ok {
+				sl := reflect.MakeSlice(v1.Type(), len(val1), len(val1))
 				b := false
-				for i := 0; i < len(val); i++ {
-					if doBasic(sl.Index(i), f.Type.Elem(), val[i]) {
+				for i := 0; i < len(val1); i++ {
+					if doBasic(sl.Index(i), f.Type.Elem(), val1[i]) {
 						b = true
 					}
 				}
 				if b {
 					v1.Set(sl)
+				}
+			} else if val2, ok := val.(string); ok {
+				vTemp := reflect.New(v1.Type()).Interface()
+				err := json.Unmarshal([]byte(val2), vTemp)
+				if err == nil {
+					v1.Set(reflect.ValueOf(vTemp).Elem())
 				}
 			}
 			continue
