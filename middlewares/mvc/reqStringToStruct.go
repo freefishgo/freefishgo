@@ -184,6 +184,10 @@ func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
 				v1.Set(reflect.ValueOf(vTemp).Elem())
 			}
 		}
+	case reflect.Interface:
+		if v1.CanSet() {
+			v1.Set(reflect.ValueOf(val))
+		}
 	default:
 		return false
 	}
