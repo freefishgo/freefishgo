@@ -23,8 +23,6 @@ type Config struct {
 	ServerName string
 	// 是否开启Gzip压缩
 	EnableGzip bool
-	// 一次写入长度超过多少需要Gzip压缩
-	NeedGzipLen int
 	// 是否启用Session
 	EnableSession bool
 	// Session的存在时间
@@ -74,7 +72,6 @@ func NewConfig() *Config {
 		AppName:             "freeFishGo",
 		ServerName:          "freeFishGoServer:" + VERSION,
 		EnableGzip:          true,
-		NeedGzipLen:         1 << 11,
 		EnableSession:       true,
 		SessionAliveTime:    time.Minute * 20,
 		SessionCookieName:   "fishCookie",

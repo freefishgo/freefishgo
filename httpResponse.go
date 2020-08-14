@@ -94,12 +94,11 @@ type Response struct {
 	// 是否调用过Write
 	Started bool
 	// 回复状态
-	status      int
-	Gzip        *gzip.Writer
-	IsOpenGzip  bool
-	NeedGzipLen int
-	isGzip      bool
-	msgData     map[string]interface{}
+	status     int
+	Gzip       *gzip.Writer
+	IsOpenGzip bool
+	isGzip     bool
+	msgData    map[string]interface{}
 
 	isWriteInCache      bool
 	writeCache          []byte
@@ -310,7 +309,7 @@ func (r *Response) Write(b []byte) (int, error) {
 	defer func() {
 		r.Started = true
 	}()
-	if r.isGzip || (r.IsOpenGzip && r.NeedGzipLen < len(b)+len(r.writeCache) && !r.Started) {
+	if r.isGzip || (r.IsOpenGzip && !r.Started) {
 		if !r.Started {
 			if r.SessionId != "" && r.isUpdateSessionKey {
 				r.SetCookieUseKeyValue(r.SessionCookieName, r.SessionId)
@@ -323,7 +322,6 @@ func (r *Response) Write(b []byte) (int, error) {
 					r.ResponseWriter.Header().Set("Content-Type", http.DetectContentType(r.writeCache))
 				}
 			}
-			r.ResponseWriter.Header().Set("Content-Encoding", "gzip")
 			r.ResponseWriter.WriteHeader(r.status)
 		}
 		if r.Gzip == nil {

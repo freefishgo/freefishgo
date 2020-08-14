@@ -169,7 +169,9 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 		}
 	}()
 	ctx.Response.getYourself().IsOpenGzip = app.config.EnableGzip
-	ctx.Response.getYourself().NeedGzipLen = app.config.NeedGzipLen
+	if ctx.Response.getYourself().IsOpenGzip {
+		ctx.Response.Header().Set("Content-Encoding", "gzip")
+	}
 	ctx = app.middlewareLink.val.Middleware(ctx, app.middlewareLink.next.innerNext)
 	ctx.Response.SetIsWriteInCache(false)
 	ctx.Response.Write(nil)
