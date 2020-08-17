@@ -150,6 +150,14 @@ func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
 			}
 		}
 		break
+	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		if val, ok := val.(string); ok {
+			if val, err := strconv.ParseUint(val, 10, 64); err == nil {
+				if v1.CanSet() {
+					v1.SetUint(val)
+				}
+			}
+		}
 	case reflect.Bool:
 		if val, ok := val.(string); ok {
 			if val, err := strconv.ParseBool(val); err == nil {
