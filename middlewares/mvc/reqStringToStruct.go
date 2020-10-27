@@ -158,6 +158,7 @@ func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
 				}
 			}
 		}
+		break
 	case reflect.Bool:
 		if val, ok := val.(string); ok {
 			if val, err := strconv.ParseBool(val); err == nil {
