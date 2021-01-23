@@ -27,7 +27,6 @@ func init() {
 	}
 	freefishgo.SetDefaultApplicationBuilderConfig(conf.Config)
 	mvc.SetDefaultMvcWebConfig(conf.WebConfig)
-
 }
 
 func main() {

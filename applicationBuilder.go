@@ -126,7 +126,7 @@ func newApplicationHandler() *applicationHandler {
 
 type applicationHandler struct {
 	middlewareList []IMiddleware
-	middlewareLink *MiddlewareLink
+	middlewareLink *middlewareLink
 	config         *Config
 	session        ISession
 }
@@ -188,13 +188,13 @@ type IMiddleware interface {
 	LastInit(*Config)
 }
 
-type MiddlewareLink struct {
+type middlewareLink struct {
 	val  IMiddleware
-	next *MiddlewareLink
+	next *middlewareLink
 }
 
 // 执行下一个中间件
-func (link *MiddlewareLink) innerNext(ctx *HttpContext) (cont *HttpContext) {
+func (link *middlewareLink) innerNext(ctx *HttpContext) (cont *HttpContext) {
 	cont = ctx
 	defer func() {
 		if err := recover(); err != nil {
@@ -255,12 +255,12 @@ func UseMiddlewareFunc(middlewareFunc ...func(ctx *HttpContext, next Next) *Http
 
 // 中间件排序
 func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
-	app.handler.middlewareLink = new(MiddlewareLink)
+	app.handler.middlewareLink = new(middlewareLink)
 	tmpMid := app.handler.middlewareLink
 	for i := 0; i < len(app.handler.middlewareList); i++ {
 		tmpMid.val = app.handler.middlewareList[i]
 		tmpMid.val.LastInit(app.Config)
-		tmpMid.next = new(MiddlewareLink)
+		tmpMid.next = new(middlewareLink)
 		tmpMid = tmpMid.next
 	}
 	if tmpMid.val == nil {
