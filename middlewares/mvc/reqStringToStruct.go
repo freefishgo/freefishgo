@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // 字符转类型
@@ -19,7 +20,7 @@ func MapStringToStruct(i interface{}, data map[string]interface{}) interface{} {
 	}
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		name := f.Tag.Get("json")
+		name := strings.Split(f.Tag.Get("json"), ",")[0]
 		v1 := v.Field(i)
 		if name == "" {
 			name = f.Name
@@ -81,7 +82,7 @@ func MapStringToStructInReflect(v reflect.Value, data map[string]interface{}) in
 	}
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		name := f.Tag.Get("json")
+		name := strings.Split(f.Tag.Get("json"), ",")[0]
 		v1 := v.Field(i)
 		if name == "" {
 			name = f.Name
