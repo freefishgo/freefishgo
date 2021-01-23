@@ -76,16 +76,11 @@ func (c *MainController) My1(t *Test) {
 	c.Response.Write([]byte(fmt.Sprintf("数据为：%+v", t)))
 }
 func main() {
-	// 实例化一个mvc服务
-	app := mvc.NewFreeFishMvcApp()
 	// 注册控制器
-	app.AddHandlers(&MainController{})
-	// 注册主路由
-	app.AddMainRouter(&mvc.MainRouter{RouterPattern: "/{ Controller}/{Action}", HomeController: "Main", IndexAction: "My"})
-	build:= freefishgo.NewFreeFishApplicationBuilder()
+	mvc.AddHandlers(&MainController{})
 	// 把mvc实例注册到管道中
-	build.UseMiddleware(app)
-	build.Run()
+	freefishgo.UseMiddleware(mvc.GetDefaultMvcApp())
+	freefishgo.Run()
 }
 
 ```
