@@ -1,5 +1,5 @@
-# freeFishGo
-## freeFishGo是通过结构体反射实现的典型的mvc 的web框架
+# freeFishGo(1分钟学会写后端接口)
+## freeFishGo是通过结构体反射实现的典型的mvc的web框架
 ## FreeFishGo is a typical MVC web framework implemented through struct reflection
 ## 使用freefishgo的优势
 1.通过的中间件注入对http请求进行流处理 清楚明白处理流程<br/>
