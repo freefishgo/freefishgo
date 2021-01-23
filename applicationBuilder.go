@@ -216,10 +216,41 @@ func (app *ApplicationBuilder) UseMiddleware(middleware ...IMiddleware) {
 	app.handler.middlewareList = append(app.handler.middlewareList, middleware...)
 }
 
+// 中间件func注册接口
+func (app *ApplicationBuilder) UseMiddlewareFunc(middlewareFunc ...func(ctx *HttpContext, next Next) *HttpContext) {
+	if app.handler.middlewareList == nil {
+		app.handler.middlewareList = []IMiddleware{}
+	}
+	for _, v := range middlewareFunc {
+		mid := &innerMiddlewareFunc{
+			f: v,
+		}
+		app.handler.middlewareList = append(app.handler.middlewareList, mid)
+	}
+}
+
+type innerMiddlewareFunc struct {
+	f func(ctx *HttpContext, next Next) *HttpContext
+}
+
+func (m *innerMiddlewareFunc) Middleware(ctx *HttpContext, next Next) *HttpContext {
+	return m.f(ctx, next)
+}
+
+func (m *innerMiddlewareFunc) LastInit(config *Config) {
+	//panic("implement me")
+}
+
 // 向默认中间件注册接口
-func UseMiddleware(middleware IMiddleware) {
+func UseMiddleware(middleware ...IMiddleware) {
 	checkDefaultApplicationBuilderNil()
-	defaultApplicationBuilder.UseMiddleware(middleware)
+	defaultApplicationBuilder.UseMiddleware(middleware...)
+}
+
+// 中间件func注册接口
+func UseMiddlewareFunc(middlewareFunc ...func(ctx *HttpContext, next Next) *HttpContext) {
+	checkDefaultApplicationBuilderNil()
+	defaultApplicationBuilder.UseMiddlewareFunc(middlewareFunc...)
 }
 
 // 中间件排序
