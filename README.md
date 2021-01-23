@@ -54,7 +54,8 @@ func main() {
 	freefishgo.Run()
 }
 ```
-## 使用freefishgo的优势
+# 如果你想快速构建项目 请查看 https://github.com/freefishgo/freefish
+# 使用freefishgo的优势(详细文档地址访问 http://freefishgo.com)
 1.通过的中间件注入对http请求进行流处理 清楚明白处理流程<br/>
 2.自定义中间件只需要实现IMiddleware接口 该接口只有两个方法,方便快捷,实现任意地点对请求的处理<br/>
 3.提供Mvc服务也是通过中间件注入的 该中间件能通过动作器的参数进行参数注入,免去忘记请求参数的烦恼,再也不用再写反序列化获取参数了,框架帮你完成 <br/>
@@ -66,8 +67,6 @@ func main() {
 3. The Mvc service is also injected through the middleware. This middleware can inject parameters through the parameters of the actor, so as to avoid the trouble of forgetting the request parameters, and no longer need to write deserialization to get parameters<br/>
 4. Strings at any location in the url can also be injected into the request parameters<br/>
 5. Are you still worried that every actuator needs to write a routing address? Freefishgo takes care of your worries, you can implement all controller actions without routing Settings<br/>
-## 详细文档地址访问 http://freefishgo.com
-
 ## Installation
 
 To install `freefishgo` use the `go get` command:
@@ -81,5 +80,4 @@ go get github.com/freefishgo/freefishgo
 ```bash
 go get -u github.com/freefishgo/freefishgo
 ```
-# 如果你想快速构建项目 请查看 https://github.com/freefishgo/freefish
 
