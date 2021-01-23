@@ -118,33 +118,33 @@ type Response struct {
 }
 
 // 获取传递的信息
-func (s *Response) GetMsgData() map[string]interface{} {
-	return s.msgData
+func (r *Response) GetMsgData() map[string]interface{} {
+	return r.msgData
 }
 
 // 设置传递的信心
-func (s *Response) SetMsgData(data map[string]interface{}) {
-	s.msgData = data
+func (r *Response) SetMsgData(data map[string]interface{}) {
+	r.msgData = data
 }
 
 // 设置错误的堆栈信息
-func (s *Response) SetStack(str string) {
-	s.stack = str
+func (r *Response) SetStack(str string) {
+	r.stack = str
 }
 
 // 设置错误的信息
-func (s *Response) SetError(err interface{}) {
-	s.err = err
+func (r *Response) SetError(err interface{}) {
+	r.err = err
 }
 
 // 错误的堆栈信息
-func (s *Response) Stack() string {
-	return s.stack
+func (r *Response) Stack() string {
+	return r.stack
 }
 
 // 错误的信息
-func (s *Response) Error() interface{} {
-	return s.err
+func (r *Response) Error() interface{} {
+	return r.err
 }
 
 func (r *Response) SetMaxResponseCacheLen(b int) {
