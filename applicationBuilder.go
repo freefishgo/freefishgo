@@ -209,11 +209,11 @@ func (link *MiddlewareLink) innerNext(ctx *HttpContext) (cont *HttpContext) {
 }
 
 // 中间件注册接口
-func (app *ApplicationBuilder) UseMiddleware(middleware IMiddleware) {
+func (app *ApplicationBuilder) UseMiddleware(middleware ...IMiddleware) {
 	if app.handler.middlewareList == nil {
 		app.handler.middlewareList = []IMiddleware{}
 	}
-	app.handler.middlewareList = append(app.handler.middlewareList, middleware)
+	app.handler.middlewareList = append(app.handler.middlewareList, middleware...)
 }
 
 // 向默认中间件注册接口
