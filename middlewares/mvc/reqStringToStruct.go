@@ -144,7 +144,7 @@ func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
 		break
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if val, ok := val.(string); ok {
-			if val, err := strconv.ParseInt(val, 10, 64); err == nil {
+			if val, err := strconv.ParseInt(val, 10, v1.Type().Bits()); err == nil {
 				if v1.CanSet() {
 					v1.SetInt(val)
 				}
@@ -153,7 +153,7 @@ func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
 		break
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		if val, ok := val.(string); ok {
-			if val, err := strconv.ParseUint(val, 10, 64); err == nil {
+			if val, err := strconv.ParseUint(val, 10, v1.Type().Bits()); err == nil {
 				if v1.CanSet() {
 					v1.SetUint(val)
 				}
@@ -171,7 +171,7 @@ func doBasic(v1 reflect.Value, t1 reflect.Type, val interface{}) bool {
 		break
 	case reflect.Float32, reflect.Float64:
 		if val, ok := val.(string); ok {
-			if val, err := strconv.ParseFloat(val, 64); err == nil {
+			if val, err := strconv.ParseFloat(val, v1.Type().Bits()); err == nil {
 				if v1.CanSet() {
 					v1.SetFloat(val)
 				}
