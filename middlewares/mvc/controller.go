@@ -231,7 +231,7 @@ func replaceActionName(actionName string) string {
 
 }
 
-func replaceActionNameIgone(actionName string) string {
+func replaceActionNameIgnore(actionName string) string {
 	httpMethodList := []freefishgo.HttpMethod{freefishgo.MethodPost,
 		freefishgo.MethodConnect, freefishgo.MethodDelete,
 		freefishgo.MethodGet, freefishgo.MethodHead, freefishgo.MethodOptions,

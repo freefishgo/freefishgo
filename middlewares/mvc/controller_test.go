@@ -17,8 +17,8 @@ func TestReplaceActionNameIgone(T *testing.T) {
 		{f: "nIhaoGeT", r: "nIhao"},
 	}
 	for _, v := range t {
-		if replaceActionNameIgone(v.f) != v.r {
-			T.Errorf("测试失败%+v,因为%s不等于%s", v, replaceActionNameIgone(v.f), v.r)
+		if replaceActionNameIgnore(v.f) != v.r {
+			T.Errorf("测试失败%+v,因为%s不等于%s", v, replaceActionNameIgnore(v.f), v.r)
 		}
 	}
 }
