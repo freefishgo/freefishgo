@@ -67,6 +67,7 @@ func addStaticAction(c controllerModelList, list ...*ActionRouter) controllerMod
 	return c
 }
 
+// 添加动作器路由
 func (c controllerModelList) AddControllerModelList(list ...*ActionRouter) controllerModelList {
 	if c == nil {
 		c = controllerModelList{}
