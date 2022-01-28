@@ -193,7 +193,7 @@ func (reg *controllerRegister) AnalysisRequest(ctx *freefishgo.HttpContext) (con
 	}
 	ctl := f.ControllerInfo
 	action := reflect.New(ctl.ControllerFunc)
-	var ic IController = action.Interface().(IController)
+	ic := action.Interface().(IController)
 	ctx.Request.ParseForm()
 	ic.initController(ctx)
 	data := fromToSimpleMap(ctx.Request.Form, f.OtherKeyMap)

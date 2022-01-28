@@ -1,5 +1,5 @@
 module github.com/freefishgo/freefishgo
 
-go 1.12
+go 1.15
 
-require github.com/gorilla/websocket v1.4.1
+require github.com/gorilla/websocket v1.4.2
