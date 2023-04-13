@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package mvc
 
 import (
@@ -163,9 +164,10 @@ func (reg *controllerRegister) SetStatusCodeHandlers(s IStatusCodeController) {
 }
 
 // http服务逻辑处理程序
-//func (c *controllerRegister) Middleware(ctx *freefishgo.HttpContext) {
-//	c.AnalysisRequest(ctx)
-//}
+//
+//	func (c *controllerRegister) Middleware(ctx *freefishgo.HttpContext) {
+//		c.AnalysisRequest(ctx)
+//	}
 func (reg *controllerRegister) AnalysisRequest(ctx *freefishgo.HttpContext) (cont *freefishgo.HttpContext) {
 	cont = ctx
 	defer func() {
@@ -306,7 +308,7 @@ func (reg *controllerRegister) htmlTpl(path string) (template.HTML, error) {
 	}
 }
 
-//根据参数获取对应的Values
+// 根据参数获取对应的Values
 func getValues(param ...interface{}) []reflect.Value {
 	val := make([]reflect.Value, 0, len(param))
 	for i := range param {

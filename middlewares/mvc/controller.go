@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package mvc
 
 import (
@@ -29,7 +30,7 @@ type controllerInfo struct {
 	ControllerActionParameterStruct reflect.Type
 }
 
-// http请求逻辑控制器
+// Controller http请求逻辑控制器
 type Controller struct {
 	// 响应前端的处理 不建议使用
 	Response freefishgo.IResponse
@@ -61,7 +62,7 @@ func (c *Controller) setQuery(m map[string]interface{}) {
 	c.Query = m
 }
 
-// 使用模板的路径并启动调用模板
+// UseTplPath 使用模板的路径并启动调用模板
 //
 // 管道中任意地方调用Controller.HttpContext.Response.Write() 方法会失效
 //
@@ -80,56 +81,56 @@ func (c *Controller) getController() *Controller {
 	return c
 }
 
-// 控制器的基本数据结构
+// IController 控制器的基本数据结构
 type IController interface {
 	getControllerInfo(*tree) *tree
 	setSonController(IController)
 	initController(ctx *freefishgo.HttpContext)
 	getController() *Controller
 	setQuery(map[string]interface{})
-	// 使用模板
+	// UseTplPath 使用模板
 	UseTplPath(tplPath ...string)
-	// 跳过控制器
+	// SkipController 跳过控制器
 	SkipController()
-	// http控制器处理前调用方法
+	// Prepare http控制器处理前调用方法
 	Prepare()
-	// http控制器执行后调用方法
+	// Finish http控制器执行后调用方法
 	Finish()
 }
 
-// 响应状态处理接口
+// IStatusCodeController 响应状态处理接口
 type IStatusCodeController interface {
 	IController
-	// http500处理方法
+	// Error500 http500处理方法
 	Error500()
-	// http404处理方法
+	// NotFind404 http404处理方法
 	NotFind404()
-	// http403处理方法
+	// Forbidden403 http403处理方法
 	Forbidden403()
 }
 
-// http响应状态处理
+// StatusCodeController http响应状态处理
 type StatusCodeController struct {
 	Controller
 }
 
-// http 500错误处理
+// Error500 http 500错误处理
 func (s *StatusCodeController) Error500() {
 	s.Response.WriteHeader(500)
 	fmt.Fprintf(s.Response, `<html><body><div style="color: red;color: red;margin: 150px auto;width: 800px;"><div>500 Internal Server Error:  %s </div><pre>%s</pre></div></body></html>`, s.Response.Error(), s.Response.Stack())
 }
 
-// http 404处理
+// NotFind404 http 404处理
 func (s *StatusCodeController) NotFind404() {
 	s.Response.Write([]byte("404 page not found"))
 }
 
-// http 403处理
+// Forbidden403 http 403处理
 func (s *StatusCodeController) Forbidden403() {
 	s.Response.Write([]byte("403 Forbidden"))
 }
 
-// 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
+// getControllerInfo 进行路由注册的基类 如果结构体含有Controller 则Controller去掉 如GetController 变位Get  忽略大小写
 func (c *Controller) getControllerInfo(tree *tree) *tree {
 	getType := reflect.TypeOf(c.sonController)
 	controllerNameList := strings.Split(getType.String(), ".")
@@ -262,7 +263,7 @@ func isHaveHttpMethod(actionName string) bool {
 
 }
 
-// 单一动作器路由设置结构体
+// ActionRouter 单一动作器路由设置结构体
 type ActionRouter struct {
 	// 传设置控制器的方法
 	ControllerActionFuncName string
@@ -277,7 +278,7 @@ type ActionRouter struct {
 	patternMap map[string]int
 }
 
-// 单一控制器路由设置结构体，路由规则中必须包含`{Action}`变量
+// ControllerRouter 单一控制器路由设置结构体，路由规则中必须包含`{Action}`变量
 type ControllerRouter struct {
 	//路由设置  如：/{Controller}/{Action}/{id:int}
 	// /home/index/123可以匹配成功
@@ -288,34 +289,34 @@ type ControllerRouter struct {
 	patternMap map[string]int
 }
 
-// 控制器执行前调用
+// Prepare 控制器执行前调用
 func (c *Controller) Prepare() {
 	//log.Println("父类的Prepare")
 }
 
-// 控制器结束时调用
+// Finish 控制器结束时调用
 func (c *Controller) Finish() {
 	//log.Println("父类的Finish")
 }
 
-// 停止执行控制器
+// SkipController 停止执行控制器
 func (c *Controller) SkipController() {
 	c.isStopController = true
 }
 
-// 控制器注册
+// setSonController 控制器注册
 func (c *Controller) setSonController(son IController) {
 	c.sonController = son
 }
 
-// http请求上下文注册
+// initController http请求上下文注册
 func (c *Controller) initController(ctx *freefishgo.HttpContext) {
 	c.Response = ctx.Response
 	c.Request = ctx.Request
 	c.Data = map[interface{}]interface{}{}
 }
 
-// 过滤掉本地方法
+// isNotSkip 过滤掉本地方法
 func isNotSkip(methodName string) bool {
 	skinList := map[string]bool{"SetHttpContext": true,
 		"OverwriteActionRouter": true, "SetTplPath": true,

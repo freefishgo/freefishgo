@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// 字符转类型
+// MapStringToStruct 字符转类型
 func MapStringToStruct(i interface{}, data map[string]interface{}) interface{} {
 	v := reflect.ValueOf(i)
 	t := reflect.TypeOf(i)

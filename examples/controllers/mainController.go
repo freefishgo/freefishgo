@@ -6,7 +6,7 @@ import (
 	"github.com/freefishgo/freefishgo/middlewares/mvc"
 )
 
-// 实现mvc控制器的处理Main为控制器 {Controller}的值
+// HomeController 实现mvc控制器的处理Main为控制器 {Controller}的值
 type HomeController struct {
 	mvc.Controller
 }
@@ -20,7 +20,7 @@ func (c *HomeController) Prepare() {
 	log.Println("子类的Prepare")
 }
 
-// 控制器结束时调用
+// Finish 控制器结束时调用
 func (c *HomeController) Finish() {
 	log.Println("子类的Finish")
 }
@@ -46,7 +46,7 @@ func (c *HomeController) MyControllerActionStrut(Test *Test) {
 //
 //&router.ControllerActionRouter{RouterPattern: "{string}/{ Controller}/{Action}/{tstst1:string}er", ControllerActionFuncName: "LayoutTestGet"}
 
-//所以实际路由为:/任意字符串/main/layoutTest/任意字符串er
+// 所以实际路由为:/任意字符串/main/layoutTest/任意字符串er
 func (c *HomeController) LayoutTestGet(Test *Test) {
 	log.Println("控制器执行成功")
 	c.Data["Website"] = Test.Id

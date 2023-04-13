@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package freefishgo
 
 import (
@@ -22,21 +23,21 @@ import (
 	"time"
 )
 
-// Session接口
+// ISession Session接口
 type ISession interface {
-	// 初始化接口
+	// Init 初始化接口
 	Init(SessionAliveTime time.Duration) error
-	// 获取指定sessionID的值
+	// GetSession 获取指定sessionID的值
 	GetSession(sessionID string) (map[interface{}]interface{}, error)
-	// 创建一个sessionID
+	// GetSessionKeyValue 创建一个sessionID
 	GetSessionKeyValue() (string, error)
-	// 设置sessionID的值
+	// SetSession 设置sessionID的值
 	SetSession(sessionID string, m map[interface{}]interface{}) error
-	//移除sessionID及其值
+	// RemoveBySessionID 移除sessionID及其值
 	RemoveBySessionID(sessionID string) error
 }
 
-/*Session会话管理*/
+// SessionMgr Session会话管理
 type SessionMgr struct {
 	mLock        sync.RWMutex  //互斥(保证线程安全)
 	mMaxLifeTime time.Duration //垃圾回收时间
@@ -48,7 +49,7 @@ func (mgr *SessionMgr) GetSessionKeyValue() (string, error) {
 	return mgr.NewSessionID(), nil
 }
 
-//设置session里面的值
+// SetSession 设置session里面的值
 func (mgr *SessionMgr) SetSession(sessionID string, m map[interface{}]interface{}) error {
 	mgr.mLock.Lock()
 	defer mgr.mLock.Unlock()
@@ -68,7 +69,7 @@ func (mgr *SessionMgr) Init(SessionAliveTime time.Duration) error {
 	return nil
 }
 
-//创建会话管理器(cookieName:在浏览器中cookie的名字;maxLifeTime:最长生命周期)
+// NewSessionMgr 创建会话管理器(cookieName:在浏览器中cookie的名字;maxLifeTime:最长生命周期)
 func NewSessionMgr(maxLifeTime time.Duration) *SessionMgr {
 	mgr := &SessionMgr{mMaxLifeTime: maxLifeTime, mSessions: make(map[string]*Session)}
 
@@ -78,7 +79,7 @@ func NewSessionMgr(maxLifeTime time.Duration) *SessionMgr {
 	return mgr
 }
 
-//得到session里面的值
+// GetSession 得到session里面的值
 func (mgr *SessionMgr) GetSession(sessionID string) (map[interface{}]interface{}, error) {
 	mgr.mLock.RLock()
 	defer mgr.mLock.RUnlock()
@@ -91,7 +92,7 @@ func (mgr *SessionMgr) GetSession(sessionID string) (map[interface{}]interface{}
 	return nil, nil
 }
 
-//得到sessionID列表
+// GetSessionIDList 得到sessionID列表
 func (mgr *SessionMgr) GetSessionIDList() []string {
 	mgr.mLock.RLock()
 	defer mgr.mLock.RUnlock()
@@ -105,7 +106,7 @@ func (mgr *SessionMgr) GetSessionIDList() []string {
 	return sessionIDList[0:len(sessionIDList)]
 }
 
-//更新最后访问时间
+// GetLastAccessTime 更新最后访问时间
 func (mgr *SessionMgr) GetLastAccessTime(sessionID string) time.Time {
 	mgr.mLock.RLock()
 	defer mgr.mLock.RUnlock()
@@ -117,7 +118,7 @@ func (mgr *SessionMgr) GetLastAccessTime(sessionID string) time.Time {
 	return time.Now()
 }
 
-//GC回收
+// GC GC回收
 func (mgr *SessionMgr) GC() {
 	mgr.mLock.Lock()
 	defer mgr.mLock.Unlock()
@@ -132,7 +133,7 @@ func (mgr *SessionMgr) GC() {
 	time.AfterFunc(time.Second*5, func() { mgr.GC() })
 }
 
-//创建唯一ID
+// NewSessionID 创建唯一ID
 func (mgr *SessionMgr) NewSessionID() string {
 	b := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, b); err != nil {
@@ -142,8 +143,7 @@ func (mgr *SessionMgr) NewSessionID() string {
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-//——————————————————————————
-/*会话*/
+// Session 会话
 type Session struct {
 	mLastTimeAccessed time.Time                   //最后访问时间
 	mValues           map[interface{}]interface{} //其它对应值(保存用户所对应的一些值，比如用户权限之类)

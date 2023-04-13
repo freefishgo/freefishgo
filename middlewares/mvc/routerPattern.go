@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package mvc
 
 import (
@@ -25,7 +26,7 @@ type freeFishUrl struct {
 	ControllerInfo   *controllerInfo
 }
 
-// 获取控制器名称
+// GetControllerName 获取控制器名称
 func (f *freeFishUrl) GetControllerName(c *ActionRouter) string {
 	if v, ok := f.OtherKeyMap["Controller"]; ok {
 		return v.(string)
@@ -34,7 +35,7 @@ func (f *freeFishUrl) GetControllerName(c *ActionRouter) string {
 	}
 }
 
-// 获取动作名称
+// GetControllerAction 获取动作名称
 func (f *freeFishUrl) GetControllerAction(c *ActionRouter) string {
 	if v, ok := f.OtherKeyMap["Action"]; ok {
 		return v.(string)
@@ -43,11 +44,11 @@ func (f *freeFishUrl) GetControllerAction(c *ActionRouter) string {
 	}
 }
 
-/// <summary>
-/// 转义字符串中所有正则特殊字符
-/// </summary>
-/// <param name="input">传入字符串</param>
-/// <returns></returns>
+// / <summary>
+// / 转义字符串中所有正则特殊字符
+// / </summary>
+// / <param name="input">传入字符串</param>
+// / <returns></returns>
 func filterRegexpString(input string) string {
 	input = strings.Replace(input, "\\", "\\\\", -1) //先替换“\”，不然后面会因为替换出现其他的“\”
 	//r := regexp.MustCompile("[\\*\\.\\?\\+\\$\\^\\[\\]\\(\\)\\{\\}\\|\\/]")

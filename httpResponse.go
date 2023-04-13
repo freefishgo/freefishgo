@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package freefishgo
 
 import (
@@ -26,63 +27,63 @@ import (
 )
 
 type IResponse interface {
-	// 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
+	// WebSocket 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
 	WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.Conn, err error)
 	Hijack() (net.Conn, *bufio.ReadWriter, error)
 	setISession(i ISession)
 	getSessionKeyValue() (err error)
-	// 移除Session
+	// RemoveSession 移除Session
 	RemoveSession()
-	// 获取指定key的session值
+	// GetSession 获取指定key的session值
 	GetSession(key string) (interface{}, error)
 	getSession() error
-	// 更新session值
+	// UpdateSession 更新session值
 	UpdateSession() error
-	// 设置session值
+	// SetSession 设置session值
 	SetSession(key string, val interface{}) error
-	// 设置Cookie
+	// SetCookie 设置Cookie
 	SetCookie(c *http.Cookie)
-	// 设置Cookie
+	// SetCookieUseKeyValue 设置Cookie
 	SetCookieUseKeyValue(key string, val string)
-	// 通过cookie名字移除Cookie
+	// RemoveCookieByName 通过cookie名字移除Cookie
 	RemoveCookieByName(name string)
-	// 设置响应状态值
+	// WriteHeader 设置响应状态值
 	WriteHeader(statusCode int)
-	// 读取响应状态值
+	// ReadStatusCode 读取响应状态值
 	ReadStatusCode() int
-	// 通过cookie移除Cookie
+	// RemoveCookie 通过cookie移除Cookie
 	RemoveCookie(ck *http.Cookie)
-	// 写入前端的数据
+	// Write 写入前端的数据
 	Write(b []byte) (int, error)
-	// 获取写入前端的缓存
+	// GetWriteCache 获取写入前端的缓存
 	GetWriteCache() []byte
-	// 清除写入前端的缓存
+	// ClearWriteCache 清除写入前端的缓存
 	ClearWriteCache()
-	// 写入前端的json数据
+	// WriteJson 写入前端的json数据
 	WriteJson(i interface{}) error
-	// 重定向路径
+	// Redirect 重定向路径
 	Redirect(redirectPath string)
 	getYourself() *Response
-	// 是否已经向前端写入数据了，默认是开启的，且GetMaxResponseCacheLen()设置很小
+	// GetStarted 是否已经向前端写入数据了，默认是开启的，且GetMaxResponseCacheLen()设置很小
 	GetStarted() bool
-	// 获取当前请求是否临时缓存数据进入缓存中
+	// GetIsWriteInCache 获取当前请求是否临时缓存数据进入缓存中
 	GetIsWriteInCache() bool
-	// 设置是否延迟把写入前端的数据写入前端，即使设置了延迟写入前端，
+	// SetIsWriteInCache 设置是否延迟把写入前端的数据写入前端，即使设置了延迟写入前端，
 	// 但当数据长度超过了配置文件设置的 MaxResponseCacheLen是依然会写入前端，
 	// 判断是否已经写入前端 调用 GetStarted()进行判断
 	SetIsWriteInCache(bool)
 	Header() http.Header
-	// 查看延迟写入前端的数据的最大值
+	// GetMaxResponseCacheLen 查看延迟写入前端的数据的最大值
 	GetMaxResponseCacheLen() int
-	// 设置延迟写入前端的数据的最大值，GetIsWriteInCache()为True时生效
+	// SetMaxResponseCacheLen 设置延迟写入前端的数据的最大值，GetIsWriteInCache()为True时生效
 	SetMaxResponseCacheLen(int)
-	// 获取传送数据
+	// GetMsgData 获取传送数据
 	GetMsgData() map[string]interface{}
-	// 设置传送数据
+	// SetMsgData 设置传送数据
 	SetMsgData(map[string]interface{})
-	// 500 错误的堆栈信息,其他状态为空
+	// Stack 500 错误的堆栈信息,其他状态为空
 	Stack() string
-	// 500 错误的信息,其他状态为空
+	// Error 500 错误的信息,其他状态为空
 	Error() interface{}
 	SetStack(string)
 	SetError(interface{})
@@ -117,32 +118,32 @@ type Response struct {
 	stack string
 }
 
-// 获取传递的信息
+// GetMsgData 获取传递的信息
 func (r *Response) GetMsgData() map[string]interface{} {
 	return r.msgData
 }
 
-// 设置传递的信心
+// SetMsgData 设置传递的信心
 func (r *Response) SetMsgData(data map[string]interface{}) {
 	r.msgData = data
 }
 
-// 设置错误的堆栈信息
+// SetStack 设置错误的堆栈信息
 func (r *Response) SetStack(str string) {
 	r.stack = str
 }
 
-// 设置错误的信息
+// SetError 设置错误的信息
 func (r *Response) SetError(err interface{}) {
 	r.err = err
 }
 
-// 错误的堆栈信息
+// Stack 错误的堆栈信息
 func (r *Response) Stack() string {
 	return r.stack
 }
 
-// 错误的信息
+// Error 错误的信息
 func (r *Response) Error() interface{} {
 	return r.err
 }
@@ -176,7 +177,7 @@ var upgrade = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-// 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
+// WebSocket 升级为WebSocket服务 upgrades为空时采用默认的参数 为多个时只采用第一个作为WebSocket参数
 func (r *Response) WebSocket(upgrades ...*websocket.Upgrader) (conn *websocket.Conn, err error) {
 	if upgrades == nil {
 		conn, err = upgrade.Upgrade(r, r.req, r.Header())
@@ -269,17 +270,17 @@ func (r *Response) SetSession(key string, val interface{}) error {
 	return r.UpdateSession()
 }
 
-// 设置Cookie
+// SetCookie 设置Cookie
 func (r *Response) SetCookie(c *http.Cookie) {
 	http.SetCookie(r, c)
 }
 
-// 设置Cookie
+// SetCookieUseKeyValue 设置Cookie
 func (r *Response) SetCookieUseKeyValue(key string, val string) {
 	http.SetCookie(r.ResponseWriter, &http.Cookie{Name: key, Value: val, Path: "/"})
 }
 
-// 通过cookie名字移除Cookie
+// RemoveCookieByName 通过cookie名字移除Cookie
 func (r *Response) RemoveCookieByName(name string) {
 	if ck, err := r.req.Cookie(name); err != http.ErrNoCookie {
 		ck.Expires = time.Now()
@@ -294,13 +295,13 @@ func (r *Response) ReadStatusCode() int {
 	return r.status
 }
 
-// 通过cookie移除Cookie
+// RemoveCookie 通过cookie移除Cookie
 func (r *Response) RemoveCookie(ck *http.Cookie) {
 	ck.Expires = time.Now()
 	http.SetCookie(r, ck)
 }
 
-// 写入前端的数据
+// Write 写入前端的数据
 func (r *Response) Write(b []byte) (int, error) {
 	if !r.Started && r.isWriteInCache && len(r.writeCache) < r.maxResponseCacheLen {
 		r.writeCache = append(r.writeCache, b...)
@@ -342,17 +343,17 @@ func (r *Response) Write(b []byte) (int, error) {
 	return r.ResponseWriter.Write(b)
 }
 
-// 获取写入前端的缓存
+// GetWriteCache 获取写入前端的缓存
 func (r *Response) GetWriteCache() []byte {
 	return r.writeCache
 }
 
-// 清除写入前端的缓存
+// ClearWriteCache 清除写入前端的缓存
 func (r *Response) ClearWriteCache() {
 	r.writeCache = nil
 }
 
-// 写入前端的json数据
+// WriteJson 写入前端的json数据
 func (r *Response) WriteJson(i interface{}) error {
 	if b, err := json.Marshal(i); err == nil {
 		r.ResponseWriter.Header().Set("Content-Type", "application/json")

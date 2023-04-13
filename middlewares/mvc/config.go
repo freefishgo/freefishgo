@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package mvc
 
 type MvcWebConfig struct {
@@ -33,7 +34,7 @@ type MvcWebConfig struct {
 	indexAction    string
 }
 
-// 实例化一个 MvcWebConfig
+// NewWebConfig 实例化一个 MvcWebConfig
 func NewWebConfig() *MvcWebConfig {
 	return &MvcWebConfig{ViewsPath: "views", TemplateLeft: "{{", TemplateRight: "}}", IsDevelopment: false, LayoutTemplateLeft: "{{{", LayoutTemplateRight: "}}}", StaticDir: "static"}
 }

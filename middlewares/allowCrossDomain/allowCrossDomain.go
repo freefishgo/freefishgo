@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package allowCrossDomain
 
 import (
@@ -18,7 +19,7 @@ import (
 	"net/http"
 )
 
-// 组装一个Middleware服务，实现允许跨域请求
+// AllowCrossDomain 组装一个Middleware服务，实现允许跨域请求
 type AllowCrossDomain struct {
 	// 允许跨域源
 	AllowOrigin string
@@ -28,7 +29,7 @@ type AllowCrossDomain struct {
 	AllowHeaders string
 }
 
-// 中间件实现允许跨域请求
+// Middleware 中间件实现允许跨域请求
 func (allow *AllowCrossDomain) Middleware(ctx *freefishgo.HttpContext, next freefishgo.Next) *freefishgo.HttpContext {
 	ctx.Response.Header().Set("Access-Control-Allow-Origin", allow.AllowOrigin)
 	ctx.Response.Header().Set("Access-Control-Allow-Methods", allow.AllowMethods)
@@ -39,7 +40,7 @@ func (allow *AllowCrossDomain) Middleware(ctx *freefishgo.HttpContext, next free
 	return next(ctx)
 }
 
-// 中间件注册时调用函数进行该中间件最后的设置
+// LastInit 中间件注册时调用函数进行该中间件最后的设置
 func (allow *AllowCrossDomain) LastInit(config *freefishgo.Config) {
 	if allow.AllowOrigin == "" {
 		allow.AllowOrigin = "*"

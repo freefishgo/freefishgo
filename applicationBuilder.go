@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package freefishgo
 
 import (
@@ -43,24 +44,24 @@ func checkDefaultApplicationBuilderNil() {
 	}
 }
 
-// ApplicationBuilder管道构造器
+// ApplicationBuilder ApplicationBuilder管道构造器
 type ApplicationBuilder struct {
 	Config  *Config
 	handler *applicationHandler
 }
 
-// 向管道注入session去数据的接口
+// InjectionSession 向管道注入session去数据的接口
 func (app *ApplicationBuilder) InjectionSession(session ISession) {
 	app.handler.session = session
 }
 
-// 向默认管道注入session去数据的接口
+// InjectionSession 向默认管道注入session去数据的接口
 func InjectionSession(session ISession) {
 	checkDefaultApplicationBuilderNil()
 	defaultApplicationBuilder.InjectionSession(session)
 }
 
-// 创建一个ApplicationBuilder管道
+// NewFreeFishApplicationBuilder 创建一个ApplicationBuilder管道
 func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	freeFish := new(ApplicationBuilder)
 	freeFish.handler = newApplicationHandler()
@@ -68,13 +69,13 @@ func NewFreeFishApplicationBuilder() *ApplicationBuilder {
 	return freeFish
 }
 
-// 启动默认中间件web服务
+// Run 启动默认中间件web服务
 func Run() {
 	checkDefaultApplicationBuilderNil()
 	defaultApplicationBuilder.Run()
 }
 
-// 启动web服务
+// Run 启动web服务
 func (app *ApplicationBuilder) Run() {
 	app.middlewareSorting()
 	app.handler.config = app.Config
@@ -83,7 +84,7 @@ func (app *ApplicationBuilder) Run() {
 		if app.handler.session == nil {
 			app.handler.session = NewSessionMgr(app.handler.config.SessionAliveTime)
 		}
-		app.handler.session.Init(app.handler.config.SessionAliveTime)
+		_ = app.handler.session.Init(app.handler.config.SessionAliveTime)
 	}
 	if app.Config.Listen.EnableHTTP {
 		addr := app.Config.Listen.HTTPAddr + ":" + strconv.Itoa(app.Config.Listen.HTTPPort)
@@ -131,7 +132,7 @@ type applicationHandler struct {
 	session        ISession
 }
 
-// http服务逻辑处理程序
+// ServeHTTP http服务逻辑处理程序
 func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := new(HttpContext)
 	ctx.setContext(rw, r)
@@ -177,14 +178,14 @@ func (app *applicationHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request
 	ctx.Response.Write(nil)
 }
 
-// 下一个中间件
+// Next 下一个中间件
 type Next func(*HttpContext) *HttpContext
 
-// 中间件类型接口
+// IMiddleware 中间件类型接口
 type IMiddleware interface {
-	// 中间件的逻辑处理函数 框架会调用
+	// Middleware 中间件的逻辑处理函数 框架会调用
 	Middleware(ctx *HttpContext, next Next) *HttpContext
-	// 注册框架后 框架会自动调用这个函数
+	// LastInit 注册框架后 框架会自动调用这个函数
 	LastInit(*Config)
 }
 
@@ -193,7 +194,7 @@ type middlewareLink struct {
 	next *middlewareLink
 }
 
-// 执行下一个中间件
+// innerNext 执行下一个中间件
 func (link *middlewareLink) innerNext(ctx *HttpContext) (cont *HttpContext) {
 	cont = ctx
 	defer func() {
@@ -208,7 +209,7 @@ func (link *middlewareLink) innerNext(ctx *HttpContext) (cont *HttpContext) {
 	return link.val.Middleware(ctx, link.next.innerNext)
 }
 
-// 中间件注册接口
+// UseMiddleware 中间件注册接口
 func (app *ApplicationBuilder) UseMiddleware(middleware ...IMiddleware) {
 	if app.handler.middlewareList == nil {
 		app.handler.middlewareList = []IMiddleware{}
@@ -216,7 +217,7 @@ func (app *ApplicationBuilder) UseMiddleware(middleware ...IMiddleware) {
 	app.handler.middlewareList = append(app.handler.middlewareList, middleware...)
 }
 
-// 中间件func注册接口
+// UseMiddlewareFunc 中间件func注册接口
 func (app *ApplicationBuilder) UseMiddlewareFunc(middlewareFunc ...func(ctx *HttpContext, next Next) *HttpContext) {
 	if app.handler.middlewareList == nil {
 		app.handler.middlewareList = []IMiddleware{}
@@ -241,19 +242,19 @@ func (m *innerMiddlewareFunc) LastInit(config *Config) {
 	//panic("implement me")
 }
 
-// 向默认中间件注册接口
+// UseMiddleware 向默认中间件注册接口
 func UseMiddleware(middleware ...IMiddleware) {
 	checkDefaultApplicationBuilderNil()
 	defaultApplicationBuilder.UseMiddleware(middleware...)
 }
 
-// 中间件func注册接口
+// UseMiddlewareFunc 中间件func注册接口
 func UseMiddlewareFunc(middlewareFunc ...func(ctx *HttpContext, next Next) *HttpContext) {
 	checkDefaultApplicationBuilderNil()
 	defaultApplicationBuilder.UseMiddlewareFunc(middlewareFunc...)
 }
 
-// 中间件排序
+// middlewareSorting 中间件排序
 func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 	app.handler.middlewareLink = new(middlewareLink)
 	tmpMid := app.handler.middlewareLink
@@ -270,7 +271,7 @@ func (app *ApplicationBuilder) middlewareSorting() *ApplicationBuilder {
 	return app
 }
 
-// 框架最后一个中间件
+// lastFrameMiddleware 框架最后一个中间件
 type lastFrameMiddleware struct {
 }
 

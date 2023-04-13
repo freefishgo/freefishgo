@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package freefishgo
 
 import (
@@ -21,45 +22,45 @@ type Config struct {
 	AppName    string
 	RunMode    string
 	ServerName string
-	// 是否开启Gzip压缩
+	// EnableGzip 是否开启Gzip压缩
 	EnableGzip bool
-	// 是否启用Session
+	// EnableSession 是否启用Session
 	EnableSession bool
-	// Session的存在时间
+	// SessionAliveTime Session的存在时间
 	SessionAliveTime time.Duration
-	// 响应数据最大缓存长度
+	// MaxResponseCacheLen 响应数据最大缓存长度
 	MaxResponseCacheLen int
-	// Session的客户端Cookie名字
+	// SessionCookieName Session的客户端Cookie名字
 	SessionCookieName string
-	// 是否在管道最末端捕获Panic，以取代框架的处理Panic函数
+	// RecoverPanic 是否在管道最末端捕获Panic，以取代框架的处理Panic函数
 	RecoverPanic bool
-	// 捕获Panic的处理函数
+	// RecoverFunc 捕获Panic的处理函数
 	RecoverFunc func(ctx *HttpContext)
 	Listen      Listen
 }
 
 type Listen struct {
-	// 服务超时时间
+	// ServerTimeOut 服务超时时间
 	ServerTimeOut time.Duration
-	//写超时时间
+	// WriteTimeout 写超时时间
 	WriteTimeout time.Duration
 
 	MaxHeaderBytes int
-	// 是否开启http服务
+	// EnableHTTP 是否开启http服务
 	EnableHTTP bool
-	// http服务运行ip地址
+	// HTTPAddr http服务运行ip地址
 	HTTPAddr string
-	// http服务运行端口
+	// HTTPPort http服务运行端口
 	HTTPPort int
-	// 是否开启Https服务
+	// EnableHTTPS 是否开启Https服务
 	EnableHTTPS bool
-	// https服务运行ip地址
+	// HTTPSAddr https服务运行ip地址
 	HTTPSAddr string
-	// https服务运行端口
+	// HTTPSPort https服务运行端口
 	HTTPSPort int
-	// httpsCertFile文件地址
+	// HTTPSCertFile httpsCertFile文件地址
 	HTTPSCertFile string
-	// HTTPSKeyFile文件地址
+	// HTTPSKeyFile HTTPSKeyFile文件地址
 	HTTPSKeyFile string
 }
 
